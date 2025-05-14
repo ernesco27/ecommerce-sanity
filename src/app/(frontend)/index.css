@@ -1,1 +1,55 @@
-@import "tailwindcss";
+/* @import "tailwindcss"; */
+
+@import "tailwindcss/preflight";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+@layer utilities {
+}
+
+@layer base {
+  i,
+  svg,
+  button {
+    @apply cursor-pointer;
+  }
+  /* font sizes here */
+  h1 {
+    @apply text-h1;
+  }
+  h2 {
+    @apply text-h2;
+  }
+  h3 {
+    @apply text-h3;
+  }
+  h4 {
+    @apply text-h4;
+  }
+  h5 {
+    @apply text-h5;
+  }
+  h6 {
+    @apply text-h6;
+  }
+
+  span {
+    @apply text-span;
+  }
+  div {
+    @apply text-div;
+  }
+  p {
+    @apply text-p;
+  }
+}
+
+:root {
+  --toastify-container-width: fit-content;
+  --toastify-toast-width: 320px;
+  --toastify-toast-offset: 16px;
+}
+
+.Toastify__toast {
+  font-size: 18px;
+}
