@@ -24,13 +24,39 @@ export const productType = {
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: "seo",
+      title: "SEO",
+      type: "object",
+      fields: [
+        defineField({
+          name: "metaTitle",
+          title: "Meta Title",
+          type: "string",
+          description: "Title used for search engines and browser tabs",
+          validation: (Rule) => Rule.max(60),
+        }),
+        defineField({
+          name: "metaDescription",
+          title: "Meta Description",
+          type: "text",
+          description: "Description for search engines",
+          validation: (Rule) => Rule.max(160),
+        }),
+        defineField({
+          name: "keywords",
+          title: "Keywords",
+          type: "array",
+          of: [{ type: "string" }],
+          description: "Keywords for search engines",
+        }),
+      ],
+    }),
+    defineField({
       name: "description",
       title: "Product Description",
       type: "text",
-
       validation: (Rule) => Rule.required(),
     }),
-
     defineField({
       name: "fullDescription",
       type: "blockContent",
@@ -43,23 +69,97 @@ export const productType = {
       description: "Total stock of all variants",
       readOnly: true,
     }),
-    defineField({ name: "price", type: "number", title: "Price" }),
-    defineField({ name: "salesPrice", type: "number", title: "Sales Price" }),
-    defineField({ name: "sku", type: "string", title: "SKU" }),
+    defineField({
+      name: "price",
+      type: "number",
+      title: "Price",
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "salesPrice",
+      type: "number",
+      title: "Sales Price",
+    }),
+    defineField({
+      name: "sku",
+      type: "string",
+      title: "SKU",
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "taxInfo",
+      title: "Tax Information",
+      type: "object",
+      fields: [
+        defineField({
+          name: "taxCategory",
+          title: "Tax Category",
+          type: "string",
+          options: {
+            list: [
+              { title: "Standard Rate", value: "standard" },
+              { title: "Reduced Rate", value: "reduced" },
+              { title: "Zero Rate", value: "zero" },
+              { title: "Exempt", value: "exempt" },
+            ],
+          },
+        }),
+        defineField({
+          name: "taxRate",
+          title: "Tax Rate (%)",
+          type: "number",
+        }),
+        defineField({
+          name: "hsnCode",
+          title: "HSN/SAC Code",
+          type: "string",
+          description: "Harmonized System Nomenclature code",
+        }),
+      ],
+    }),
+    defineField({
+      name: "shippingDimensions",
+      title: "Shipping Dimensions",
+      type: "object",
+      fields: [
+        defineField({
+          name: "weight",
+          title: "Weight (kg)",
+          type: "number",
+          validation: (Rule) => Rule.min(0),
+        }),
+        defineField({
+          name: "length",
+          title: "Length (cm)",
+          type: "number",
+          validation: (Rule) => Rule.min(0),
+        }),
+        defineField({
+          name: "width",
+          title: "Width (cm)",
+          type: "number",
+          validation: (Rule) => Rule.min(0),
+        }),
+        defineField({
+          name: "height",
+          title: "Height (cm)",
+          type: "number",
+          validation: (Rule) => Rule.min(0),
+        }),
+      ],
+    }),
     defineField({
       name: "variants",
       type: "array",
       of: [{ type: "reference", to: [{ type: "productVariant" }] }],
       title: "Product Variants",
     }),
-
     defineField({
       name: "images",
       type: "array",
       of: [{ type: "reference", to: [{ type: "productImage" }] }],
       title: "All Images",
     }),
-
     defineField({
       name: "isAvailable",
       type: "boolean",
@@ -77,6 +177,7 @@ export const productType = {
       type: "reference",
       to: [{ type: "category" }],
       title: "Category",
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: "brand",

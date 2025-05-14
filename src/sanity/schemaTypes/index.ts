@@ -2,8 +2,6 @@ import { type SchemaTypeDefinition } from "sanity";
 
 import { blockContentType } from "./blockContentType";
 import { categoryType } from "./categoryType";
-import { postType } from "./postType";
-import { authorType } from "./authorType";
 import { subcategoryType } from "./subCategoryTypes";
 import { productType } from "./productType";
 import { productVariantType } from "./productVariantTypes";
@@ -17,17 +15,21 @@ import { userType } from "./userType";
 import { reviewImageType } from "./reviewImages";
 import { productWishlistType } from "./wishListType";
 import { relatedProduct } from "./relatedProductType";
+import { orderType } from "./orderType";
+import { orderItemType } from "./orderItemType";
+import { addressType } from "./addressType";
+import { paymentType } from "./paymentType";
+import { shippingMethodType } from "./shippingMethodType";
+import { cartType } from "./cartType";
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
     blockContentType,
     categoryType,
-    postType,
-    authorType,
     subcategoryType,
     productType,
     productVariantType,
-    //productVariantValueType,
+    productVariantValueType,
     productImageType,
     ProductVariantStockType,
     brandType,
@@ -37,5 +39,11 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     reviewImageType,
     productWishlistType,
     relatedProduct,
+    orderType,
+    orderItemType,
+    addressType,
+    paymentType,
+    shippingMethodType,
+    cartType,
   ],
 };
