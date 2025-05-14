@@ -40,25 +40,22 @@ const IconsGroup = ({
           className="cursor-pointer"
           onClick={() => setOpenSearchBar(!openSearchBar)}
         >
-          <CiSearch size={40} className="hover:text-primary-700" />
+          <CiSearch size={40} className="hover:text-yellow-600" />
         </div>
         <div
           className="cursor-pointer hidden lg:block relative "
           onClick={() => setCartOpen(!cartOpen)}
         >
-          <CiShoppingCart size={40} className="hover:text-primary-700" />
-          <span className="absolute -top-1 -right-1 bg-primary-500 text-white text-sm w-6 h-6 rounded-full flex items-center justify-center">
-            {/* {items.length} */}
+          <CiShoppingCart size={40} className="hover:text-yellow-600" />
+          <span className="absolute -top-1 -right-1 bg-yellow-500 text-white text-sm w-6 h-6 rounded-full flex items-center justify-center">
+            {/* {items.length} */}4
           </span>
         </div>
         <div
           className="cursor-pointer"
           onClick={() => router.push("/account/dashboard")}
         >
-          <CiUser
-            size={40}
-            className="hover:text-primary-700 hidden lg:block"
-          />
+          <CiUser size={40} className="hover:text-yellow-600 hidden lg:block" />
         </div>
         {/* <CartMin cartOpen={cartOpen} setCartOpen={setCartOpen} /> */}
         <CartPreview
