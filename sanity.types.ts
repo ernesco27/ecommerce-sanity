@@ -68,21 +68,234 @@ export type Geopoint = {
   alt?: number;
 };
 
-export type Post = {
+export type Cart = {
   _id: string;
-  _type: "post";
+  _type: "cart";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  user?: {
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    [internalGroqTypeReferenceTo]?: "user";
+  };
+  items?: Array<{
+    product?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "product";
+    };
+    productVariant?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "productVariant";
+    };
+    quantity?: number;
+    _key: string;
+  }>;
+  subtotal?: number;
+  appliedDiscounts?: Array<{
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    _key: string;
+    [internalGroqTypeReferenceTo]?: "discount";
+  }>;
+  lastUpdated?: string;
+  status?: "active" | "abandoned" | "converted";
+};
+
+export type OrderItem = {
+  _id: string;
+  _type: "orderItem";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  product?: {
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    [internalGroqTypeReferenceTo]?: "product";
+  };
+  productVariant?: {
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    [internalGroqTypeReferenceTo]?: "productVariant";
+  };
+  quantity?: number;
+  price?: number;
+  totalPrice?: number;
+  appliedDiscount?: {
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    [internalGroqTypeReferenceTo]?: "discount";
+  };
+};
+
+export type Order = {
+  _id: string;
+  _type: "order";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  orderNumber?: string;
+  user?: {
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    [internalGroqTypeReferenceTo]?: "user";
+  };
+  items?: Array<{
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    _key: string;
+    [internalGroqTypeReferenceTo]?: "orderItem";
+  }>;
+  totalAmount?: number;
+  status?: "pending" | "processing" | "shipped" | "delivered" | "cancelled";
+  shippingAddress?: {
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    [internalGroqTypeReferenceTo]?: "address";
+  };
+  billingAddress?: {
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    [internalGroqTypeReferenceTo]?: "address";
+  };
+  paymentInfo?: {
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    [internalGroqTypeReferenceTo]?: "payment";
+  };
+  shippingMethod?: {
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    [internalGroqTypeReferenceTo]?: "shippingMethod";
+  };
+  orderNotes?: string;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type ShippingMethod = {
+  _id: string;
+  _type: "shippingMethod";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  name?: string;
+  description?: string;
+  price?: number;
+  estimatedDays?: number;
+  isAvailable?: boolean;
+  restrictions?: Array<string>;
+  countries?: Array<string>;
+};
+
+export type Payment = {
+  _id: string;
+  _type: "payment";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  paymentMethod?: "credit_card" | "paypal" | "bank_transfer" | "cod";
+  amount?: number;
+  currency?: string;
+  status?: "pending" | "completed" | "failed" | "refunded";
+  transactionId?: string;
+  paymentDate?: string;
+  notes?: string;
+};
+
+export type Address = {
+  _id: string;
+  _type: "address";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  addressType?: "shipping" | "billing" | "both";
+  user?: {
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    [internalGroqTypeReferenceTo]?: "user";
+  };
+  fullName?: string;
+  addressLine1?: string;
+  addressLine2?: string;
+  city?: string;
+  state?: string;
+  postalCode?: string;
+  country?: string;
+  phone?: string;
+  isDefault?: boolean;
+};
+
+export type RelatedProduct = {
+  _id: string;
+  _type: "relatedProduct";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  link?: string;
+  slug?: Slug;
+  product?: {
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    [internalGroqTypeReferenceTo]?: "product";
+  };
+};
+
+export type ProductWishlist = {
+  _id: string;
+  _type: "productWishlist";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  product?: {
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    [internalGroqTypeReferenceTo]?: "product";
+  };
+  user?: {
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    [internalGroqTypeReferenceTo]?: "user";
+  };
+  addedAt?: string;
+  notes?: string;
+  variant?: {
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    [internalGroqTypeReferenceTo]?: "productVariant";
+  };
+  notifyWhenAvailable?: boolean;
+  notifyOnPriceChange?: boolean;
+};
+
+export type ReviewImage = {
+  _id: string;
+  _type: "reviewImage";
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
   title?: string;
-  slug?: Slug;
-  author?: {
-    _ref: string;
-    _type: "reference";
-    _weak?: boolean;
-    [internalGroqTypeReferenceTo]?: "author";
-  };
-  mainImage?: {
+  images?: Array<{
     asset?: {
       _ref: string;
       _type: "reference";
@@ -92,18 +305,213 @@ export type Post = {
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
-    alt?: string;
     _type: "image";
+    _key: string;
+  }>;
+  altText?: Array<string>;
+  user?: {
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    [internalGroqTypeReferenceTo]?: "user";
   };
-  categories?: Array<{
+};
+
+export type ProductReview = {
+  _id: string;
+  _type: "productReview";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  reviewTitle?: string;
+  rating?: number;
+  reviewDetails?: string;
+  user?: {
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    [internalGroqTypeReferenceTo]?: "user";
+  };
+  product?: {
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    [internalGroqTypeReferenceTo]?: "product";
+  };
+  productVariant?: {
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    [internalGroqTypeReferenceTo]?: "productVariant";
+  };
+  verifiedPurchase?: boolean;
+  images?: Array<{
     _ref: string;
     _type: "reference";
     _weak?: boolean;
     _key: string;
-    [internalGroqTypeReferenceTo]?: "category";
+    [internalGroqTypeReferenceTo]?: "reviewImage";
   }>;
-  publishedAt?: string;
-  body?: Array<{
+  helpfulVotes?: number;
+  status?: "pending" | "approved" | "rejected";
+  reviewDate?: string;
+  lastModified?: string;
+};
+
+export type User = {
+  _id: string;
+  _type: "user";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phone?: string;
+  photo?: {
+    asset?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+    };
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  };
+  accountStatus?: "active" | "inactive" | "suspended" | "pending";
+  accountType?: "regular" | "premium" | "business";
+  dateJoined?: string;
+  lastLogin?: string;
+  preferences?: {
+    language?: "en" | "es" | "fr";
+    currency?: "USD" | "EUR" | "GBP";
+    notifications?: {
+      email?: boolean;
+      sms?: boolean;
+      push?: boolean;
+    };
+  };
+  marketingPreferences?: {
+    emailMarketing?: boolean;
+    smsMarketing?: boolean;
+    personalization?: boolean;
+    thirdPartySharing?: boolean;
+  };
+  productReviews?: Array<{
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    _key: string;
+    [internalGroqTypeReferenceTo]?: "productReview";
+  }>;
+  wishlist?: Array<{
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    _key: string;
+    [internalGroqTypeReferenceTo]?: "productWishlist";
+  }>;
+  productLikes?: Array<{
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    _key: string;
+    [internalGroqTypeReferenceTo]?: "product";
+  }>;
+};
+
+export type VariantStock = {
+  _type: "variantStock";
+  color?: string;
+  hexCode?: Color;
+  stock?: number;
+  images?: Array<{
+    asset?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+    };
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+    _key: string;
+  }>;
+};
+
+export type ProductImage = {
+  _id: string;
+  _type: "productImage";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  title?: string;
+  images?: Array<{
+    asset?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+    };
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+    _key: string;
+  }>;
+  altText?: Array<string>;
+  product?: {
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    [internalGroqTypeReferenceTo]?: "product";
+  };
+};
+
+export type ProductVariantValue = {
+  _id: string;
+  _type: "productVariantValue";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  type?: "size" | "color";
+  size?: string;
+  colorName?: string;
+  hexCode?: string;
+};
+
+export type ProductVariant = {
+  _id: string;
+  _type: "productVariant";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  size?: string;
+  price?: number;
+  salesPrice?: number;
+  variantStocks?: Array<{
+    _key: string;
+  } & VariantStock>;
+};
+
+export type Product = {
+  _id: string;
+  _type: "product";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  name?: string;
+  slug?: Slug;
+  seo?: {
+    metaTitle?: string;
+    metaDescription?: string;
+    keywords?: Array<string>;
+  };
+  description?: string;
+  fullDescription?: Array<{
     children?: Array<{
       marks?: Array<string>;
       text?: string;
@@ -134,16 +542,182 @@ export type Post = {
     _type: "image";
     _key: string;
   }>;
+  baseStock?: number;
+  price?: number;
+  salesPrice?: number;
+  sku?: string;
+  taxInfo?: {
+    taxCategory?: "standard" | "reduced" | "zero" | "exempt";
+    taxRate?: number;
+    hsnCode?: string;
+  };
+  shippingDimensions?: {
+    weight?: number;
+    length?: number;
+    width?: number;
+    height?: number;
+  };
+  variants?: Array<{
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    _key: string;
+    [internalGroqTypeReferenceTo]?: "productVariant";
+  }>;
+  images?: Array<{
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    _key: string;
+    [internalGroqTypeReferenceTo]?: "productImage";
+  }>;
+  isAvailable?: boolean;
+  featured?: boolean;
+  category?: {
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    [internalGroqTypeReferenceTo]?: "category";
+  };
+  brand?: {
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    [internalGroqTypeReferenceTo]?: "brand";
+  };
+  discount?: {
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    [internalGroqTypeReferenceTo]?: "discount";
+  };
+  reviews?: Array<{
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    _key: string;
+    [internalGroqTypeReferenceTo]?: "productReview";
+  }>;
+  relatedProducts?: Array<{
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    _key: string;
+    [internalGroqTypeReferenceTo]?: "relatedProduct";
+  }>;
 };
 
-export type Author = {
+export type Discount = {
   _id: string;
-  _type: "author";
+  _type: "discount";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  name?: string;
+  code?: string;
+  type?: "percentage" | "amount" | "bxgy" | "free_shipping";
+  value?: number;
+  minOrderValue?: number;
+  maxDiscount?: number;
+  startDate?: string;
+  endDate?: string;
+  isActive?: boolean;
+  usageLimit?: {
+    totalUses?: number;
+    perCustomer?: number;
+  };
+  applicableTo?: {
+    products?: Array<{
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      _key: string;
+      [internalGroqTypeReferenceTo]?: "product";
+    }>;
+    categories?: Array<{
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      _key: string;
+      [internalGroqTypeReferenceTo]?: "category";
+    }>;
+    brands?: Array<{
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      _key: string;
+      [internalGroqTypeReferenceTo]?: "brand";
+    }>;
+  };
+  exclusions?: {
+    products?: Array<{
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      _key: string;
+      [internalGroqTypeReferenceTo]?: "product";
+    }>;
+    categories?: Array<{
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      _key: string;
+      [internalGroqTypeReferenceTo]?: "category";
+    }>;
+    brands?: Array<{
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      _key: string;
+      [internalGroqTypeReferenceTo]?: "brand";
+    }>;
+  };
+};
+
+export type Brand = {
+  _id: string;
+  _type: "brand";
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
   name?: string;
   slug?: Slug;
+  logo?: {
+    asset?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+    };
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+  };
+  description?: string;
+  website?: string;
+  founded?: string;
+  country?: string;
+  featured?: boolean;
+  status?: "active" | "inactive";
+  socialMedia?: {
+    facebook?: string;
+    instagram?: string;
+    twitter?: string;
+    linkedin?: string;
+  };
+};
+
+export type Subcategory = {
+  _id: string;
+  _type: "subcategory";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  name?: string;
+  slug?: Slug;
+  description?: string;
   image?: {
     asset?: {
       _ref: string;
@@ -154,26 +728,23 @@ export type Author = {
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
+    alt?: string;
     _type: "image";
   };
-  bio?: Array<{
-    children?: Array<{
-      marks?: Array<string>;
-      text?: string;
-      _type: "span";
-      _key: string;
-    }>;
-    style?: "normal";
-    listItem?: never;
-    markDefs?: Array<{
-      href?: string;
-      _type: "link";
-      _key: string;
-    }>;
-    level?: number;
-    _type: "block";
-    _key: string;
-  }>;
+  parentCategory?: {
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    [internalGroqTypeReferenceTo]?: "category";
+  };
+  displayOrder?: number;
+  isActive?: boolean;
+  featured?: boolean;
+  seo?: {
+    metaTitle?: string;
+    metaDescription?: string;
+    keywords?: Array<string>;
+  };
 };
 
 export type Category = {
@@ -185,6 +756,46 @@ export type Category = {
   title?: string;
   slug?: Slug;
   description?: string;
+  image?: {
+    asset?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+    };
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+  };
+  icon?: {
+    asset?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+    };
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  };
+  subcategories?: Array<{
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    _key: string;
+    [internalGroqTypeReferenceTo]?: "subcategory";
+  }>;
+  displayOrder?: number;
+  isActive?: boolean;
+  featured?: boolean;
+  seo?: {
+    metaTitle?: string;
+    metaDescription?: string;
+    keywords?: Array<string>;
+  };
 };
 
 export type Slug = {
@@ -282,5 +893,38 @@ export type SanityImageMetadata = {
   isOpaque?: boolean;
 };
 
-export type AllSanitySchemaTypes = SanityImagePaletteSwatch | SanityImagePalette | SanityImageDimensions | SanityFileAsset | Geopoint | Post | Author | Category | Slug | BlockContent | SanityImageCrop | SanityImageHotspot | SanityImageAsset | SanityAssetSourceData | SanityImageMetadata;
+export type Color = {
+  _type: "color";
+  hex?: string;
+  alpha?: number;
+  hsl?: HslaColor;
+  hsv?: HsvaColor;
+  rgb?: RgbaColor;
+};
+
+export type RgbaColor = {
+  _type: "rgbaColor";
+  r?: number;
+  g?: number;
+  b?: number;
+  a?: number;
+};
+
+export type HsvaColor = {
+  _type: "hsvaColor";
+  h?: number;
+  s?: number;
+  v?: number;
+  a?: number;
+};
+
+export type HslaColor = {
+  _type: "hslaColor";
+  h?: number;
+  s?: number;
+  l?: number;
+  a?: number;
+};
+
+export type AllSanitySchemaTypes = SanityImagePaletteSwatch | SanityImagePalette | SanityImageDimensions | SanityFileAsset | Geopoint | Cart | OrderItem | Order | ShippingMethod | Payment | Address | RelatedProduct | ProductWishlist | ReviewImage | ProductReview | User | VariantStock | ProductImage | ProductVariantValue | ProductVariant | Product | Discount | Brand | Subcategory | Category | Slug | BlockContent | SanityImageCrop | SanityImageHotspot | SanityImageAsset | SanityAssetSourceData | SanityImageMetadata | Color | RgbaColor | HsvaColor | HslaColor;
 export declare const internalGroqTypeReferenceTo: unique symbol;

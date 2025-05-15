@@ -12,22 +12,24 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CiMenuFries } from "react-icons/ci";
 import { cn } from "@/lib/utils";
 
-import useSWR, { Fetcher } from "swr";
-
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { Category, Subcategory } from "../../../../sanity.types";
 
-const SidebarMenu = () => {
+const SidebarMenu = ({ categories }: { categories: Category[] }) => {
   const [show, setShow] = useState(false);
-  // const [subCategory, setSubCategory] = useState<SubCategory[]>([]);
-  // const [openMenu, setOpenMenu] = useState<boolean>(false);
+  const [subCategory, setSubCategory] = useState<Subcategory[]>([]);
   const [open, setOpen] = useState(false);
+
+  console.log("categories:", categories);
 
   const router = useRouter();
 
+  // const categoryTitles = categories?.map((category) => category.title);
+  // console.log("categoryTitles:", categoryTitles);
   return (
     <>
       <Sheet open={open} onOpenChange={setOpen}>
@@ -37,15 +39,45 @@ const SidebarMenu = () => {
         <SheetContent
           className={cn("px-4 w-full [&>#closeBtn]:text-3xl ", "md:w-[400px]")}
         >
-          <div className="mt-10">
+          <div className="mt-10 ">
             <Tabs defaultValue="category">
-              <TabsList className="grid grid-cols-2">
+              <TabsList className="grid grid-cols-2 w-full">
                 <TabsTrigger value="category">Categories</TabsTrigger>
                 <TabsTrigger value="page">Pages</TabsTrigger>
               </TabsList>
               <TabsContent value="category">
                 <div className="flex flex-col gap-8 h-full">
                   {/* TODO: API call */}
+                  {categories.map((item: Category, index) => (
+                    <div key={item._id} className="group px-4 py-2">
+                      <div className="flex items-center gap-4">
+                        <span
+                          className="capitalize hover:text-primary-500 cursor-pointer"
+                          onClick={() => {
+                            router.push(`/categories/${item.slug}`);
+                            setOpen(false);
+                          }}
+                        >
+                          {item.title}
+                        </span>
+
+                        {item.subcategories &&
+                          item.subcategories.length > 0 && (
+                            <ChevronRight
+                              className={`text-icon ms-auto h-5 w-5`}
+                              onClick={() => {
+                                setShow(!show);
+                                if (item.subcategories) {
+                                  setSubCategory(
+                                    item.subcategories as unknown as Subcategory[],
+                                  );
+                                }
+                              }}
+                            />
+                          )}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </TabsContent>
               <TabsContent value="page">
@@ -91,15 +123,15 @@ const SidebarMenu = () => {
               <ChevronLeft />
             </Button>
             <div className="flex flex-col gap-8 justify-center mt-12">
-              {/* {subCategory?.map((item: SubCategory, index: number) => (
+              {subCategory?.map((item: Subcategory) => (
                 <Link
                   className="Capitalize hover:text-primary-800"
-                  href={`/categories/${item.link}/products`}
-                  key={index}
+                  href={`/categories/${item.slug?.current || ""}`}
+                  key={item._id}
                 >
                   {item.name}
                 </Link>
-              ))} */}
+              ))}
             </div>
           </div>
         </SheetContent>
