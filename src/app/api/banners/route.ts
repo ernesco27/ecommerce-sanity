@@ -60,12 +60,7 @@ export async function GET(request: Request) {
       ...(location && { location }),
     };
 
-    console.log("Fetching banners with query:", query);
-    console.log("Query parameters:", params);
-
     const banners = await client.fetch<Banner[]>(query, params);
-
-    console.log("Fetched banners:", banners);
 
     if (!banners || banners.length === 0) {
       return NextResponse.json([]);

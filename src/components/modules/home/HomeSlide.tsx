@@ -46,8 +46,6 @@ const HomeSlide = () => {
 
   if (!banners || banners.length === 0) return null;
 
-  console.log("bannerS:", banners);
-
   return (
     <section className="w-full overflow-hidden">
       <Container className="w-full max-w-full px-0">
@@ -78,7 +76,7 @@ const HomeSlide = () => {
               }}
             >
               <div
-                className="absolute grid grid-cols-1 place-content-center lg:place-content-start justify-items-center gap-4 capitalize m-auto top-1/4  w-full lg:w-1/2 p-8"
+                className="absolute grid grid-cols-1 place-content-center lg:place-content-start justify-items-center gap-4 capitalize m-auto lg:left-2 top-1/4  w-full lg:w-1/2 p-8"
                 style={{ color: banner.textColor || "white" }}
               >
                 {banner.subTitle && (

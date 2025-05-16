@@ -11,6 +11,9 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^6.19.2",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/material": "^7.1.0",
     "@radix-ui/react-dialog": "^1.1.13",
     "@radix-ui/react-slot": "^1.2.2",
     "@radix-ui/react-tabs": "^1.1.11",
@@ -27,6 +30,7 @@
     "react-dom": "^19.0.0",
     "react-icons": "^5.5.0",
     "react-is": "^19.1.0",
+    "react-number-format": "^5.4.4",
     "react-toastify": "^11.0.5",
     "sanity": "^3.88.2",
     "styled-components": "^6.1.18",

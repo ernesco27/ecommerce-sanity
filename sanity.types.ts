@@ -68,6 +68,40 @@ export type Geopoint = {
   alt?: number;
 };
 
+export type Banner = {
+  _id: string;
+  _type: "banner";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  title?: string;
+  subTitle?: string;
+  description?: string;
+  image?: {
+    asset?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+    };
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+  };
+  slug?: Slug;
+  link?: string;
+  buttonText?: string;
+  displayOrder?: number;
+  isActive?: boolean;
+  startDate?: string;
+  endDate?: string;
+  bannerType?: "hero" | "promo" | "category" | "sale";
+  textColor?: string;
+  backgroundColor?: string;
+};
+
 export type Page = {
   _id: string;
   _type: "page";
@@ -1032,48 +1066,13 @@ export type HslaColor = {
   a?: number;
 };
 
-export type Banner = {
-  _id: string;
-  _type: "banner";
-  _createdAt: string;
-  _updatedAt: string;
-  _rev: string;
-  title?: string;
-  subTitle?: string;
-  description?: string;
-  image?: {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
-    media?: unknown;
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
-    alt?: string;
-    _type: "image";
-  };
-  imageUrl?: string;
-  alt?: string;
-  slug?: Slug;
-  link?: string;
-  buttonText?: string;
-  displayOrder?: number;
-  isActive?: boolean;
-  startDate?: string;
-  endDate?: string;
-  bannerType?: "hero" | "promo" | "category" | "sale";
-  textColor?: string;
-  backgroundColor?: string;
-};
-
 export type AllSanitySchemaTypes =
   | SanityImagePaletteSwatch
   | SanityImagePalette
   | SanityImageDimensions
   | SanityFileAsset
   | Geopoint
+  | Banner
   | Page
   | Cart
   | OrderItem
@@ -1105,6 +1104,98 @@ export type AllSanitySchemaTypes =
   | Color
   | RgbaColor
   | HsvaColor
-  | HslaColor
-  | Banner;
+  | HslaColor;
 export declare const internalGroqTypeReferenceTo: unique symbol;
+// Source: ./src/app/api/products/route.ts
+// Variable: productsQuery
+// Query: *[_type == "product"] {  _id,  _createdAt,  name,  "slug": slug.current,  description,  price,  salesPrice,  sku,  baseStock,  isAvailable,  featured,  "category": category->{ _id, name, "slug": slug.current },  "brand": brand->{ _id, name, "slug": slug.current },  "images": images[]->{     _id,    title,    "urls": images[].asset->url,    "altText": altText  },  "variants": variants[]->{     _id,    size,    price,    salesPrice,    "stocks": variantStocks[] {      color,      "hexCode": hexCode.hex,      stock,      "images": images[].asset->url    }  },  seo {    metaTitle,    metaDescription,    keywords  }} | order(_createdAt desc)
+export type ProductsQueryResult = Array<{
+  _id: string;
+  _createdAt: string;
+  name: string | null;
+  slug: string | null;
+  description: string | null;
+  fullDescription: string | null;
+  price: number | null;
+  salesPrice: number | null;
+  sku: string | null;
+  shippingDimensions: {
+    weight: number;
+    length: number;
+    width: number;
+    height: number;
+  } | null;
+  taxInfo: {
+    taxCategory: "standard" | "reduced" | "zero" | "exempt";
+    taxRate: number;
+    hsnCode: string;
+  } | null;
+  baseStock: number;
+  isAvailable: boolean;
+  featured: boolean;
+  category: {
+    _id: string;
+    title: string | null;
+    slug: string | null;
+    subcategories: Array<{
+      _id: string;
+      name: string | null;
+      slug: string | null;
+    }> | null;
+  } | null;
+  brand: {
+    _id: string;
+    name: string | null;
+    slug: string | null;
+  } | null;
+  images: Array<{
+    _id: string;
+    title: string | null;
+    urls: Array<string>;
+    altText: Array<string>;
+  }> | null;
+  variants: Array<{
+    _id: string;
+    size: string | null;
+    price: number | null;
+    salesPrice: number | null;
+    stocks: Array<{
+      color: string | null;
+      hexCode: string | null;
+      stock: number;
+      images: Array<string>;
+    }>;
+  }> | null;
+  reviews: Array<{
+    _id: string;
+    reviewTitle: string | null;
+    rating: number;
+    reviewDetails: string | null;
+    verifiedPurchase: boolean;
+    helpfulVotes: number;
+    reviewDate: string | null;
+    user: {
+      firstName: string | null;
+      lastName: string | null;
+      email: string | null;
+    } | null;
+    images: Array<{
+      title: string | null;
+      urls: Array<string>;
+      altText: Array<string>;
+    }> | null;
+  }> | null;
+  seo: {
+    metaTitle: string | null;
+    metaDescription: string | null;
+    keywords: Array<string> | null;
+  } | null;
+}>;
+
+// Query TypeMap
+import "@sanity/client";
+declare module "@sanity/client" {
+  interface SanityQueries {
+    '*[_type == "product"] {\n  _id,\n  _createdAt,\n  name,\n  "slug": slug.current,\n  description,\n  price,\n  salesPrice,\n  sku,\n  baseStock,\n  isAvailable,\n  featured,\n  "category": category->{ _id, name, "slug": slug.current },\n  "brand": brand->{ _id, name, "slug": slug.current },\n  "images": images[]->{ \n    _id,\n    title,\n    "urls": images[].asset->url,\n    "altText": altText\n  },\n  "variants": variants[]->{ \n    _id,\n    size,\n    price,\n    salesPrice,\n    "stocks": variantStocks[] {\n      color,\n      "hexCode": hexCode.hex,\n      stock,\n      "images": images[].asset->url\n    }\n  },\n  seo {\n    metaTitle,\n    metaDescription,\n    keywords\n  }\n} | order(_createdAt desc)': ProductsQueryResult;
+  }
+}
