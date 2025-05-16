@@ -4,63 +4,31 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
-import useSWR, { Fetcher } from "swr";
-
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { Category, Subcategory } from "../../../../sanity.types";
 import { Button } from "@/components/ui/button";
-
-interface CategoriesResponse {
-  categories: Category[];
-}
+import { usePages } from "@/store/pagesStore";
+import { useCategories } from "@/store/categoriesStore";
 
 const MainMenu = () => {
   const pathname = usePathname();
   const [show, setShow] = useState(false);
-
-  // const fetcher = (url: string) => fetch(url).then((res) => res.json());
-  // const { data: pageData } = useSWR<Page[]>("/api/pages", fetcher);
-  // const { data: categoryData } = useSWR<Category[]>("/api/categories", fetcher);
-
-  const fetcher: Fetcher<CategoriesResponse> = (url: string) =>
-    fetch(url).then((res) => res.json());
-
-  const { data } = useSWR<CategoriesResponse>("/api/categories", fetcher);
-
-  const categories = data?.categories || [];
+  const { pages } = usePages();
+  const { categories } = useCategories();
 
   const router = useRouter();
 
-  console.log("categories", categories);
-
   return (
     <section className="hidden lg:flex z-10 relative">
-      <ul className="flex justify-between items-center gap-32 ">
-        {/* {["Home", "Shop", "Contact"].map((name) => {
-          const page = pageData?.find((page) => page.name === name);
-          return page ? (
-            <li key={page.id} className="relative">
-              <Link
-                className={cn(
-                  "text-xl h-full duration-300 after:absolute after:top-[26px] after:left-0 after:w-0 after:h-1 after:bg-primary-700 after:duration-100 after:ease-linear hover:after:w-full ",
-                  pathname === `${page.link}` &&
-                    "border-b-4 border-primary-400 capitalize",
-                )}
-                href={`${page.link}`}
-              >
-                {page.name}
-              </Link>
-            </li>
-          ) : null;
-        })} */}
+      <ul className="flex justify-between items-center gap-10  ">
         <li className="relative">
           <Link
             href="/"
             className={cn(
-              "text-xl h-full duration-300 after:absolute after:top-[26px] after:left-0 after:w-0 after:h-1 after:bg-primary-700 after:duration-100 after:ease-linear hover:after:w-full ",
-              pathname === `${"/home"}` &&
-                "border-b-4 border-primary-400 capitalize",
+              "text-xl h-full duration-300 after:absolute after:top-[26px] after:left-0 after:w-0 after:h-1 after:bg-yellow-700 after:duration-100 after:ease-linear hover:after:w-full ",
+              pathname === `${"/"}` &&
+                "border-b-4 border-yellow-400 capitalize",
             )}
           >
             Home
@@ -70,9 +38,9 @@ const MainMenu = () => {
           <Link
             href="/"
             className={cn(
-              "text-xl h-full duration-300 after:absolute after:top-[26px] after:left-0 after:w-0 after:h-1 after:bg-primary-700 after:duration-100 after:ease-linear hover:after:w-full ",
+              "text-xl h-full duration-300 after:absolute after:top-[26px] after:left-0 after:w-0 after:h-1 after:bg-yellow-700 after:duration-100 after:ease-linear hover:after:w-full ",
               pathname === `${"/home"}` &&
-                "border-b-4 border-primary-400 capitalize",
+                "border-b-4 border-yellow-400 capitalize",
             )}
           >
             Shop
@@ -80,13 +48,10 @@ const MainMenu = () => {
         </li>
 
         {/* Categories */}
-        <li className="group">
+        <li className="relative text-xl h-full duration-300 after:absolute after:top-[26px] after:left-0 after:w-0 after:h-1 after:bg-yellow-700 after:duration-100 after:ease-linear hover:after:w-full">
           <button
             className="capitalize inline-flex items-center text-lg cursor-pointer"
-            onClick={() => {
-              console.log("clicked");
-              setShow(!show);
-            }}
+            onClick={() => setShow(!show)}
           >
             Categories
             <ChevronDown />
@@ -108,7 +73,7 @@ const MainMenu = () => {
                   filter: "blur(5px)",
                   transition: { ease: "easeIn", duration: 0.22 },
                 }}
-                className="z-50 h-[440px] bg-yellow-500  w-[950px] absolute right-0 top-[54px] shadow-xl"
+                className="z-50 h-[440px] bg-yellow-500  w-[950px] absolute -right-100 top-[54px] shadow-xl"
               >
                 <div className="grid grid-cols-4 justify-items-center grid-rows-auto max-h-[450px]  bg-white p-4  gap-8  overflow-hidden ">
                   {categories?.map((cat: Category) => {
@@ -164,6 +129,23 @@ const MainMenu = () => {
             )}
           </AnimatePresence>
         </li>
+        {["About Us", "Contact Us"].map((title) => {
+          const page = pages?.find((page) => page.title === title);
+          return page ? (
+            <li key={page._id} className="relative">
+              <Link
+                className={cn(
+                  "text-xl h-full duration-300 after:absolute after:top-[26px] after:left-0 after:w-0 after:h-1 after:bg-yellow-700 after:duration-100 after:ease-linear hover:after:w-full ",
+                  pathname === `${page.slug?.current}` &&
+                    "border-b-4 border-yellow-400 capitalize",
+                )}
+                href={`${page.slug?.current}`}
+              >
+                {page.title}
+              </Link>
+            </li>
+          ) : null;
+        })}
       </ul>
     </section>
   );

@@ -17,9 +17,15 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Category, Subcategory } from "../../../../sanity.types";
+import { Category, Page, Subcategory } from "../../../../sanity.types";
 
-const SidebarMenu = ({ categories }: { categories: Category[] }) => {
+const SidebarMenu = ({
+  categories,
+  pages,
+}: {
+  categories: Category[];
+  pages: Page[];
+}) => {
   const [show, setShow] = useState(false);
   const [subCategory, setSubCategory] = useState<Subcategory[]>([]);
   const [open, setOpen] = useState(false);
@@ -28,8 +34,6 @@ const SidebarMenu = ({ categories }: { categories: Category[] }) => {
 
   const router = useRouter();
 
-  // const categoryTitles = categories?.map((category) => category.title);
-  // console.log("categoryTitles:", categoryTitles);
   return (
     <>
       <Sheet open={open} onOpenChange={setOpen}>
@@ -46,15 +50,15 @@ const SidebarMenu = ({ categories }: { categories: Category[] }) => {
                 <TabsTrigger value="page">Pages</TabsTrigger>
               </TabsList>
               <TabsContent value="category">
-                <div className="flex flex-col gap-8 h-full">
+                <div className="flex flex-col gap-4 h-full">
                   {/* TODO: API call */}
-                  {categories.map((item: Category, index) => (
+                  {categories.map((item: Category) => (
                     <div key={item._id} className="group px-4 py-2">
                       <div className="flex items-center gap-4">
                         <span
-                          className="capitalize hover:text-primary-500 cursor-pointer"
+                          className="capitalize hover:text-yellow-500 cursor-pointer"
                           onClick={() => {
-                            router.push(`/categories/${item.slug}`);
+                            router.push(`/categories/${item.slug?.current}`);
                             setOpen(false);
                           }}
                         >
@@ -81,26 +85,26 @@ const SidebarMenu = ({ categories }: { categories: Category[] }) => {
                 </div>
               </TabsContent>
               <TabsContent value="page">
-                <div className="flex flex-col gap-8 h-full">
+                <div className="flex flex-col gap-4 h-full">
                   {/* TODO: API call */}
-                  {/* {pageData.map((page: Page) => (
-                    // <div
-                    //   key={page.id}
-                    //   className="group inline-flex items-center px-4 py-2 gap-4 w-full hover:text-primary-700 capitalize"
-                    // >
-                    //   <div className="flex items-center gap-4 w-full">
-                    //     <span
-                    //       onClick={() => {
-                    //         router.push(`${page.link}`);
-                    //         setOpen(false);
-                    //       }}
-                    //       className=""
-                    //     >
-                    //       {page.name}
-                    //     </span>
-                    //   </div>
-                    // </div>
-                  ))} */}
+                  {pages.map((page: Page) => (
+                    <div
+                      key={page._id}
+                      className="group inline-flex items-center px-4 py-2 gap-4 w-full hover:text-primary-700 capitalize"
+                    >
+                      <div className="flex items-center gap-2 w-full">
+                        <span
+                          onClick={() => {
+                            router.push(`${page.slug?.current}`);
+                            setOpen(false);
+                          }}
+                          className=""
+                        >
+                          {page.title}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </TabsContent>
             </Tabs>

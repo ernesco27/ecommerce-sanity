@@ -19,7 +19,7 @@ export async function GET() {
       }
     }`);
 
-    return NextResponse.json({ categories });
+    return NextResponse.json(categories);
   } catch (error) {
     console.error("Error fetching categories:", error);
     return NextResponse.json(

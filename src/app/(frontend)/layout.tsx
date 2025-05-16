@@ -8,6 +8,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import Header from "@/components/modules/header";
 import Footer from "@/components/modules/footer";
 import { cn } from "@/lib/utils";
+import MobileNav from "@/components/custom/MobileNav";
 
 export const metadata: Metadata = {
   title: "Edimays Couture",
@@ -37,6 +38,7 @@ export default function RootLayout({
             <Header />
             {children}
             <Footer />
+            <MobileNav />
           </main>
         </body>
       </html>

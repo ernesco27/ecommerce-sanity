@@ -1,6 +1,7 @@
 import {
   BoxesIcon,
   CircleDollarSign,
+  FileTextIcon,
   Heart,
   ImageIcon,
   Landmark,
@@ -28,29 +29,80 @@ export const structure: StructureResolver = (S) =>
             .title("Catalog Management")
             .items([
               S.listItem()
-                .title("Products")
-                .icon(ShoppingCart)
-                .child(S.documentTypeList("product")),
-              S.listItem()
                 .title("Categories")
                 .icon(TagIcon)
                 .child(S.documentTypeList("category")),
               S.listItem()
-                .title("Subcategories")
-                .icon(TagIcon)
-                .child(S.documentTypeList("subcategory")),
+                .title("Products")
+                .icon(ShoppingCart)
+                .child(S.documentTypeList("product")),
+
+              // S.listItem()
+              //   .title("Subcategories")
+              //   .icon(TagIcon)
+              //   .child(S.documentTypeList("subcategory")),
               S.listItem()
                 .title("Brands")
                 .icon(Landmark)
                 .child(S.documentTypeList("brand")),
+              // S.listItem()
+              //   .title("Product Variants")
+              //   .schemaType("productVariant")
+              //   .child(S.documentTypeList("productVariant")),
+              // S.listItem()
+              //   .title("Product Images")
+              //   .icon(ImageIcon)
+              //   .child(S.documentTypeList("productImage")),
+              // S.listItem()
+              //   .title("Related Products")
+              //   .icon(ImageIcon)
+              //   .child(S.documentTypeList("relatedProduct")),
+            ]),
+        ),
+
+      S.divider(),
+
+      // Static Pages
+      S.listItem()
+        .title("Static Pages")
+        .icon(FileTextIcon)
+        .child(
+          S.list()
+            .title("Static Pages")
+            .items([
               S.listItem()
-                .title("Product Variants")
-                .schemaType("productVariant")
-                .child(S.documentTypeList("productVariant")),
+                .title("About & Contact")
+                .child(
+                  S.documentList()
+                    .title("About & Contact Pages")
+                    .filter(
+                      '_type == "page" && (pageType == "about" || pageType == "contact")',
+                    ),
+                ),
               S.listItem()
-                .title("Product Images")
-                .icon(ImageIcon)
-                .child(S.documentTypeList("productImage")),
+                .title("Legal & Policies")
+                .child(
+                  S.documentList()
+                    .title("Legal & Policy Pages")
+                    .filter(
+                      '_type == "page" && (pageType == "terms" || pageType == "privacy" || pageType == "shipping" || pageType == "return")',
+                    ),
+                ),
+              S.listItem()
+                .title("FAQ")
+                .child(
+                  S.documentList()
+                    .title("FAQ Pages")
+                    .filter('_type == "page" && pageType == "faq"'),
+                ),
+              S.listItem()
+                .title("Custom Pages")
+                .child(
+                  S.documentList()
+                    .title("Custom Pages")
+                    .filter('_type == "page" && pageType == "custom"'),
+                ),
+              S.listItem().title("All Pages").child(S.documentTypeList("page")),
             ]),
         ),
 
@@ -150,6 +202,9 @@ export const structure: StructureResolver = (S) =>
             "blockContent",
             "reviewImage",
             "orderItem",
-          ].includes(listItem.getId()!),
+            "relatedProduct",
+            "productVariantValue",
+            "page",
+          ].includes(listItem.getId() ?? ""),
       ),
     ]);

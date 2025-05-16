@@ -21,6 +21,8 @@ import { addressType } from "./addressType";
 import { paymentType } from "./paymentType";
 import { shippingMethodType } from "./shippingMethodType";
 import { cartType } from "./cartType";
+import { pageType } from "./pageType";
+import { bannerType } from "./bannerType";
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
@@ -45,5 +47,7 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     paymentType,
     shippingMethodType,
     cartType,
+    pageType,
+    bannerType,
   ],
 };
