@@ -3,7 +3,7 @@
 import Container from "@/components/custom/Container";
 import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, Navigation, Pagination, EffectFade } from "swiper/modules";
+import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
@@ -56,14 +56,13 @@ const HomeSlide = () => {
             delay: 6000,
             disableOnInteraction: false,
           }}
-          effect="fade"
           spaceBetween={0}
           slidesPerView={1}
           navigation={true}
           pagination={{
             clickable: true,
           }}
-          modules={[Autoplay, Navigation, Pagination, EffectFade]}
+          modules={[Autoplay, Navigation, Pagination]}
           className="w-full"
         >
           {banners.map((banner) => (
@@ -79,7 +78,7 @@ const HomeSlide = () => {
               }}
             >
               <div
-                className="absolute grid grid-cols-1 place-content-center lg:place-content-start justify-items-center gap-4 capitalize m-auto top-0 lg:top-1/4 lg:left-20 w-full lg:w-1/2 p-8"
+                className="absolute grid grid-cols-1 place-content-center lg:place-content-start justify-items-center gap-4 capitalize m-auto top-1/4  w-full lg:w-1/2 p-8"
                 style={{ color: banner.textColor || "white" }}
               >
                 {banner.subTitle && (
