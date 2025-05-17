@@ -4,7 +4,9 @@ import Services from "@/components/modules/home/Services";
 import FeaturedProducts from "@/components/modules/home/FeaturedProducts";
 
 import React from "react";
-
+import CtaOne from "@/components/modules/home/CtaOne";
+import Deals from "@/components/modules/home/Deals";
+import CollectionCta from "@/components/modules/home/CollectionCta";
 const Home = () => {
   return (
     <>
@@ -12,6 +14,9 @@ const Home = () => {
       <Services />
       <Categories />
       <FeaturedProducts />
+      <CtaOne />
+      <Deals />
+      <CollectionCta />
     </>
   );
 };

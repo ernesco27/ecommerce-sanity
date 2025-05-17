@@ -14,17 +14,10 @@ import Row from "@/components/custom/Row";
 
 import { Skeleton } from "@/components/ui/skeleton";
 import Heading from "@/components/custom/Heading";
-import { useCategories } from "@/store/categoriesStore";
+
 import { Banner } from "../../../../sanity.types";
 
 const Categories = () => {
-  //   const fetcher = (url: string) => fetch(url).then((res) => res.json());
-
-  //   const { data: slideImages, isLoading } = useSWR<Slides[]>(
-  //     "/api/slides",
-  //     fetcher,
-  //   );
-
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
   const {
@@ -94,7 +87,7 @@ const Categories = () => {
           modules={[Autoplay, Navigation, Pagination]}
           className=" w-full flex items-center justify-center  rounded-md px-20 py-10 "
         >
-          {banners.map((banner: Banner, index: number) => (
+          {banners?.map((banner: Banner, index: number) => (
             <SwiperSlide
               key={banner._id}
               className="relative [&>button]:block !transition  duration-300 ease-in-out hover:scale-105 cursor-pointer rounded-md "

@@ -1,30 +1,38 @@
 "use client";
 
 import React from "react";
-import Container from "@/components/custom/Container";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, Navigation, Pagination } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/navigation";
+import { motion } from "framer-motion";
 import useSWR from "swr";
 
-import ProductCard from "@/components/custom/ProductCard";
+import { useRouter } from "next/navigation";
+import Container from "@/components/custom/Container";
+import Countdown from "react-countdown";
+
+import Image from "next/image";
 import Row from "@/components/custom/Row";
 import Heading from "@/components/custom/Heading";
-import { motion } from "framer-motion";
-import { Skeleton } from "@/components/ui/skeleton";
-import type { ProductsQueryResult } from "../../../../sanity.types";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, Navigation, Pagination } from "swiper/modules";
+import "swiper/css/pagination";
 
-const FeaturedProducts = () => {
+import { Skeleton } from "@/components/ui/skeleton";
+import ProductCardTwo from "@/components/custom/ProductCardTwo";
+import { ProductsQueryResult } from "../../../../sanity.types";
+
+const Deals = () => {
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
+  const router = useRouter();
 
   const {
     data: products,
     error,
     isLoading,
-  } = useSWR<ProductsQueryResult>("/api/products?featured=true", fetcher);
+  } = useSWR<ProductsQueryResult>("/api/products?limit=10", fetcher);
 
-  if (error) return <div>error fetching featured products</div>;
+  const handleClick = (link: string) => {
+    router.push(link);
+  };
 
   return (
     <motion.section
@@ -43,8 +51,12 @@ const FeaturedProducts = () => {
     >
       <Container>
         <Row className="mb-10">
-          <Heading name="Featured Products" />
+          <Heading name="Today Deals" />
+          <Countdown date={Date.now() + 1000000} className="text-2xl" />
         </Row>
+        <h3 className="py-2 font-normal text-lg lg:text-2xl">
+          Deals of the Day
+        </h3>
         {isLoading && (
           <div className=" ">
             <Skeleton className="w-full h-[350px]" />
@@ -76,14 +88,14 @@ const FeaturedProducts = () => {
           navigation={false}
           pagination={true}
           modules={[Autoplay, Navigation, Pagination]}
-          className=" w-full flex items-center justify-center rounded-md py-10"
+          className=" w-full flex items-center justify-center rounded-md"
         >
           {products?.map((item) => (
             <SwiperSlide
               key={item._id}
-              className="relative [&>button]:block  cursor-pointer rounded-md"
+              className="relative [&>button]:block  cursor-pointer rounded-md mb-4"
             >
-              <ProductCard item={item} />
+              <ProductCardTwo item={item} />
             </SwiperSlide>
           ))}
         </Swiper>
@@ -92,4 +104,4 @@ const FeaturedProducts = () => {
   );
 };
 
-export default FeaturedProducts;
+export default Deals;

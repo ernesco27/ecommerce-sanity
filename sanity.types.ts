@@ -77,6 +77,7 @@ export type Banner = {
   title?: string;
   subTitle?: string;
   description?: string;
+  imageUrl?: string;
   image?: {
     asset?: {
       _ref: string;
