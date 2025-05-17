@@ -14,6 +14,109 @@ export const analyticsType = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: "pageViews",
+      type: "array",
+      title: "Page Views",
+      of: [
+        {
+          type: "object",
+          fields: [
+            { name: "timestamp", type: "datetime" },
+            { name: "pageUrl", type: "string" },
+            { name: "pageType", type: "string" },
+            { name: "duration", type: "number" },
+            { name: "referrer", type: "string" },
+            {
+              name: "user",
+              type: "reference",
+              to: [{ type: "user" }],
+              weak: true,
+            },
+          ],
+        },
+      ],
+    }),
+    defineField({
+      name: "productViews",
+      type: "array",
+      title: "Product Views",
+      of: [
+        {
+          type: "object",
+          fields: [
+            { name: "timestamp", type: "datetime" },
+            { name: "duration", type: "number" },
+            {
+              name: "product",
+              type: "reference",
+              to: [{ type: "product" }],
+              validation: (Rule) => Rule.required(),
+            },
+            {
+              name: "user",
+              type: "reference",
+              to: [{ type: "user" }],
+              weak: true,
+            },
+          ],
+        },
+      ],
+    }),
+    defineField({
+      name: "userActions",
+      type: "array",
+      title: "User Actions",
+      of: [
+        {
+          type: "object",
+          fields: [
+            { name: "timestamp", type: "datetime" },
+            {
+              name: "action",
+              type: "string",
+              validation: (Rule) => Rule.required(),
+            },
+            {
+              name: "entityType",
+              type: "string",
+              validation: (Rule) => Rule.required(),
+            },
+            {
+              name: "entityId",
+              type: "string",
+              validation: (Rule) => Rule.required(),
+            },
+            {
+              name: "details",
+              type: "object",
+              fields: [
+                { name: "value", type: "number" },
+                { name: "currency", type: "string" },
+                { name: "quantity", type: "number" },
+                { name: "variant", type: "string" },
+                { name: "source", type: "string" },
+                {
+                  name: "metadata",
+                  type: "object",
+                  fields: [
+                    { name: "browser", type: "string" },
+                    { name: "device", type: "string" },
+                    { name: "platform", type: "string" },
+                  ],
+                },
+              ],
+            },
+            {
+              name: "user",
+              type: "reference",
+              to: [{ type: "user" }],
+              validation: (Rule) => Rule.required(),
+            },
+          ],
+        },
+      ],
+    }),
+    defineField({
       name: "salesMetrics",
       type: "object",
       title: "Sales Metrics",
@@ -81,6 +184,8 @@ export const analyticsType = defineType({
             { name: "addToCart", type: "number" },
             { name: "wishlistAdds", type: "number" },
             { name: "reviews", type: "number" },
+            { name: "averageSessionDuration", type: "number" },
+            { name: "bounceRate", type: "number" },
           ],
         }),
       ],
@@ -183,13 +288,20 @@ export const analyticsType = defineType({
   preview: {
     select: {
       date: "date",
-      sales: "salesMetrics.totalSales",
+      pageViews: "pageViews",
+      productViews: "productViews",
+      userActions: "userActions",
     },
     prepare(selection) {
-      const { date, sales } = selection;
+      const {
+        date,
+        pageViews = [],
+        productViews = [],
+        userActions = [],
+      } = selection;
       return {
         title: new Date(date).toLocaleDateString(),
-        subtitle: `Total Sales: $${sales?.toLocaleString() || 0}`,
+        subtitle: `Page Views: ${pageViews.length} | Product Views: ${productViews.length} | User Actions: ${userActions.length}`,
       };
     },
   },
