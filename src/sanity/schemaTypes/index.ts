@@ -23,6 +23,11 @@ import { shippingMethodType } from "./shippingMethodType";
 import { cartType } from "./cartType";
 import { pageType } from "./pageType";
 import { bannerType } from "./bannerType";
+import { roleType } from "./roleType";
+import { inventoryType } from "./inventoryType";
+import { warehouseType } from "./warehouseType";
+import { auditLogType } from "./auditLogType";
+import { analyticsType } from "./analyticsType";
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
@@ -49,5 +54,10 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     cartType,
     pageType,
     bannerType,
+    roleType,
+    inventoryType,
+    warehouseType,
+    auditLogType,
+    analyticsType,
   ],
 };

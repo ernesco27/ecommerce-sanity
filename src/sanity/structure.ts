@@ -12,11 +12,22 @@ import {
   TagIcon,
   Truck,
   UserIcon,
+  Activity,
+  ChartBar,
+  Download,
+  FileClock,
 } from "lucide-react";
-import type { StructureResolver } from "sanity/structure";
+import {
+  type StructureBuilder,
+  type DefaultDocumentNodeResolver,
+} from "sanity/desk";
+import { type ComponentType } from "react";
+import { AuditLogsViewer } from "./components/AuditLogsViewer";
+import { AnalyticsDashboard } from "./components/AnalyticsDashboard";
+import { ReportGenerator } from "./components/ReportGenerator";
 
 // https://www.sanity.io/docs/structure-builder-cheat-sheet
-export const structure: StructureResolver = (S) =>
+export const structure = (S: StructureBuilder) =>
   S.list()
     .title("E-commerce Dashboard")
     .items([
@@ -180,6 +191,54 @@ export const structure: StructureResolver = (S) =>
             ]),
         ),
 
+      // Reports & Analytics
+      S.listItem()
+        .title("Reports & Analytics")
+        .icon(ChartBar)
+        .child(
+          S.list()
+            .title("Reports & Analytics")
+            .items([
+              // Audit Logs Viewer
+              S.listItem()
+                .title("Audit Logs")
+                .icon(Activity)
+                .child(
+                  S.component()
+                    .title("Audit Logs")
+                    .component(AuditLogsViewer as ComponentType<any>),
+                ),
+
+              // Analytics Dashboard
+              S.listItem()
+                .title("Analytics Dashboard")
+                .icon(ChartBar)
+                .child(
+                  S.component()
+                    .title("Analytics Dashboard")
+                    .component(AnalyticsDashboard as ComponentType<any>),
+                ),
+
+              // Report Generator
+              S.listItem()
+                .title("Generate Reports")
+                .icon(Download)
+                .child(
+                  S.component()
+                    .title("Generate Reports")
+                    .component(ReportGenerator as ComponentType<any>),
+                ),
+
+              // Raw Audit Logs (for debugging)
+              S.listItem()
+                .title("Raw Audit Logs")
+                .icon(FileClock)
+                .child(S.documentTypeList("auditLog")),
+            ]),
+        ),
+
+      S.divider(),
+
       // Hidden Document Types
       ...S.documentTypeListItems().filter(
         (listItem) =>
@@ -205,6 +264,11 @@ export const structure: StructureResolver = (S) =>
             "relatedProduct",
             "productVariantValue",
             "page",
+            "auditLog",
+            "analytics",
           ].includes(listItem.getId() ?? ""),
       ),
     ]);
+
+export const defaultDocumentNode: DefaultDocumentNodeResolver = (S) =>
+  S.document();

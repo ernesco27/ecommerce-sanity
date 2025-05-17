@@ -193,5 +193,104 @@ export const userType = defineType({
       title: "Product Likes",
       description: "Products that the user has liked",
     }),
+    defineField({
+      name: "roles",
+      type: "array",
+      title: "User Roles",
+      of: [{ type: "reference", to: [{ type: "role" }] }],
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "isEmailVerified",
+      type: "boolean",
+      title: "Email Verified",
+      initialValue: false,
+    }),
+    defineField({
+      name: "isMobileVerified",
+      type: "boolean",
+      title: "Mobile Verified",
+      initialValue: false,
+    }),
+    defineField({
+      name: "twoFactorEnabled",
+      type: "boolean",
+      title: "Two-Factor Authentication",
+      initialValue: false,
+    }),
+    defineField({
+      name: "lastPasswordChange",
+      type: "datetime",
+      title: "Last Password Change",
+      readOnly: true,
+    }),
+    defineField({
+      name: "loginHistory",
+      type: "array",
+      title: "Login History",
+      of: [
+        {
+          type: "object",
+          fields: [
+            defineField({
+              name: "timestamp",
+              type: "datetime",
+              title: "Login Time",
+            }),
+            defineField({
+              name: "ipAddress",
+              type: "string",
+              title: "IP Address",
+            }),
+            defineField({
+              name: "deviceInfo",
+              type: "string",
+              title: "Device Info",
+            }),
+            defineField({
+              name: "location",
+              type: "string",
+              title: "Location",
+            }),
+          ],
+        },
+      ],
+    }),
+    defineField({
+      name: "failedLoginAttempts",
+      type: "number",
+      title: "Failed Login Attempts",
+      initialValue: 0,
+      readOnly: true,
+    }),
+    defineField({
+      name: "accountLocked",
+      type: "boolean",
+      title: "Account Locked",
+      initialValue: false,
+      description:
+        "Account automatically locks after multiple failed login attempts",
+    }),
+    defineField({
+      name: "lockExpiresAt",
+      type: "datetime",
+      title: "Lock Expiry Time",
+      hidden: true,
+    }),
   ],
+  preview: {
+    select: {
+      title: "firstName",
+      subtitle: "email",
+      media: "photo",
+    },
+    prepare(selection) {
+      const { title, subtitle, media } = selection;
+      return {
+        title: title || "Unnamed User",
+        subtitle: subtitle || "No email",
+        media: media,
+      };
+    },
+  },
 });
