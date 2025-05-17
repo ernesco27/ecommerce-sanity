@@ -4,8 +4,23 @@ import React from "react";
 import { motion } from "framer-motion";
 import Container from "@/components/custom/Container";
 import CustomButton from "@/components/custom/CustomButton";
+import { Banner } from "../../../../sanity.types";
+import useSWR from "swr";
+import { cn } from "@/lib/utils";
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const CollectionCta = () => {
+  const {
+    data: banners,
+    error,
+    isLoading,
+  } = useSWR<Banner[]>("/api/banners?type=promo", fetcher);
+
+  //console.log("banners:", banners);
+
+  const casualBanner = banners?.[1]?.imageUrl;
+  const specialtyBanner = banners?.[2]?.imageUrl;
+
   return (
     <section className="py-10  overflow-hidden">
       <Container>
@@ -14,7 +29,14 @@ const CollectionCta = () => {
             initial={{ x: -100, opacity: 0 }}
             whileInView={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.5, type: "spring" }}
-            className="h-[250px] lg:h-[350px] xl:h-[350px] rounded-md bg-[url('/assets/cols-man.jpg')] bg-cover   bg-no-repeat bg-top md:bg-[url('/assets/cols-man2.jpg')] lg:bg-[url('/assets/cols-man2.jpg')] px-8  "
+            className="h-[250px] lg:h-[350px] xl:h-[350px] rounded-md px-8 bg-red-200"
+            style={{
+              backgroundImage: `url(${casualBanner})`,
+              backgroundSize: "cover",
+              backgroundPosition: "top",
+              backgroundRepeat: "no-repeat",
+              height: "350px",
+            }}
           >
             <motion.div
               initial={{ x: -100, opacity: 0 }}
@@ -23,18 +45,18 @@ const CollectionCta = () => {
               className="flex flex-col gap-4 lg:gap-6 py-4 w-3/4"
             >
               <p className="capitalize text-sm lg:text-lg font-normal">
-                Explore the Latest Trends
+                {banners?.[1]?.title}
               </p>
               <div className="">
                 <span className="block text-2xl lg:text-4xl ">
-                  Men's Latest
+                  {banners?.[1]?.subTitle}
                 </span>
                 <span className="block mt-2 lg:mt-6 text-2xl lg:text-4xl">
                   Collection
                 </span>
               </div>
               <p className="text-wrap text-sm lg:text-lg font-normal mr-8 leading-tight">
-                From casual to formal, find the perfect outfit for any occasion.
+                {banners?.[1]?.description}
               </p>
             </motion.div>
             <motion.div
@@ -44,7 +66,7 @@ const CollectionCta = () => {
               className="mt-4"
             >
               <CustomButton
-                name="Shop Now"
+                name={banners?.[1]?.buttonText || "Shop Now"}
                 primaryColor="#eab308"
                 secondColor="white"
                 outlineColor="#eab308"
@@ -55,7 +77,14 @@ const CollectionCta = () => {
             initial={{ x: 100, opacity: 0 }}
             whileInView={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.5, type: "spring" }}
-            className="h-[250px] lg:h-[350px] md:h-[350px] xl:h-[350px]  rounded-md bg-[url('/assets/cols-lady2.jpg')] bg-cover bg-no-repeat bg-top md:bg-[url('/assets/cols-lady.jpg')] lg:bg-[url('/assets/cols-lady.jpg')] px-8"
+            className="h-[250px] lg:h-[350px] md:h-[350px] xl:h-[350px]  rounded-md px-8"
+            style={{
+              backgroundImage: `url(${specialtyBanner})`,
+              backgroundSize: "cover",
+              backgroundPosition: "top",
+              backgroundRepeat: "no-repeat",
+              height: "350px",
+            }}
           >
             <motion.div
               initial={{ x: -100, opacity: 0 }}
@@ -85,7 +114,7 @@ const CollectionCta = () => {
               className="mt-4"
             >
               <CustomButton
-                name="Shop Now"
+                name={banners?.[2]?.buttonText || "Shop Now"}
                 primaryColor="white"
                 secondColor="#eab308"
                 outlineColor="#eab308"
