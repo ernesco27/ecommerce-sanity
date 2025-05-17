@@ -5,9 +5,7 @@ import { categoryType } from "./categoryType";
 import { subcategoryType } from "./subCategoryTypes";
 import { productType } from "./productType";
 import { productVariantType } from "./productVariantTypes";
-import { productVariantValueType } from "./productVariantValueTypes";
-import { productImageType } from "./productImageTypes";
-import { ProductVariantStockType } from "./productVariantStockType";
+import { productAttributeType } from "./productAttributeType";
 import { brandType } from "./brandType";
 import { discountType } from "./discountType";
 import { productReviewType } from "./reviewsType";
@@ -36,9 +34,7 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     subcategoryType,
     productType,
     productVariantType,
-    productVariantValueType,
-    productImageType,
-    ProductVariantStockType,
+    productAttributeType,
     brandType,
     discountType,
     productReviewType,

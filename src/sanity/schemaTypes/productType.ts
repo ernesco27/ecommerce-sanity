@@ -1,11 +1,10 @@
 import { TrolleyIcon } from "@sanity/icons";
-import { defineField, validation } from "sanity";
+import { defineField, defineType } from "sanity";
 
-export const productType = {
+export const productType = defineType({
   name: "product",
   title: "Products",
   type: "document",
-
   icon: TrolleyIcon,
   fields: [
     defineField({
@@ -22,6 +21,43 @@ export const productType = {
         maxLength: 96,
       },
       validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "status",
+      type: "string",
+      title: "Product Status",
+      options: {
+        list: [
+          { title: "Draft", value: "draft" },
+          { title: "Active", value: "active" },
+          { title: "Discontinued", value: "discontinued" },
+          { title: "Scheduled", value: "scheduled" },
+        ],
+      },
+      initialValue: "draft",
+    }),
+    defineField({
+      name: "visibility",
+      type: "object",
+      title: "Visibility Settings",
+      fields: [
+        defineField({
+          name: "isVisible",
+          type: "boolean",
+          title: "Visible in Store",
+          initialValue: false,
+        }),
+        defineField({
+          name: "publishDate",
+          type: "datetime",
+          title: "Publish Date",
+        }),
+        defineField({
+          name: "unpublishDate",
+          type: "datetime",
+          title: "Unpublish Date",
+        }),
+      ],
     }),
     defineField({
       name: "seo",
@@ -49,11 +85,38 @@ export const productType = {
           of: [{ type: "string" }],
           description: "Keywords for search engines",
         }),
+        defineField({
+          name: "canonicalUrl",
+          title: "Canonical URL",
+          type: "url",
+          description: "The preferred URL for this product",
+        }),
+        defineField({
+          name: "structuredData",
+          title: "Structured Data",
+          type: "object",
+          fields: [
+            defineField({
+              name: "brand",
+              type: "reference",
+              to: [{ type: "brand" }],
+            }),
+            defineField({
+              name: "category",
+              type: "reference",
+              to: [{ type: "category" }],
+            }),
+            defineField({
+              name: "manufacturer",
+              type: "string",
+            }),
+          ],
+        }),
       ],
     }),
     defineField({
       name: "description",
-      title: "Product Description",
+      title: "Short Description",
       type: "text",
       validation: (Rule) => Rule.required(),
     }),
@@ -63,28 +126,84 @@ export const productType = {
       title: "Full Description",
     }),
     defineField({
-      name: "baseStock",
-      type: "number",
-      title: "Base Stock",
-      description: "Total stock of all variants",
-      readOnly: true,
+      name: "images",
+      type: "object",
+      title: "Product Images",
+      fields: [
+        defineField({
+          name: "primary",
+          type: "image",
+          title: "Primary Image",
+          options: { hotspot: true },
+          fields: [
+            {
+              name: "alt",
+              type: "string",
+              title: "Alt Text",
+              validation: (Rule) => Rule.required(),
+            },
+          ],
+          validation: (Rule) => Rule.required(),
+        }),
+        defineField({
+          name: "gallery",
+          type: "array",
+          title: "Gallery Images",
+          of: [
+            {
+              type: "image",
+              options: { hotspot: true },
+              fields: [
+                {
+                  name: "alt",
+                  type: "string",
+                  title: "Alt Text",
+                  validation: (Rule) => Rule.required(),
+                },
+                {
+                  name: "displayOrder",
+                  type: "number",
+                  title: "Display Order",
+                  initialValue: 0,
+                },
+              ],
+            },
+          ],
+        }),
+      ],
     }),
     defineField({
-      name: "price",
-      type: "number",
-      title: "Price",
+      name: "variants",
+      type: "array",
+      title: "Product Variants",
+      of: [{ type: "reference", to: [{ type: "productVariant" }] }],
+      validation: (Rule) => Rule.required().min(1),
+    }),
+    defineField({
+      name: "attributes",
+      type: "array",
+      title: "Available Attributes",
+      description: "Attributes that can be used to create variants",
+      of: [{ type: "reference", to: [{ type: "productAttribute" }] }],
+    }),
+    defineField({
+      name: "category",
+      type: "reference",
+      to: [{ type: "category" }],
+      title: "Primary Category",
       validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: "salesPrice",
-      type: "number",
-      title: "Sales Price",
+      name: "additionalCategories",
+      type: "array",
+      title: "Additional Categories",
+      of: [{ type: "reference", to: [{ type: "category" }] }],
     }),
     defineField({
-      name: "sku",
-      type: "string",
-      title: "SKU",
-      validation: (Rule) => Rule.required(),
+      name: "brand",
+      type: "reference",
+      to: [{ type: "brand" }],
+      title: "Brand",
     }),
     defineField({
       name: "taxInfo",
@@ -118,80 +237,6 @@ export const productType = {
       ],
     }),
     defineField({
-      name: "shippingDimensions",
-      title: "Shipping Dimensions",
-      type: "object",
-      fields: [
-        defineField({
-          name: "weight",
-          title: "Weight (kg)",
-          type: "number",
-          validation: (Rule) => Rule.min(0),
-        }),
-        defineField({
-          name: "length",
-          title: "Length (cm)",
-          type: "number",
-          validation: (Rule) => Rule.min(0),
-        }),
-        defineField({
-          name: "width",
-          title: "Width (cm)",
-          type: "number",
-          validation: (Rule) => Rule.min(0),
-        }),
-        defineField({
-          name: "height",
-          title: "Height (cm)",
-          type: "number",
-          validation: (Rule) => Rule.min(0),
-        }),
-      ],
-    }),
-    defineField({
-      name: "variants",
-      type: "array",
-      of: [{ type: "reference", to: [{ type: "productVariant" }] }],
-      title: "Product Variants",
-    }),
-    defineField({
-      name: "images",
-      type: "array",
-      of: [{ type: "reference", to: [{ type: "productImage" }] }],
-      title: "All Images",
-    }),
-    defineField({
-      name: "isAvailable",
-      type: "boolean",
-      title: "Is Available",
-      initialValue: true,
-    }),
-    defineField({
-      name: "featured",
-      type: "boolean",
-      title: "Featured",
-      initialValue: false,
-    }),
-    defineField({
-      name: "category",
-      type: "reference",
-      to: [{ type: "category" }],
-      title: "Category",
-      validation: (Rule) => Rule.required(),
-    }),
-    defineField({
-      name: "brand",
-      type: "reference",
-      to: [{ type: "brand" }],
-      title: "Brand",
-    }),
-    defineField({
-      name: "discount",
-      type: "reference",
-      to: [{ type: "discount" }],
-      title: "Discount",
-    }),
-    defineField({
       name: "reviews",
       type: "array",
       of: [{ type: "reference", to: [{ type: "productReview" }] }],
@@ -200,8 +245,9 @@ export const productType = {
     defineField({
       name: "relatedProducts",
       type: "array",
-      of: [{ type: "reference", to: [{ type: "relatedProduct" }] }],
+      of: [{ type: "reference", to: [{ type: "product" }] }],
       title: "Related Products",
+      validation: (Rule) => Rule.unique(),
     }),
   ],
-};
+});

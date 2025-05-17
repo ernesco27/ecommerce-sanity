@@ -10,14 +10,12 @@ const productsQuery = groq`*[_type == "product"] {
   "slug": slug.current,
   description,
   fullDescription,
-  price,
-  salesPrice,
-  sku,
-  shippingDimensions,
-  taxInfo,
-  "baseStock": count(variants[]->.variantStocks[].stock),
-  isAvailable,
-  featured,
+  status,
+  visibility {
+    isVisible,
+    publishDate,
+    unpublishDate
+  },
   "category": category->{ 
     _id, 
     title, 
@@ -28,28 +26,75 @@ const productsQuery = groq`*[_type == "product"] {
       "slug": slug.current 
     }
   },
+  "additionalCategories": additionalCategories[]->{ 
+    _id, 
+    title, 
+    "slug": slug.current 
+  },
   "brand": brand->{ 
     _id, 
     name, 
     "slug": slug.current 
   },
-  "images": images[]->{ 
-    _id,
-    title,
-    "urls": images[].asset->url,
-    "altText": altText
+  "images": {
+    "primary": {
+      "url": primary.asset->url,
+      "alt": primary.alt,
+      "metadata": primary.asset->metadata
+    },
+    "gallery": gallery[]{ 
+      "url": asset->url,
+      "alt": alt,
+      "metadata": asset->metadata,
+      displayOrder
+    }
   },
   "variants": variants[]->{ 
     _id,
-    size,
-    price,
-    salesPrice,
-    "stocks": variantStocks[] {
-      color,
-      "hexCode": hexCode.hex,
-      stock,
-      "images": images[].asset->url
+    sku,
+    "attributes": attributes[]{
+      "name": attribute->name,
+      "code": attribute->code,
+      value
+    },
+    pricing {
+      basePrice,
+      salePrice,
+      validFrom,
+      validTo
+    },
+    inventory {
+      quantity,
+      lowStockThreshold,
+      reserved,
+      status,
+      "warehouse": warehouse->name
+    },
+    "images": {
+      "primary": {
+        "url": primary.asset->url,
+        "alt": primary.alt,
+        "metadata": primary.asset->metadata
+      },
+      "gallery": gallery[]{ 
+        "url": asset->url,
+        "alt": alt,
+        "metadata": asset->metadata,
+        displayOrder
+      }
+    },
+    dimensions {
+      weight,
+      length,
+      width,
+      height
     }
+  },
+  "attributes": attributes[]->{ 
+    _id,
+    name,
+    code,
+    values
   },
   "reviews": reviews[]->{ 
     _id,
@@ -63,17 +108,26 @@ const productsQuery = groq`*[_type == "product"] {
       firstName,
       lastName,
       email
-    },
-    "images": images[]->{ 
-      title,
-      "urls": images[].asset->url,
-      altText
     }
   },
   seo {
     metaTitle,
     metaDescription,
-    keywords
+    keywords,
+    canonicalUrl,
+    structuredData {
+      "brand": brand->{
+        name,
+        "logo": logo.asset->url
+      },
+      "category": category->title,
+      manufacturer
+    }
+  },
+  taxInfo {
+    taxCategory,
+    taxRate,
+    hsnCode
   }
 } | order(_createdAt desc)`;
 
@@ -84,18 +138,28 @@ export async function GET(request: Request) {
     const limit = searchParams.get("limit")
       ? parseInt(searchParams.get("limit")!)
       : undefined;
-    const featured = searchParams.get("featured") === "true";
     const category = searchParams.get("category");
+    const status = searchParams.get("status");
+    const isVisible = searchParams.get("visible") === "true";
 
     // Modify query based on parameters
     let query = productsQuery;
-    if (featured) {
-      query = groq`*[_type == "product" && featured == true]${query.substring(
-        query.indexOf("{"),
-      )}`;
-    }
+    let filters: string[] = [];
+
     if (category) {
-      query = groq`*[_type == "product" && category->slug.current == "${category}"]${query.substring(
+      filters.push(`category->slug.current == "${category}"`);
+    }
+    if (status) {
+      filters.push(`status == "${status}"`);
+    }
+    if (isVisible !== undefined) {
+      filters.push(`visibility.isVisible == ${isVisible}`);
+    }
+
+    // Apply filters if any exist
+    if (filters.length > 0) {
+      const filterString = filters.join(" && ");
+      query = groq`*[_type == "product" && ${filterString}]${query.substring(
         query.indexOf("{"),
       )}`;
     }
