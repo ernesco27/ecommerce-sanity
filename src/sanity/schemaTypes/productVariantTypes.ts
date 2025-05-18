@@ -147,9 +147,10 @@ export const productVariantType = defineType({
     select: {
       size: "size",
       price: "price",
-      colorCount: "colorVariants.length",
+      colorVariants: "colorVariants",
     },
-    prepare({ size, price, colorCount = 0 }) {
+    prepare({ size, price, colorVariants = [] }) {
+      const colorCount = colorVariants?.length || 0;
       return {
         title: `Size ${size}`,
         subtitle: `$${price} - ${colorCount} color${colorCount === 1 ? "" : "s"}`,
