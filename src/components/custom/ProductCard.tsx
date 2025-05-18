@@ -23,8 +23,9 @@ const ProductCard = ({ item }: ProductCardProps) => {
   const router = useRouter();
 
   const discount =
-    item.salesPrice && item.price
-      ? ((Number(item.price) - Number(item.salesPrice)) / Number(item.price)) *
+    item.pricing?.max && item.pricing?.min
+      ? ((Number(item.pricing.max) - Number(item.pricing.min)) /
+          Number(item.pricing.max)) *
         100
       : 0;
 
@@ -36,7 +37,7 @@ const ProductCard = ({ item }: ProductCardProps) => {
 
   return (
     <Card className="w-[400px] mb-8 relative">
-      {item.salesPrice && item.price && (
+      {item.pricing?.max && item.pricing?.min && (
         <Badge
           variant="default"
           className="absolute top-4 left-2 z-10 text-lg bg-white text-green-600 font-semibold"
@@ -59,7 +60,7 @@ const ProductCard = ({ item }: ProductCardProps) => {
             item.images?.gallery?.[1]?.alt ??
             "/placeholder.jpg"
           }
-          alt={item.images?.[1]?.altText?.[0] ?? item.name ?? "Product image"}
+          alt={item.images?.gallery?.[1]?.alt ?? item.name ?? "Product image"}
           width="400"
           height="350"
           className="absolute inset-0 object-cover duration-300 ease-linear -translate-x-full group-hover/image:translate-x-0"
@@ -143,7 +144,7 @@ const ProductCard = ({ item }: ProductCardProps) => {
         </h5>
 
         <div className=" w-full">
-          {item.pricing ? (
+          {item.pricing?.min ? (
             <div className="flex flex-wrap justify-between">
               <CurrencyFormat
                 value={Number(item.pricing?.min)}

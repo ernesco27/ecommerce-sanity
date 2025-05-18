@@ -71,6 +71,26 @@ const productsQuery = groq`*[_type == "product"] {
   "pricing": {
     "min": coalesce((variants[]->price)[0], 0),
     "max": coalesce((variants[]->price)[-1], 0)
+  },
+  "reviews": reviews[]->{
+    _id,
+    rating,
+    title,
+    comment,
+    author,
+    verifiedPurchase,
+    createdAt,
+    helpful
+  },
+  "relatedProducts": relatedProducts[]->{ 
+    _id,
+    name,
+    "slug": slug.current,
+    "primaryImage": images.primary{
+      "url": asset->url,
+      alt,
+      "lqip": asset->metadata.lqip
+    }
   }
 } | order(coalesce((variants[]->price)[0], 0) asc)`;
 

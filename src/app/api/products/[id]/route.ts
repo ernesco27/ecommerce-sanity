@@ -77,6 +77,23 @@ export async function GET(
           }
         }
       },
+      "reviews": reviews[]->{ 
+        _id,
+        rating,
+        title,
+        comment,
+        author,
+        verifiedPurchase,
+        createdAt,
+        helpful
+      },
+      "reviewSummary": {
+        "averageRating": coalesce(round(select(
+          count(reviews) > 0 => sum(reviews[].rating) / count(reviews),
+          0
+        ) * 10) / 10, 0),
+        "totalReviews": count(reviews)
+      },
       seo {
         metaTitle,
         metaDescription,
@@ -87,6 +104,20 @@ export async function GET(
         taxCategory,
         taxRate,
         hsnCode
+      },
+      "relatedProducts": relatedProducts[]->{ 
+        _id,
+        name,
+        "slug": slug.current,
+        "primaryImage": images.primary{
+          "url": asset->url,
+          alt,
+          "lqip": asset->metadata.lqip
+        },
+        "pricing": {
+          "min": coalesce((variants[]->price)[0], 0),
+          "max": coalesce((variants[]->price)[-1], 0)
+        }
       }
     }`;
 

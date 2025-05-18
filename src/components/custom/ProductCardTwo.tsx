@@ -13,7 +13,7 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import Tooltip from "@mui/material/Tooltip";
-import { Product, ProductsQueryResult } from "../../../sanity.types";
+import { ProductsQueryResult } from "../../../sanity.types";
 
 type ProductCardProps = {
   item: ProductsQueryResult[0];
@@ -39,12 +39,8 @@ const ProductCardTwo = ({ item }: ProductCardProps) => {
           className="absolute inset-0 object-cover duration-300 ease-linear group-hover/image:translate-x-full "
         />
         <Image
-          src={
-            item.images?.gallery?.[1]?.url ??
-            item.images?.gallery?.[1]?.alt ??
-            "/placeholder.jpg"
-          }
-          alt={item.images?.[1]?.altText?.[0] ?? item.name ?? "Product image"}
+          src={item.images?.gallery?.[1]?.url ?? "/placeholder.jpg"}
+          alt={item.images?.gallery?.[1]?.alt ?? item.name ?? "Product image"}
           width="350"
           height="350"
           className="absolute inset-0 object-cover duration-300 ease-linear -translate-x-full group-hover/image:translate-x-0"
@@ -108,7 +104,7 @@ const ProductCardTwo = ({ item }: ProductCardProps) => {
             {item.name?.substring(0, 20)}...{" "}
           </h5>
           <div className=" w-full">
-            {item.pricing ? (
+            {item.pricing?.min ? (
               <div className="flex flex-wrap justify-between">
                 <CurrencyFormat
                   value={Number(item.pricing?.min)}
