@@ -26,6 +26,8 @@ const FeaturedProducts = () => {
 
   if (error) return <div>error fetching featured products</div>;
 
+  console.log("products:", products);
+
   return (
     <motion.section
       initial={{

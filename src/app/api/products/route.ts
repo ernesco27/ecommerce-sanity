@@ -11,108 +11,77 @@ const productsQuery = groq`*[_type == "product"] {
   description,
   fullDescription,
   status,
+  featured,
   visibility {
     isVisible,
     publishDate,
     unpublishDate
   },
-  "category": category->{ 
-    _id, 
-    title, 
-    "slug": slug.current,
-    "subcategories": subcategories[]->{ 
-      _id, 
-      name, 
-      "slug": slug.current 
-    }
+  "category": category->{
+    _id,
+    title,
+    "slug": slug.current
   },
-  "subcategories": subcategory[]->{ 
-    _id, 
-    name, 
+  "subcategories": subcategory[]->{
+    _id,
+    name,
     "slug": slug.current,
-    "parentCategory": parentCategory->{ 
+    "parentCategory": parentCategory->{
       _id,
-      title,
-      "slug": slug.current
+      title
     }
   },
-  "brand": brand->{ 
-    _id, 
-    name, 
-    "slug": slug.current 
+  "brand": brand->{
+    _id,
+    name,
+    "slug": slug.current
   },
   "images": {
-    "primary": {
-      "url": primary.asset->url,
-      "alt": primary.alt,
-      "metadata": primary.asset->metadata
-    },
-    "gallery": gallery[]{ 
+    "primary": images.primary{
       "url": asset->url,
-      "alt": alt,
-      "metadata": asset->metadata
+      alt,
+      "lqip": asset->metadata.lqip,
+      "dimensions": asset->metadata.dimensions
+    },
+    "gallery": images.gallery[]{
+      "url": asset->url,
+      alt,
+      "lqip": asset->metadata.lqip,
+      "dimensions": asset->metadata.dimensions
     }
   },
-  "variants": variants[]->{ 
+  "variants": variants[]->{
     _id,
     size,
     price,
     compareAtPrice,
     sku,
-    "colorVariants": colorVariants[] {
+    colorVariants[] {
       color,
       colorCode,
       stock,
-      "images": images[] {
+      "images": images[]{
         "url": asset->url,
-        "alt": alt,
-        "metadata": asset->metadata
+        alt,
+        "lqip": asset->metadata.lqip,
+        "dimensions": asset->metadata.dimensions
       }
     }
   },
-  "attributes": attributes[]->{ 
-    _id,
-    name,
-    code,
-    values
-  },
-  "reviews": reviews[]->{ 
-    _id,
-    reviewTitle,
-    rating,
-    reviewDetails,
-    verifiedPurchase,
-    helpfulVotes,
-    reviewDate,
-    "user": user->{ 
-      firstName,
-      lastName,
-      email
-    }
-  },
-  seo {
-    metaTitle,
-    metaDescription,
-    keywords,
-    canonicalUrl,
-    structuredData {
-      "brand": brand->{
-        name,
-        "logo": logo.asset->url
-      },
-      "category": category->title,
-      manufacturer
-    }
-  },
-  taxInfo {
-    taxCategory,
-    taxRate,
-    hsnCode
+  "pricing": {
+    "min": coalesce((variants[]->price)[0], 0),
+    "max": coalesce((variants[]->price)[-1], 0)
   }
-} | order(_createdAt desc)`;
+} | order(coalesce((variants[]->price)[0], 0) asc)`;
 
 export async function GET(request: Request) {
   try {
+    console.log("API Config:", {
+      projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
+      dataset: process.env.NEXT_PUBLIC_SANITY_DATASET,
+      apiVersion: process.env.NEXT_PUBLIC_SANITY_API_VERSION,
+    });
+
     // Extract query parameters
     const { searchParams } = new URL(request.url);
     const limit = searchParams.get("limit")
@@ -120,50 +89,80 @@ export async function GET(request: Request) {
       : undefined;
     const category = searchParams.get("category");
     const subcategory = searchParams.get("subcategory");
-    const status = searchParams.get("status");
-    const isVisible = searchParams.get("visible") === "true";
+    const featured = searchParams.get("featured") === "true";
+    const isVisible = searchParams.get("visible");
     const size = searchParams.get("size");
     const color = searchParams.get("color");
-    const inStock = searchParams.get("inStock") === "true";
+    const minPrice = searchParams.get("minPrice")
+      ? parseFloat(searchParams.get("minPrice")!)
+      : undefined;
+    const maxPrice = searchParams.get("maxPrice")
+      ? parseFloat(searchParams.get("maxPrice")!)
+      : undefined;
+    const sortBy = searchParams.get("sort") || "default";
 
-    // Modify query based on parameters
-    let query = productsQuery;
-    let filters: string[] = [];
+    // Build filters array
+    const filters: string[] = [];
 
     if (category) {
       filters.push(`category->slug.current == "${category}"`);
     }
     if (subcategory) {
-      filters.push(`$subcategory in subcategory[]->slug.current`);
+      filters.push(`"${subcategory}" in subcategory[]->slug.current`);
     }
-    if (status) {
-      filters.push(`status == "${status}"`);
+    if (featured) {
+      filters.push(`featured == true`);
     }
-    if (isVisible !== undefined) {
-      filters.push(`visibility.isVisible == ${isVisible}`);
+    if (isVisible !== null) {
+      filters.push(`visibility.isVisible == ${isVisible === "true"}`);
     }
     if (size) {
       filters.push(`"${size}" in variants[]->size`);
     }
     if (color) {
-      filters.push(`"${color}" in variants[].colorVariants[].color`);
+      filters.push(`"${color}" in variants[]->colorVariants[].color`);
     }
-    if (inStock === true) {
-      filters.push(`count(variants[]->.colorVariants[stock > 0]) > 0`);
+    if (minPrice !== undefined) {
+      filters.push(`coalesce((variants[]->price)[0], 0) >= ${minPrice}`);
+    }
+    if (maxPrice !== undefined) {
+      filters.push(`coalesce((variants[]->price)[-1], 0) <= ${maxPrice}`);
+    }
+
+    // Build the order clause
+    let orderClause = "| order(_createdAt desc)";
+    switch (sortBy) {
+      case "price-asc":
+        orderClause = "| order(coalesce((variants[]->price)[0], 0) asc)";
+        break;
+      case "price-desc":
+        orderClause = "| order(coalesce((variants[]->price)[0], 0) desc)";
+        break;
+      case "newest":
+        orderClause = "| order(_createdAt desc)";
+        break;
+      case "oldest":
+        orderClause = "| order(_createdAt asc)";
+        break;
     }
 
     // Apply filters if any exist
+    let finalQuery = productsQuery;
     if (filters.length > 0) {
       const filterString = filters.join(" && ");
-      query = groq`*[_type == "product" && ${filterString}]${query.substring(
-        query.indexOf("{"),
-      )}`;
+      const baseQuery = productsQuery.substring(productsQuery.indexOf("{"));
+      finalQuery = groq`*[_type == "product" && ${filterString}]${baseQuery}`;
     }
 
+    // Remove the default order from productsQuery and apply the new order clause
+    finalQuery =
+      finalQuery.replace(
+        "| order(coalesce((variants[]->price)[0], 0) asc)",
+        "",
+      ) + orderClause;
+
     // Fetch products from Sanity with parameters
-    const products = await client.fetch(query, {
-      subcategory: subcategory || "",
-    });
+    const products = await client.fetch(finalQuery);
 
     // Apply limit if specified
     const limitedProducts = limit ? products.slice(0, limit) : products;
