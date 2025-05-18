@@ -47,16 +47,16 @@ const ProductCard = ({ item }: ProductCardProps) => {
 
       <CardHeader className="group/image relative h-[350px] overflow-hidden ">
         <Image
-          src={item.images?.[0]?.urls?.[0] ?? "/placeholder.jpg"}
-          alt={item.images?.[0]?.altText?.[0] ?? item.name ?? "Product image"}
+          src={item.images?.gallery?.[0]?.url ?? "/placeholder.jpg"}
+          alt={item.images?.gallery?.[0]?.alt ?? item.name ?? "Product image"}
           width="400"
           height="350"
           className="absolute inset-0 object-cover duration-300 ease-linear group-hover/image:translate-x-full "
         />
         <Image
           src={
-            item.images?.[0]?.urls?.[1] ??
-            item.images?.[0]?.urls?.[0] ??
+            item.images?.gallery?.[1]?.url ??
+            item.images?.gallery?.[1]?.alt ??
             "/placeholder.jpg"
           }
           alt={item.images?.[1]?.altText?.[0] ?? item.name ?? "Product image"}
@@ -120,14 +120,18 @@ const ProductCard = ({ item }: ProductCardProps) => {
       <CardContent className="flex flex-col items-start">
         <div className="flex justify-between items-center mt-2 w-full">
           <p className="text-lg font-normal text-gray-400">
-            {item.category?.subcategories?.[0]?.name ?? "Uncategorized"}
+            {item.subcategories?.[0]?.name ?? "Uncategorized"}
           </p>
-          <span className="text-yellow-400 flex items-center gap-1">
-            <Star className="w-5 h-5 fill-yellow-400" />
-            <p className="text-lg font-semibold text-black">
-              {rating.toFixed(1)}
-            </p>
-          </span>
+          {rating ? (
+            <span className="text-yellow-400 flex items-center gap-1">
+              <Star className="w-5 h-5 fill-yellow-400" />
+              <p className="text-lg font-semibold text-black">
+                {rating.toFixed(1)}
+              </p>
+            </span>
+          ) : (
+            ""
+          )}
         </div>
         <h5
           className="capitalize cursor-pointer text-xl lg:text-xl mt-2"
@@ -139,20 +143,20 @@ const ProductCard = ({ item }: ProductCardProps) => {
         </h5>
 
         <div className=" w-full">
-          {item.salesPrice ? (
+          {item.pricing ? (
             <div className="flex flex-wrap justify-between">
               <CurrencyFormat
-                value={Number(item.salesPrice)}
+                value={Number(item.pricing?.min)}
                 className="font-bold text-yellow-600 text-left w-20 text-lg lg:text-xl"
               />
               <CurrencyFormat
-                value={Number(item.price)}
+                value={Number(item.pricing?.max)}
                 className="line-through text-lg lg:text-xl text-slate-600"
               />
             </div>
           ) : (
             <CurrencyFormat
-              value={Number(item.price)}
+              value={Number(item.pricing.max)}
               className="font-bold text-yellow-600 text-left w-20 text-lg lg:text-xl"
             />
           )}

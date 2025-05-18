@@ -7,24 +7,30 @@ import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import useSWR from "swr";
-
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import Row from "@/components/custom/Row";
-
 import { Skeleton } from "@/components/ui/skeleton";
 import Heading from "@/components/custom/Heading";
-
 import { Banner } from "../../../../sanity.types";
 
 const Categories = () => {
+  const router = useRouter();
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
-
   const {
     data: banners,
     error,
     isLoading,
   } = useSWR<Banner[]>("/api/banners?type=category", fetcher);
+
+  const animation = {
+    hide: { scale: 0, opacity: 0 },
+    show: { scale: 1, opacity: 1 },
+  };
+
+  const handleClick = (link: string) => {
+    router.push(`/${link}`);
+  };
 
   if (isLoading)
     return (
@@ -36,17 +42,6 @@ const Categories = () => {
   if (error) return null;
 
   if (!banners || banners.length === 0) return null;
-
-  const animation = {
-    hide: { scale: 0, opacity: 0 },
-    show: { scale: 1, opacity: 1 },
-  };
-
-  const router = useRouter();
-
-  const handleClick = (link: string) => {
-    router.push(`/${link}`);
-  };
 
   return (
     <section className="py-10">
