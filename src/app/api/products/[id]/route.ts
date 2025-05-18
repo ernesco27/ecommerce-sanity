@@ -17,14 +17,12 @@ export async function GET(
       "slug": slug.current,
       description,
       fullDescription,
-      price,
-      salesPrice,
-      sku,
-      shippingDimensions,
-      taxInfo,
-      "baseStock": count(variants[]->.variantStocks[].stock),
-      isAvailable,
-      featured,
+      status,
+      visibility {
+        isVisible,
+        publishDate,
+        unpublishDate
+      },
       "category": category->{ 
         _id, 
         title, 
@@ -35,52 +33,60 @@ export async function GET(
           "slug": slug.current 
         }
       },
+      "subcategories": subcategory[]->{ 
+        _id, 
+        name, 
+        "slug": slug.current,
+        "parentCategory": parentCategory->{ 
+          _id,
+          title,
+          "slug": slug.current
+        }
+      },
       "brand": brand->{ 
         _id, 
         name, 
         "slug": slug.current 
       },
-      "images": images[]->{ 
-        _id,
-        title,
-        "urls": images[].asset->url,
-        "altText": altText
+      "images": {
+        "primary": {
+          "url": primary.asset->url,
+          "alt": primary.alt,
+          "metadata": primary.asset->metadata
+        },
+        "gallery": gallery[]{ 
+          "url": asset->url,
+          "alt": alt,
+          "metadata": asset->metadata
+        }
       },
       "variants": variants[]->{ 
         _id,
         size,
         price,
-        salesPrice,
-        "stocks": variantStocks[] {
+        compareAtPrice,
+        sku,
+        "colorVariants": colorVariants[] {
           color,
-          "hexCode": hexCode.hex,
+          colorCode,
           stock,
-          "images": images[].asset->url
-        }
-      },
-      "reviews": reviews[]->{ 
-        _id,
-        reviewTitle,
-        rating,
-        reviewDetails,
-        verifiedPurchase,
-        helpfulVotes,
-        reviewDate,
-        "user": user->{ 
-          firstName,
-          lastName,
-          email
-        },
-        "images": images[]->{ 
-          title,
-          "urls": images[].asset->url,
-          altText
+          "images": images[] {
+            "url": asset->url,
+            "alt": alt,
+            "metadata": asset->metadata
+          }
         }
       },
       seo {
         metaTitle,
         metaDescription,
-        keywords
+        keywords,
+        canonicalUrl
+      },
+      taxInfo {
+        taxCategory,
+        taxRate,
+        hsnCode
       }
     }`;
 

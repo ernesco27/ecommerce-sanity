@@ -26,10 +26,15 @@ const productsQuery = groq`*[_type == "product"] {
       "slug": slug.current 
     }
   },
-  "additionalCategories": additionalCategories[]->{ 
+  "subcategories": subcategory[]->{ 
     _id, 
-    title, 
-    "slug": slug.current 
+    name, 
+    "slug": slug.current,
+    "parentCategory": parentCategory->{ 
+      _id,
+      title,
+      "slug": slug.current
+    }
   },
   "brand": brand->{ 
     _id, 
@@ -45,49 +50,24 @@ const productsQuery = groq`*[_type == "product"] {
     "gallery": gallery[]{ 
       "url": asset->url,
       "alt": alt,
-      "metadata": asset->metadata,
-      displayOrder
+      "metadata": asset->metadata
     }
   },
   "variants": variants[]->{ 
     _id,
+    size,
+    price,
+    compareAtPrice,
     sku,
-    "attributes": attributes[]{
-      "name": attribute->name,
-      "code": attribute->code,
-      value
-    },
-    pricing {
-      basePrice,
-      salePrice,
-      validFrom,
-      validTo
-    },
-    inventory {
-      quantity,
-      lowStockThreshold,
-      reserved,
-      status,
-      "warehouse": warehouse->name
-    },
-    "images": {
-      "primary": {
-        "url": primary.asset->url,
-        "alt": primary.alt,
-        "metadata": primary.asset->metadata
-      },
-      "gallery": gallery[]{ 
+    "colorVariants": colorVariants[] {
+      color,
+      colorCode,
+      stock,
+      "images": images[] {
         "url": asset->url,
         "alt": alt,
-        "metadata": asset->metadata,
-        displayOrder
+        "metadata": asset->metadata
       }
-    },
-    dimensions {
-      weight,
-      length,
-      width,
-      height
     }
   },
   "attributes": attributes[]->{ 
@@ -139,8 +119,12 @@ export async function GET(request: Request) {
       ? parseInt(searchParams.get("limit")!)
       : undefined;
     const category = searchParams.get("category");
+    const subcategory = searchParams.get("subcategory");
     const status = searchParams.get("status");
     const isVisible = searchParams.get("visible") === "true";
+    const size = searchParams.get("size");
+    const color = searchParams.get("color");
+    const inStock = searchParams.get("inStock") === "true";
 
     // Modify query based on parameters
     let query = productsQuery;
@@ -149,11 +133,23 @@ export async function GET(request: Request) {
     if (category) {
       filters.push(`category->slug.current == "${category}"`);
     }
+    if (subcategory) {
+      filters.push(`$subcategory in subcategory[]->slug.current`);
+    }
     if (status) {
       filters.push(`status == "${status}"`);
     }
     if (isVisible !== undefined) {
       filters.push(`visibility.isVisible == ${isVisible}`);
+    }
+    if (size) {
+      filters.push(`"${size}" in variants[]->size`);
+    }
+    if (color) {
+      filters.push(`"${color}" in variants[].colorVariants[].color`);
+    }
+    if (inStock === true) {
+      filters.push(`count(variants[]->.colorVariants[stock > 0]) > 0`);
     }
 
     // Apply filters if any exist
@@ -164,8 +160,10 @@ export async function GET(request: Request) {
       )}`;
     }
 
-    // Fetch products from Sanity
-    const products = await client.fetch(query);
+    // Fetch products from Sanity with parameters
+    const products = await client.fetch(query, {
+      subcategory: subcategory || "",
+    });
 
     // Apply limit if specified
     const limitedProducts = limit ? products.slice(0, limit) : products;

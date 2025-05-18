@@ -1,5 +1,16 @@
 import { TrolleyIcon } from "@sanity/icons";
 import { defineField, defineType } from "sanity";
+import type {
+  Rule,
+  ReferenceFilterOptions,
+  ReferenceFilterResolverContext,
+  SanityDocument,
+  Reference,
+} from "sanity";
+
+interface ProductDocument extends SanityDocument {
+  category?: Reference;
+}
 
 export const productType = defineType({
   name: "product",
@@ -60,61 +71,6 @@ export const productType = defineType({
       ],
     }),
     defineField({
-      name: "seo",
-      title: "SEO",
-      type: "object",
-      fields: [
-        defineField({
-          name: "metaTitle",
-          title: "Meta Title",
-          type: "string",
-          description: "Title used for search engines and browser tabs",
-          validation: (Rule) => Rule.max(60),
-        }),
-        defineField({
-          name: "metaDescription",
-          title: "Meta Description",
-          type: "text",
-          description: "Description for search engines",
-          validation: (Rule) => Rule.max(160),
-        }),
-        defineField({
-          name: "keywords",
-          title: "Keywords",
-          type: "array",
-          of: [{ type: "string" }],
-          description: "Keywords for search engines",
-        }),
-        defineField({
-          name: "canonicalUrl",
-          title: "Canonical URL",
-          type: "url",
-          description: "The preferred URL for this product",
-        }),
-        defineField({
-          name: "structuredData",
-          title: "Structured Data",
-          type: "object",
-          fields: [
-            defineField({
-              name: "brand",
-              type: "reference",
-              to: [{ type: "brand" }],
-            }),
-            defineField({
-              name: "category",
-              type: "reference",
-              to: [{ type: "category" }],
-            }),
-            defineField({
-              name: "manufacturer",
-              type: "string",
-            }),
-          ],
-        }),
-      ],
-    }),
-    defineField({
       name: "description",
       title: "Short Description",
       type: "text",
@@ -160,12 +116,6 @@ export const productType = defineType({
                   title: "Alt Text",
                   validation: (Rule) => Rule.required(),
                 },
-                {
-                  name: "displayOrder",
-                  type: "number",
-                  title: "Display Order",
-                  initialValue: 0,
-                },
               ],
             },
           ],
@@ -176,15 +126,9 @@ export const productType = defineType({
       name: "variants",
       type: "array",
       title: "Product Variants",
+      description: "Add size variants with their prices and color options",
       of: [{ type: "reference", to: [{ type: "productVariant" }] }],
       validation: (Rule) => Rule.required().min(1),
-    }),
-    defineField({
-      name: "attributes",
-      type: "array",
-      title: "Available Attributes",
-      description: "Attributes that can be used to create variants",
-      of: [{ type: "reference", to: [{ type: "productAttribute" }] }],
     }),
     defineField({
       name: "category",
@@ -194,16 +138,68 @@ export const productType = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: "additionalCategories",
+      name: "subcategory",
       type: "array",
-      title: "Additional Categories",
-      of: [{ type: "reference", to: [{ type: "category" }] }],
+      title: "Subcategory",
+      description: "Select subcategory from the primary category",
+      of: [
+        {
+          type: "reference",
+          to: [{ type: "subcategory" }],
+          options: {
+            disableNew: true,
+            filter: ({ document }: { document?: ProductDocument }) => {
+              if (!document?.category?._ref) return false;
+              return {
+                filter: "parentCategory._ref == $categoryId",
+                params: { categoryId: document.category._ref },
+              };
+            },
+          },
+        },
+      ],
+      hidden: ({ document }) => !document?.category,
+      validation: (Rule) => Rule.unique(),
     }),
     defineField({
       name: "brand",
       type: "reference",
       to: [{ type: "brand" }],
       title: "Brand",
+    }),
+    defineField({
+      name: "seo",
+      title: "SEO",
+      type: "object",
+      fields: [
+        defineField({
+          name: "metaTitle",
+          title: "Meta Title",
+          type: "string",
+          description: "Title used for search engines and browser tabs",
+          validation: (Rule) => Rule.max(60),
+        }),
+        defineField({
+          name: "metaDescription",
+          title: "Meta Description",
+          type: "text",
+          description: "Description for search engines",
+          validation: (Rule) => Rule.max(160),
+        }),
+        defineField({
+          name: "keywords",
+          title: "Keywords",
+          type: "array",
+          of: [{ type: "string" }],
+          description: "Keywords for search engines",
+        }),
+        defineField({
+          name: "canonicalUrl",
+          title: "Canonical URL",
+          type: "url",
+          description: "The preferred URL for this product",
+        }),
+      ],
     }),
     defineField({
       name: "taxInfo",
@@ -250,4 +246,18 @@ export const productType = defineType({
       validation: (Rule) => Rule.unique(),
     }),
   ],
+  preview: {
+    select: {
+      title: "name",
+      subtitle: "status",
+      media: "images.primary",
+    },
+    prepare({ title, subtitle, media }) {
+      return {
+        title: title || "Untitled Product",
+        subtitle: subtitle || "Draft",
+        media: media,
+      };
+    },
+  },
 });

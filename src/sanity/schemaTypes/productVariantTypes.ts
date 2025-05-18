@@ -8,31 +8,94 @@ export const productVariantType = defineType({
   icon: CircleFadingPlus,
   fields: [
     defineField({
-      name: "sku",
+      name: "size",
       type: "string",
-      title: "SKU",
+      title: "Size",
       validation: (Rule) => Rule.required(),
+      options: {
+        list: [
+          { title: "Small", value: "S" },
+          { title: "Medium", value: "M" },
+          { title: "Large", value: "L" },
+          { title: "Extra Large", value: "XL" },
+          { title: "2XL", value: "2XL" },
+        ],
+      },
     }),
     defineField({
-      name: "attributes",
+      name: "price",
+      type: "number",
+      title: "Price for this Size",
+      description:
+        "Price for this size variant (same price regardless of color)",
+      validation: (Rule) => Rule.required().min(0),
+    }),
+    defineField({
+      name: "compareAtPrice",
+      type: "number",
+      title: "Compare at Price",
+      description: "Original price before discount (optional)",
+      validation: (Rule) => Rule.min(0),
+    }),
+    defineField({
+      name: "colorVariants",
       type: "array",
-      title: "Variant Attributes",
+      title: "Color Variants",
+      description: "Add available colors and their stock levels for this size",
       of: [
         {
           type: "object",
+          name: "colorVariant",
           fields: [
             defineField({
-              name: "attribute",
-              type: "reference",
-              to: [{ type: "productAttribute" }],
-              title: "Attribute",
+              name: "color",
+              type: "string",
+              title: "Color",
               validation: (Rule) => Rule.required(),
+              options: {
+                list: [
+                  { title: "Red", value: "red" },
+                  { title: "Green", value: "green" },
+                  { title: "Blue", value: "blue" },
+                  { title: "Black", value: "black" },
+                  { title: "White", value: "white" },
+                  { title: "Gray", value: "gray" },
+                  { title: "Navy", value: "navy" },
+                  { title: "Brown", value: "brown" },
+                ],
+              },
             }),
             defineField({
-              name: "value",
-              type: "string",
-              title: "Value",
-              validation: (Rule) => Rule.required(),
+              name: "colorCode",
+              type: "color",
+              title: "Color Code",
+              description: "Pick the exact color shade",
+            }),
+            defineField({
+              name: "stock",
+              type: "number",
+              title: "Available Stock",
+              initialValue: 0,
+              validation: (Rule) => Rule.required().min(0),
+            }),
+            defineField({
+              name: "images",
+              type: "array",
+              title: "Color-specific Images",
+              of: [
+                {
+                  type: "image",
+                  options: { hotspot: true },
+                  fields: [
+                    {
+                      name: "alt",
+                      type: "string",
+                      title: "Alt Text",
+                      validation: (Rule) => Rule.required(),
+                    },
+                  ],
+                },
+              ],
             }),
           ],
         },
@@ -40,129 +103,22 @@ export const productVariantType = defineType({
       validation: (Rule) => Rule.required().min(1),
     }),
     defineField({
-      name: "pricing",
-      type: "object",
-      title: "Pricing",
-      fields: [
-        defineField({
-          name: "basePrice",
-          type: "number",
-          title: "Base Price",
-          validation: (Rule) => Rule.required().min(0),
-        }),
-        defineField({
-          name: "salePrice",
-          type: "number",
-          title: "Sale Price",
-          validation: (Rule) => Rule.min(0),
-        }),
-        defineField({
-          name: "validFrom",
-          type: "datetime",
-          title: "Price Valid From",
-        }),
-        defineField({
-          name: "validTo",
-          type: "datetime",
-          title: "Price Valid To",
-        }),
-      ],
+      name: "sku",
+      type: "string",
+      title: "SKU",
+      description: "Stock Keeping Unit (unique identifier for this variant)",
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: "inventory",
-      type: "object",
-      title: "Inventory",
-      fields: [
-        defineField({
-          name: "quantity",
-          type: "number",
-          title: "Available Quantity",
-          validation: (Rule) => Rule.required().min(0),
-          initialValue: 0,
-        }),
-        defineField({
-          name: "lowStockThreshold",
-          type: "number",
-          title: "Low Stock Threshold",
-          validation: (Rule) => Rule.min(0),
-        }),
-        defineField({
-          name: "reserved",
-          type: "number",
-          title: "Reserved Quantity",
-          validation: (Rule) => Rule.min(0),
-          initialValue: 0,
-        }),
-        defineField({
-          name: "status",
-          type: "string",
-          title: "Stock Status",
-          options: {
-            list: [
-              { title: "In Stock", value: "in_stock" },
-              { title: "Low Stock", value: "low_stock" },
-              { title: "Out of Stock", value: "out_of_stock" },
-              { title: "Backorder", value: "backorder" },
-            ],
-          },
-          initialValue: "out_of_stock",
-        }),
-        defineField({
-          name: "warehouse",
-          type: "reference",
-          to: [{ type: "warehouse" }],
-          title: "Warehouse",
-        }),
-      ],
-    }),
-    defineField({
-      name: "images",
-      type: "object",
-      title: "Variant Images",
-      fields: [
-        defineField({
-          name: "primary",
-          type: "image",
-          title: "Primary Image",
-          options: { hotspot: true },
-          fields: [
-            {
-              name: "alt",
-              type: "string",
-              title: "Alt Text",
-            },
-          ],
-        }),
-        defineField({
-          name: "gallery",
-          type: "array",
-          title: "Gallery Images",
-          of: [
-            {
-              type: "image",
-              options: { hotspot: true },
-              fields: [
-                {
-                  name: "alt",
-                  type: "string",
-                  title: "Alt Text",
-                },
-                {
-                  name: "displayOrder",
-                  type: "number",
-                  title: "Display Order",
-                  initialValue: 0,
-                },
-              ],
-            },
-          ],
-        }),
-      ],
+      name: "barcode",
+      type: "string",
+      title: "Barcode",
+      description: "UPC, EAN, or other barcode (optional)",
     }),
     defineField({
       name: "dimensions",
       type: "object",
-      title: "Product Dimensions",
+      title: "Dimensions",
       fields: [
         defineField({
           name: "weight",
@@ -187,4 +143,17 @@ export const productVariantType = defineType({
       ],
     }),
   ],
+  preview: {
+    select: {
+      size: "size",
+      price: "price",
+      colorCount: "colorVariants.length",
+    },
+    prepare({ size, price, colorCount = 0 }) {
+      return {
+        title: `Size ${size}`,
+        subtitle: `$${price} - ${colorCount} color${colorCount === 1 ? "" : "s"}`,
+      };
+    },
+  },
 });
