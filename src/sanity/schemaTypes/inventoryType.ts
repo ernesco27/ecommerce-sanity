@@ -104,8 +104,9 @@ export const inventoryType = defineType({
                 list: [
                   { title: "Stock In", value: "stock_in" },
                   { title: "Stock Out", value: "stock_out" },
+                  { title: "Order Fulfillment", value: "order_fulfillment" },
+                  { title: "Order Return", value: "order_return" },
                   { title: "Adjustment", value: "adjustment" },
-                  { title: "Return", value: "return" },
                   { title: "Damage", value: "damage" },
                 ],
               },
@@ -116,6 +117,15 @@ export const inventoryType = defineType({
               type: "number",
               title: "Quantity",
               validation: (Rule) => Rule.required(),
+            }),
+            defineField({
+              name: "order",
+              type: "reference",
+              to: [{ type: "order" }],
+              title: "Related Order",
+              description: "If this movement is related to an order",
+              hidden: ({ parent }) =>
+                !["order_fulfillment", "order_return"].includes(parent?.type),
             }),
             defineField({
               name: "reference",
@@ -137,6 +147,7 @@ export const inventoryType = defineType({
           ],
         },
       ],
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: "notes",
@@ -155,7 +166,7 @@ export const inventoryType = defineType({
       const { title, subtitle, warehouse } = selection;
       return {
         title: title || "Untitled Product",
-        subtitle: `Qty: ${subtitle || 0} @ ${warehouse || "Unknown Location"}`,
+        subtitle: `Stock: ${subtitle || 0} @ ${warehouse || "Unknown Location"}`,
       };
     },
   },

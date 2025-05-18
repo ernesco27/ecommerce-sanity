@@ -13,20 +13,48 @@ import { format } from "date-fns";
 
 export function ReportGenerator() {
   const [reportConfig, setReportConfig] = useState({
-    type: "audit",
+    type: "stock",
     startDate: format(
       new Date().setDate(new Date().getDate() - 30),
       "yyyy-MM-dd",
     ),
     endDate: format(new Date(), "yyyy-MM-dd"),
     format: "csv",
-    metrics: ["pageViews", "productViews", "userActions"],
+    metrics: ["stock", "movements", "alerts"],
     filters: {
       entityType: "",
       action: "",
     },
   });
   const [loading, setLoading] = useState(false);
+
+  const reportTypes = [
+    {
+      value: "stock",
+      label: "Stock Report",
+      metrics: ["stock", "movements", "alerts", "recommendations"],
+    },
+    {
+      value: "sales",
+      label: "Sales Analytics",
+      metrics: ["revenue", "orders", "products", "trends"],
+    },
+    {
+      value: "customer",
+      label: "Customer Analytics",
+      metrics: ["engagement", "satisfaction", "demographics", "behavior"],
+    },
+    {
+      value: "order",
+      label: "Order Analytics",
+      metrics: ["volume", "status", "fulfillment", "returns"],
+    },
+    {
+      value: "audit",
+      label: "Audit Log Report",
+      metrics: ["actions", "users", "changes", "timestamps"],
+    },
+  ];
 
   const handleGenerateReport = async () => {
     setLoading(true);
@@ -53,28 +81,32 @@ export function ReportGenerator() {
       }
 
       if (reportConfig.format === "csv") {
-        // Handle CSV download
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.style.display = "none";
         a.href = url;
-        a.download = `${reportConfig.type}-report-${format(new Date(), "yyyy-MM-dd")}.csv`;
+        a.download = `${reportConfig.type}-report-${format(
+          new Date(),
+          "yyyy-MM-dd",
+        )}.csv`;
         document.body.appendChild(a);
         a.click();
         window.URL.revokeObjectURL(url);
         document.body.removeChild(a);
       } else {
-        // Handle JSON display
         const data = await response.json();
         console.log("Report data:", data);
-        // You could add state to display this data in the UI
       }
     } catch (error) {
       console.error("Error generating report:", error);
     }
     setLoading(false);
   };
+
+  const currentReportType = reportTypes.find(
+    (rt) => rt.value === reportConfig.type,
+  );
 
   return (
     <Card padding={4} tone="transparent">
@@ -90,15 +122,23 @@ export function ReportGenerator() {
                 <Text size={1}>Report Type</Text>
                 <Select
                   value={reportConfig.type}
-                  onChange={(e) =>
+                  onChange={(e) => {
+                    const newType = e.currentTarget.value;
+                    const reportType = reportTypes.find(
+                      (rt) => rt.value === newType,
+                    );
                     setReportConfig({
                       ...reportConfig,
-                      type: e.currentTarget.value,
-                    })
-                  }
+                      type: newType,
+                      metrics: reportType?.metrics.slice(0, 3) || [],
+                    });
+                  }}
                 >
-                  <option value="audit">Audit Log Report</option>
-                  <option value="analytics">Analytics Report</option>
+                  {reportTypes.map((rt) => (
+                    <option key={rt.value} value={rt.value}>
+                      {rt.label}
+                    </option>
+                  ))}
                 </Select>
               </Stack>
 
@@ -149,89 +189,38 @@ export function ReportGenerator() {
               </Stack>
             </Grid>
 
-            {reportConfig.type === "analytics" && (
+            {currentReportType && (
               <Stack space={3}>
                 <Text size={1}>Metrics to Include</Text>
                 <Grid columns={3} gap={2}>
-                  {["pageViews", "productViews", "userActions"].map(
-                    (metric) => (
-                      <Box key={metric}>
-                        <label>
-                          <input
-                            type="checkbox"
-                            checked={reportConfig.metrics.includes(metric)}
-                            onChange={(e) => {
-                              const metrics = e.currentTarget.checked
-                                ? [...reportConfig.metrics, metric]
-                                : reportConfig.metrics.filter(
-                                    (m) => m !== metric,
-                                  );
-                              setReportConfig({ ...reportConfig, metrics });
-                            }}
-                          />{" "}
-                          {metric}
-                        </label>
-                      </Box>
-                    ),
-                  )}
+                  {currentReportType.metrics.map((metric) => (
+                    <Box key={metric}>
+                      <label>
+                        <input
+                          type="checkbox"
+                          checked={reportConfig.metrics.includes(metric)}
+                          onChange={(e) => {
+                            const metrics = e.currentTarget.checked
+                              ? [...reportConfig.metrics, metric]
+                              : reportConfig.metrics.filter(
+                                  (m) => m !== metric,
+                                );
+                            setReportConfig({ ...reportConfig, metrics });
+                          }}
+                        />{" "}
+                        {metric}
+                      </label>
+                    </Box>
+                  ))}
                 </Grid>
               </Stack>
             )}
 
-            {reportConfig.type === "audit" && (
-              <Grid columns={2} gap={3}>
-                <Stack space={3}>
-                  <Text size={1}>Entity Type</Text>
-                  <Select
-                    value={reportConfig.filters.entityType}
-                    onChange={(e) =>
-                      setReportConfig({
-                        ...reportConfig,
-                        filters: {
-                          ...reportConfig.filters,
-                          entityType: e.currentTarget.value,
-                        },
-                      })
-                    }
-                  >
-                    <option value="">All Types</option>
-                    <option value="product">Product</option>
-                    <option value="order">Order</option>
-                    <option value="user">User</option>
-                    <option value="inventory">Inventory</option>
-                  </Select>
-                </Stack>
-
-                <Stack space={3}>
-                  <Text size={1}>Action Type</Text>
-                  <Select
-                    value={reportConfig.filters.action}
-                    onChange={(e) =>
-                      setReportConfig({
-                        ...reportConfig,
-                        filters: {
-                          ...reportConfig.filters,
-                          action: e.currentTarget.value,
-                        },
-                      })
-                    }
-                  >
-                    <option value="">All Actions</option>
-                    <option value="create">Create</option>
-                    <option value="update">Update</option>
-                    <option value="delete">Delete</option>
-                    <option value="login">Login</option>
-                    <option value="logout">Logout</option>
-                  </Select>
-                </Stack>
-              </Grid>
-            )}
-
             <Button
               tone="primary"
+              text={loading ? "Generating..." : "Generate Report"}
               onClick={handleGenerateReport}
               disabled={loading}
-              text={loading ? "Generating..." : "Generate Report"}
             />
           </Stack>
         </Card>

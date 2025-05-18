@@ -15,13 +15,11 @@ import { structure, defaultDocumentNode } from "./src/sanity/structure";
 import { apiVersion, dataset, projectId } from "./src/sanity/env";
 
 export default defineConfig({
-  name: "default",
-  title: "ecommerce-sanity",
-  basePath: "/studio",
-
+  name: "ecommerce-sanity",
+  title: "E-commerce Admin",
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET!,
-
+  basePath: "/studio",
   plugins: [
     deskTool({
       structure,
@@ -30,7 +28,6 @@ export default defineConfig({
     visionTool(),
     colorInput(),
   ],
-
   schema: {
     types: schema.types,
   },

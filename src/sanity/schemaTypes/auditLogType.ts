@@ -34,6 +34,13 @@ export const auditLogType = defineType({
           { title: "Export", value: "export" },
           { title: "Import", value: "import" },
           { title: "Permission Change", value: "permission_change" },
+          { title: "Stock Adjustment", value: "stock_adjustment" },
+          {
+            title: "Stock Order Fulfillment",
+            value: "stock_order_fulfillment",
+          },
+          { title: "Stock Return", value: "stock_return" },
+          { title: "Stock Count", value: "stock_count" },
         ],
       },
       validation: (Rule) => Rule.required(),
@@ -63,30 +70,31 @@ export const auditLogType = defineType({
       description: "ID of the affected entity",
     }),
     defineField({
-      name: "changes",
-      type: "array",
-      title: "Changes",
-      of: [
-        {
-          type: "object",
-          fields: [
-            defineField({
-              name: "field",
-              type: "string",
-              title: "Field Name",
-            }),
-            defineField({
-              name: "oldValue",
-              type: "string",
-              title: "Old Value",
-            }),
-            defineField({
-              name: "newValue",
-              type: "string",
-              title: "New Value",
-            }),
-          ],
-        },
+      name: "details",
+      type: "object",
+      title: "Action Details",
+      fields: [
+        defineField({
+          name: "previousValue",
+          type: "string",
+          title: "Previous Value",
+        }),
+        defineField({
+          name: "newValue",
+          type: "string",
+          title: "New Value",
+        }),
+        defineField({
+          name: "reason",
+          type: "string",
+          title: "Reason for Change",
+        }),
+        defineField({
+          name: "relatedOrder",
+          type: "reference",
+          to: [{ type: "order" }],
+          title: "Related Order",
+        }),
       ],
     }),
     defineField({
@@ -124,11 +132,10 @@ export const auditLogType = defineType({
       subtitle: "entityType",
       timestamp: "timestamp",
     },
-    prepare(selection) {
-      const { title, subtitle, timestamp } = selection;
+    prepare({ title, subtitle, timestamp }) {
       return {
-        title: `${title?.toUpperCase() || "Unknown Action"}`,
-        subtitle: `${subtitle} - ${new Date(timestamp).toLocaleString()}`,
+        title: title || "Unknown Action",
+        subtitle: `${subtitle || "Unknown Entity"} - ${new Date(timestamp).toLocaleString()}`,
       };
     },
   },

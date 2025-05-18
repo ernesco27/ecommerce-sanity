@@ -215,6 +215,207 @@ export const analyticsType = defineType({
           type: "number",
           title: "Stock Turnover Rate",
         }),
+        defineField({
+          name: "stockMovements",
+          type: "object",
+          title: "Stock Movements",
+          fields: [
+            defineField({
+              name: "totalIn",
+              type: "number",
+              title: "Total Stock In",
+            }),
+            defineField({
+              name: "totalOut",
+              type: "number",
+              title: "Total Stock Out",
+            }),
+            defineField({
+              name: "orderFulfillments",
+              type: "number",
+              title: "Order Fulfillments",
+            }),
+            defineField({
+              name: "returns",
+              type: "number",
+              title: "Returns",
+            }),
+            defineField({
+              name: "adjustments",
+              type: "number",
+              title: "Adjustments",
+            }),
+          ],
+        }),
+        defineField({
+          name: "topMovers",
+          type: "array",
+          title: "Top Moving Products",
+          of: [
+            {
+              type: "object",
+              fields: [
+                defineField({
+                  name: "product",
+                  type: "reference",
+                  to: [{ type: "product" }],
+                  title: "Product",
+                }),
+                defineField({
+                  name: "quantityMoved",
+                  type: "number",
+                  title: "Quantity Moved",
+                }),
+                defineField({
+                  name: "revenue",
+                  type: "number",
+                  title: "Revenue Generated",
+                }),
+                defineField({
+                  name: "movement",
+                  type: "string",
+                  title: "Movement Type",
+                  options: {
+                    list: [
+                      { title: "High Sales", value: "high_sales" },
+                      { title: "Low Sales", value: "low_sales" },
+                      { title: "No Movement", value: "no_movement" },
+                    ],
+                  },
+                }),
+              ],
+            },
+          ],
+        }),
+        defineField({
+          name: "warehouseBreakdown",
+          type: "array",
+          title: "Warehouse Breakdown",
+          of: [
+            {
+              type: "object",
+              fields: [
+                defineField({
+                  name: "warehouse",
+                  type: "reference",
+                  to: [{ type: "warehouse" }],
+                  title: "Warehouse",
+                }),
+                defineField({
+                  name: "totalStock",
+                  type: "number",
+                  title: "Total Stock",
+                }),
+                defineField({
+                  name: "stockValue",
+                  type: "number",
+                  title: "Stock Value",
+                }),
+                defineField({
+                  name: "utilization",
+                  type: "number",
+                  title: "Space Utilization %",
+                }),
+              ],
+            },
+          ],
+        }),
+        defineField({
+          name: "alerts",
+          type: "array",
+          title: "Stock Alerts",
+          of: [
+            {
+              type: "object",
+              fields: [
+                defineField({
+                  name: "type",
+                  type: "string",
+                  title: "Alert Type",
+                  options: {
+                    list: [
+                      { title: "Low Stock", value: "low_stock" },
+                      { title: "Out of Stock", value: "out_of_stock" },
+                      { title: "Overstock", value: "overstock" },
+                      { title: "Expiring Soon", value: "expiring_soon" },
+                    ],
+                  },
+                }),
+                defineField({
+                  name: "product",
+                  type: "reference",
+                  to: [{ type: "product" }],
+                  title: "Product",
+                }),
+                defineField({
+                  name: "message",
+                  type: "text",
+                  title: "Alert Message",
+                }),
+                defineField({
+                  name: "severity",
+                  type: "string",
+                  title: "Severity",
+                  options: {
+                    list: [
+                      { title: "Low", value: "low" },
+                      { title: "Medium", value: "medium" },
+                      { title: "High", value: "high" },
+                    ],
+                  },
+                }),
+              ],
+            },
+          ],
+        }),
+        defineField({
+          name: "recommendations",
+          type: "array",
+          title: "Stock Recommendations",
+          of: [
+            {
+              type: "object",
+              fields: [
+                defineField({
+                  name: "type",
+                  type: "string",
+                  title: "Recommendation Type",
+                  options: {
+                    list: [
+                      { title: "Restock", value: "restock" },
+                      { title: "Reduce Stock", value: "reduce_stock" },
+                      { title: "Relocate", value: "relocate" },
+                      { title: "Review Pricing", value: "review_pricing" },
+                    ],
+                  },
+                }),
+                defineField({
+                  name: "product",
+                  type: "reference",
+                  to: [{ type: "product" }],
+                  title: "Product",
+                }),
+                defineField({
+                  name: "suggestion",
+                  type: "text",
+                  title: "Suggestion",
+                }),
+                defineField({
+                  name: "potentialImpact",
+                  type: "string",
+                  title: "Potential Impact",
+                  options: {
+                    list: [
+                      { title: "Low", value: "low" },
+                      { title: "Medium", value: "medium" },
+                      { title: "High", value: "high" },
+                    ],
+                  },
+                }),
+              ],
+            },
+          ],
+        }),
       ],
     }),
     defineField({

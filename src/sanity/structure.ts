@@ -16,6 +16,9 @@ import {
   ChartBar,
   Download,
   FileClock,
+  Box,
+  LineChart,
+  Users,
 } from "lucide-react";
 import {
   type StructureBuilder,
@@ -25,6 +28,11 @@ import { type ComponentType } from "react";
 import { AuditLogsViewer } from "./components/AuditLogsViewer";
 import { AnalyticsDashboard } from "./components/AnalyticsDashboard";
 import { ReportGenerator } from "./components/ReportGenerator";
+import { StockReportViewer } from "./components/StockReportViewer";
+import { StockDashboard } from "./components/dashboards/StockDashboard";
+import { SalesDashboard } from "./components/dashboards/SalesDashboard";
+import { CustomerDashboard } from "./components/dashboards/CustomerDashboard";
+import { OrderDashboard } from "./components/dashboards/OrderDashboard";
 
 // https://www.sanity.io/docs/structure-builder-cheat-sheet
 export const structure = (S: StructureBuilder) =>
@@ -199,41 +207,75 @@ export const structure = (S: StructureBuilder) =>
           S.list()
             .title("Reports & Analytics")
             .items([
-              // Audit Logs Viewer
+              // Dashboards
               S.listItem()
-                .title("Audit Logs")
-                .icon(Activity)
+                .title("Stock Dashboard")
+                .icon(Box)
                 .child(
-                  S.component()
-                    .title("Audit Logs")
-                    .component(AuditLogsViewer as ComponentType<any>),
+                  S.component(StockDashboard)
+                    .title("Stock Dashboard")
+                    .id("stock-dashboard"),
                 ),
 
-              // Analytics Dashboard
               S.listItem()
-                .title("Analytics Dashboard")
-                .icon(ChartBar)
+                .title("Sales Dashboard")
+                .icon(LineChart)
                 .child(
-                  S.component()
-                    .title("Analytics Dashboard")
-                    .component(AnalyticsDashboard as ComponentType<any>),
+                  S.component(SalesDashboard)
+                    .title("Sales Dashboard")
+                    .id("sales-dashboard"),
                 ),
 
-              // Report Generator
+              S.listItem()
+                .title("Customer Dashboard")
+                .icon(Users)
+                .child(
+                  S.component(CustomerDashboard)
+                    .title("Customer Dashboard")
+                    .id("customer-dashboard"),
+                ),
+
+              S.listItem()
+                .title("Order Dashboard")
+                .icon(ShoppingCart)
+                .child(
+                  S.component(OrderDashboard)
+                    .title("Order Dashboard")
+                    .id("order-dashboard"),
+                ),
+
+              S.divider(),
+
+              // Reports Generator
               S.listItem()
                 .title("Generate Reports")
                 .icon(Download)
                 .child(
-                  S.component()
+                  S.component(ReportGenerator)
                     .title("Generate Reports")
-                    .component(ReportGenerator as ComponentType<any>),
+                    .id("report-generator"),
                 ),
 
-              // Raw Audit Logs (for debugging)
+              S.divider(),
+
+              // Raw Data Views
               S.listItem()
-                .title("Raw Audit Logs")
-                .icon(FileClock)
-                .child(S.documentTypeList("auditLog")),
+                .title("Analytics Data")
+                .icon(ChartBar)
+                .child(
+                  S.documentTypeList("analytics")
+                    .title("Analytics Data")
+                    .filter('_type == "analytics"'),
+                ),
+
+              S.listItem()
+                .title("Audit Logs")
+                .icon(Activity)
+                .child(
+                  S.component(AuditLogsViewer)
+                    .title("Audit Logs")
+                    .id("audit-logs"),
+                ),
             ]),
         ),
 

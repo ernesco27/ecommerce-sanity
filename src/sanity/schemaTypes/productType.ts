@@ -245,17 +245,49 @@ export const productType = defineType({
       title: "Related Products",
       validation: (Rule) => Rule.unique(),
     }),
+    defineField({
+      name: "stockSummary",
+      type: "object",
+      title: "Stock Summary",
+      readOnly: true,
+      fields: [
+        defineField({
+          name: "totalStock",
+          type: "number",
+          title: "Total Stock",
+          description: "Aggregated stock across all variants",
+        }),
+        defineField({
+          name: "lowStockVariants",
+          type: "number",
+          title: "Low Stock Variants",
+          description: "Number of variants below minimum stock level",
+        }),
+        defineField({
+          name: "outOfStockVariants",
+          type: "number",
+          title: "Out of Stock Variants",
+          description: "Number of variants with zero stock",
+        }),
+        defineField({
+          name: "lastUpdated",
+          type: "datetime",
+          title: "Last Stock Update",
+        }),
+      ],
+    }),
   ],
   preview: {
     select: {
       title: "name",
       subtitle: "status",
       media: "images.primary",
+      totalStock: "stockSummary.totalStock",
     },
-    prepare({ title, subtitle, media }) {
+    prepare({ title, subtitle, media, totalStock }) {
       return {
         title: title || "Untitled Product",
-        subtitle: subtitle || "Draft",
+        subtitle: `${subtitle || "Draft"} - Stock: ${totalStock || 0}`,
         media: media,
       };
     },
