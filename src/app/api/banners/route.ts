@@ -2,6 +2,11 @@ import { client } from "@/lib/client";
 import { Banner } from "../../../../sanity.types";
 import { NextResponse } from "next/server";
 
+// Extend the Banner type to include the fields from the GROQ projection
+type BannerResponse = Banner & {
+  imageUrl: string;
+};
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const type = searchParams.get("type") || "hero";
@@ -60,7 +65,7 @@ export async function GET(request: Request) {
       ...(location && { location }),
     };
 
-    const banners = await client.fetch<Banner[]>(query, params);
+    const banners = await client.fetch<BannerResponse[]>(query, params);
 
     if (!banners || banners.length === 0) {
       return NextResponse.json([]);
@@ -70,10 +75,7 @@ export async function GET(request: Request) {
   } catch (error) {
     console.error("Error fetching banners:", error);
     return NextResponse.json(
-      {
-        error:
-          error instanceof Error ? error.message : "Error fetching banners",
-      },
+      { message: "Error fetching banners", error: (error as Error).message },
       { status: 500 },
     );
   }

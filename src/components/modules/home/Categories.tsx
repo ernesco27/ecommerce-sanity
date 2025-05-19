@@ -14,6 +14,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import Heading from "@/components/custom/Heading";
 import { Banner } from "../../../../sanity.types";
 
+// Extend the Banner type to include the fields from the GROQ projection
+type BannerResponse = Banner & {
+  imageUrl: string;
+};
+
 const Categories = () => {
   const router = useRouter();
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
@@ -21,7 +26,7 @@ const Categories = () => {
     data: banners,
     error,
     isLoading,
-  } = useSWR<Banner[]>("/api/banners?type=category", fetcher);
+  } = useSWR<BannerResponse[]>("/api/banners?type=category", fetcher);
 
   const animation = {
     hide: { scale: 0, opacity: 0 },
@@ -82,7 +87,7 @@ const Categories = () => {
           modules={[Autoplay, Navigation, Pagination]}
           className=" w-full flex items-center justify-center  rounded-md px-20 py-10 "
         >
-          {banners?.map((banner: Banner, index: number) => (
+          {banners?.map((banner: BannerResponse, index: number) => (
             <SwiperSlide
               key={banner._id}
               className="relative [&>button]:block !transition  duration-300 ease-in-out hover:scale-105 cursor-pointer rounded-md "

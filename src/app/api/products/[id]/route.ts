@@ -4,13 +4,13 @@ import { NextResponse } from "next/server";
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const id = params.id;
+    const id = (await params).id;
 
     // Use the same query structure as the products list but filter by ID
-    const query = groq`*[_type == "product" && _id == "${id}"][0] {
+    const query = groq`*[_type == "product" && _id == $id][0] {
       _id,
       _createdAt,
       name,
@@ -26,12 +26,7 @@ export async function GET(
       "category": category->{ 
         _id, 
         title, 
-        "slug": slug.current,
-        "subcategories": subcategories[]->{ 
-          _id, 
-          name, 
-          "slug": slug.current 
-        }
+        "slug": slug.current
       },
       "subcategories": subcategory[]->{ 
         _id, 
@@ -49,15 +44,17 @@ export async function GET(
         "slug": slug.current 
       },
       "images": {
-        "primary": {
-          "url": primary.asset->url,
-          "alt": primary.alt,
-          "metadata": primary.asset->metadata
-        },
-        "gallery": gallery[]{ 
+        "primary": images.primary{
           "url": asset->url,
           "alt": alt,
-          "metadata": asset->metadata
+          "lqip": asset->metadata.lqip,
+          "dimensions": asset->metadata.dimensions
+        },
+        "gallery": images.gallery[]{
+          "url": asset->url,
+          "alt": alt,
+          "lqip": asset->metadata.lqip,
+          "dimensions": asset->metadata.dimensions
         }
       },
       "variants": variants[]->{ 
@@ -66,14 +63,15 @@ export async function GET(
         price,
         compareAtPrice,
         sku,
-        "colorVariants": colorVariants[] {
+        colorVariants[] {
           color,
           colorCode,
           stock,
-          "images": images[] {
+          "images": images[]{
             "url": asset->url,
             "alt": alt,
-            "metadata": asset->metadata
+            "lqip": asset->metadata.lqip,
+            "dimensions": asset->metadata.dimensions
           }
         }
       },
@@ -86,13 +84,6 @@ export async function GET(
         verifiedPurchase,
         createdAt,
         helpful
-      },
-      "reviewSummary": {
-        "averageRating": coalesce(round(select(
-          count(reviews) > 0 => sum(reviews[].rating) / count(reviews),
-          0
-        ) * 10) / 10, 0),
-        "totalReviews": count(reviews)
       },
       seo {
         metaTitle,
@@ -121,7 +112,8 @@ export async function GET(
       }
     }`;
 
-    const product = await client.fetch(query);
+    // Fetch product from Sanity
+    const product = await client.fetch(query, { id });
 
     if (!product) {
       return NextResponse.json(
