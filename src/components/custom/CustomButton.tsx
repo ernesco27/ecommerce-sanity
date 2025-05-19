@@ -32,7 +32,7 @@ const CustomButton = ({
 
   const sizeClasses = {
     sm: "w-[150px] text-sm",
-    default: "w-[170px] text-base",
+    default: "w-[170px] lg:w-[180px] text-base",
     lg: "w-[200px] text-lg",
   };
 

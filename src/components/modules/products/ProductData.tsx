@@ -59,7 +59,11 @@ interface ColorVariant {
 }
 
 interface Review {
-  rating: number;
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  _key: string;
+  rating?: number;
 }
 
 interface Tag {
@@ -67,11 +71,7 @@ interface Tag {
   name: string;
 }
 
-const ProductData = ({
-  product,
-}: {
-  product: Product & { reviews?: Review[] };
-}) => {
+const ProductData = ({ product }: { product: Product }) => {
   // All hooks at the top in consistent order
   //const { productData } = useProduct();
   // const resolvedParams = React.use(params);
@@ -184,6 +184,74 @@ const ProductData = ({
   //     }
   //   }, [product, isInitialized]);
 
+  // Check if all required variants are selected
+  const isVariantSelected = useMemo(() => {
+    const selectedSize = selectedVariants["Size"];
+    const selectedColor = selectedVariants["Color"];
+    return Boolean(selectedSize && selectedColor);
+  }, [selectedVariants]);
+
+  // Get selected variant stock
+  const selectedVariantStock = useMemo(() => {
+    const selectedSize = selectedVariants["Size"];
+    const selectedColor = selectedVariants["Color"];
+
+    if (!selectedSize || !selectedColor) {
+      return 0;
+    }
+
+    const selectedVariant = product.variants?.find((variantRef) => {
+      const variant = variantRef as unknown as ProductVariant;
+      return variant.size === selectedSize;
+    }) as unknown as ProductVariant;
+
+    if (!selectedVariant) {
+      return 0;
+    }
+
+    const selectedColorVariant = selectedVariant.colorVariants?.find(
+      (cv: ColorVariant) => cv.color === selectedColor,
+    );
+
+    return selectedColorVariant?.stock || 0;
+  }, [selectedVariants, product.variants]);
+
+  // Reset quantity when variant changes
+  useEffect(() => {
+    setQuantity(1);
+  }, [selectedVariants]);
+
+  // Get selected variant prices
+  const selectedVariantPrices = useMemo(() => {
+    const selectedSize = selectedVariants["Size"];
+
+    if (!selectedSize) {
+      // Return first variant's prices as default
+      const firstVariant = product.variants?.[0] as unknown as ProductVariant;
+      return {
+        price: firstVariant?.price ?? 0,
+        compareAtPrice: firstVariant?.compareAtPrice,
+      };
+    }
+
+    const selectedVariant = product.variants?.find((variantRef) => {
+      const variant = variantRef as unknown as ProductVariant;
+      return variant.size === selectedSize;
+    }) as unknown as ProductVariant;
+
+    if (!selectedVariant) {
+      return {
+        price: 0,
+        compareAtPrice: undefined,
+      };
+    }
+
+    return {
+      price: selectedVariant.price ?? 0,
+      compareAtPrice: selectedVariant.compareAtPrice,
+    };
+  }, [selectedVariants, product.variants]);
+
   // Get selected variant images
   const selectedVariantImages = useMemo(() => {
     const selectedSize = selectedVariants["Size"];
@@ -220,32 +288,6 @@ const ProductData = ({
   }, [product.reviews]);
 
   const handleAddToCart = () => {
-    //if (!product || !selectedItemDetails) return;
-
-    // Convert selectedVariants to the format expected by the cart store
-    // const variantArray = Object.entries(selectedVariants).map(
-    //   ([name, value]) => ({
-    //     name,
-    //     value,
-    //   }),
-    // );
-
-    // Create a product object with the selected variant's price
-    // const productWithVariantPrice = {
-    //   ...product,
-    //   price: selectedItemDetails.price,
-    //   salesPrice: selectedItemDetails.price.lt(product.price)
-    //     ? selectedItemDetails.price
-    //     : null,
-    // };
-
-    // addItem(
-    //   productWithVariantPrice,
-    //   quantity,
-    //   variantArray,
-    //   product.images[0]?.link,
-    // );
-
     toast.success("Product added to cart", {
       position: "top-right",
       autoClose: 3000,
@@ -298,19 +340,12 @@ const ProductData = ({
             {/* Price */}
             <div className="inline-flex justify-between items-center w-[20%]">
               <CurrencyFormat
-                value={
-                  (product.variants?.[0] as unknown as ProductVariant)?.price ??
-                  0
-                }
+                value={selectedVariantPrices.price}
                 className="font-bold text-yellow-600 text-left text-2xl"
               />
-              {(product.variants?.[0] as unknown as ProductVariant)
-                ?.compareAtPrice && (
+              {selectedVariantPrices.compareAtPrice && (
                 <CurrencyFormat
-                  value={
-                    (product.variants?.[0] as unknown as ProductVariant)
-                      ?.compareAtPrice ?? 0
-                  }
+                  value={selectedVariantPrices.compareAtPrice}
                   className="line-through text-xl text-slate-500 ml-4"
                 />
               )}
@@ -332,60 +367,69 @@ const ProductData = ({
 
             {/* Stock Information */}
             {(() => {
-              // Find the selected variant and its stock
-              const selectedSize = selectedVariants["Size"];
-              const selectedColor = selectedVariants["Color"];
-
-              if (!selectedSize || !selectedColor) {
+              if (!isVariantSelected) {
                 return null;
               }
 
-              const selectedVariant = product.variants?.find((variantRef) => {
-                const variant = variantRef as unknown as ProductVariant;
-                return variant.size === selectedSize;
-              }) as unknown as ProductVariant;
-
-              if (!selectedVariant) {
-                return null;
-              }
-
-              const selectedColorVariant = selectedVariant.colorVariants?.find(
-                (cv: ColorVariant) => cv.color === selectedColor,
-              );
-
-              if (!selectedColorVariant) {
-                return null;
-              }
-
-              const stock = selectedColorVariant.stock || 0;
-              const isLowStock = stock > 0 && stock < 5;
+              const isLowStock =
+                selectedVariantStock > 0 && selectedVariantStock < 5;
 
               return (
                 <div className="-mt-8">
                   {!isLowStock ? (
                     <p className="text-gray-700">
                       Stock Available:{" "}
-                      <span className="font-medium">{stock}</span>
+                      <span className="font-medium">
+                        {selectedVariantStock}
+                      </span>
                     </p>
                   ) : (
                     <p className="text-yellow-600 font-medium mt-1">
-                      Low Stock - Only {stock} left!
+                      Low Stock - Only {selectedVariantStock} left!
                     </p>
                   )}
                 </div>
               );
             })()}
 
-            {/* Add to Cart Button */}
-            {/* <div className="mt-6">
-              <CustomButton
-                name="Add to Cart"
-                primaryColor="bg-yellow-500"
-                secondColor="bg-yellow-600"
-                outlineColor="border-yellow-500"
-                handleClick={handleAddToCart}
+            {/* Size Guide */}
+            <div className="capitalize underline cursor-pointer mb-2 text-lg">
+              <p>View Size Guide</p>
+            </div>
+
+            <div className="w-full flex flex-wrap lg:flex-nowrap gap-4 lg:justify-between items-center mt-8  ">
+              <NumberInput
+                quantity={quantity}
+                setQuantity={setQuantity}
+                max={selectedVariantStock}
               />
-            </div> */}
+
+              {/* Add to Cart Button */}
+              <div className="flex gap-4 mt-2 items-center w-full">
+                <CustomButton
+                  size="default"
+                  name="Add to Cart"
+                  primaryColor="white"
+                  secondColor="#eab308"
+                  outlineColor="#eab308"
+                  disabled={!isVariantSelected || selectedVariantStock === 0}
+                  handleClick={handleAddToCart}
+                />
+                <CustomButton
+                  size="default"
+                  name="Buy Now"
+                  primaryColor="#eab308"
+                  secondColor="white"
+                  outlineColor="#eab308"
+                  disabled={!isVariantSelected || selectedVariantStock === 0}
+                />
+                {/* Wishlist Heart */}
+                <div className="flex justify-center items-center w-[40px] h-[40px] border border-slate-300 rounded-full hover:bg-yellow-600 transition-all">
+                  <Heart className="text-yellow-600 hover:text-white" />
+                </div>
+              </div>
+            </div>
+            <Separator className="mt-6" />
           </div>
         </div>
       </Container>
