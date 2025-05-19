@@ -69,7 +69,13 @@ const getImageKey = (image: ImageType | undefined): string => {
   return image._key || image.asset?._ref || "";
 };
 
-const ProductMedia = ({ media }: { media: Product["images"] }) => {
+const ProductMedia = ({
+  media,
+  variantImages,
+}: {
+  media: Product["images"];
+  variantImages?: SanityImage[];
+}) => {
   const defaultImage = media?.primary || media?.gallery?.[0];
   const [selectedMedia, setSelectedMedia] = useState<ImageType | undefined>(
     defaultImage,
@@ -82,6 +88,9 @@ const ProductMedia = ({ media }: { media: Product["images"] }) => {
     setSelectedMedia(img);
     mainSwiperRef.current?.slideTo(index);
   };
+
+  // Use variant images if available, otherwise use default gallery
+  const displayImages = variantImages || media.gallery;
 
   return (
     <div className="w-full">
@@ -98,7 +107,7 @@ const ProductMedia = ({ media }: { media: Product["images"] }) => {
           modules={[Navigation, Pagination]}
           className="w-full h-[500px] lg:h-[700px]"
         >
-          {media.gallery?.map((img) => (
+          {displayImages?.map((img) => (
             <SwiperSlide key={getImageKey(img)}>
               <div className="w-full h-full flex items-center justify-center">
                 <Zoom>
@@ -143,7 +152,7 @@ const ProductMedia = ({ media }: { media: Product["images"] }) => {
           modules={[Navigation]}
           className="w-full"
         >
-          {media.gallery?.map((img, index) => (
+          {displayImages?.map((img, index) => (
             <SwiperSlide key={getImageKey(img)}>
               <div
                 className={cn(

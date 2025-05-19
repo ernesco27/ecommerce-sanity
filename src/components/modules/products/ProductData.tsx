@@ -184,6 +184,31 @@ const ProductData = ({
   //     }
   //   }, [product, isInitialized]);
 
+  // Get selected variant images
+  const selectedVariantImages = useMemo(() => {
+    const selectedSize = selectedVariants["Size"];
+    const selectedColor = selectedVariants["Color"];
+
+    if (!selectedSize || !selectedColor) {
+      return undefined;
+    }
+
+    const selectedVariant = product.variants?.find((variantRef) => {
+      const variant = variantRef as unknown as ProductVariant;
+      return variant.size === selectedSize;
+    }) as unknown as ProductVariant;
+
+    if (!selectedVariant) {
+      return undefined;
+    }
+
+    const selectedColorVariant = selectedVariant.colorVariants?.find(
+      (cv: ColorVariant) => cv.color === selectedColor,
+    );
+
+    return selectedColorVariant?.images;
+  }, [selectedVariants, product.variants]);
+
   // Calculate average rating
   const averageRating = useMemo(() => {
     if (!product.reviews?.length) return 0;
@@ -251,8 +276,10 @@ const ProductData = ({
       <Container>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 py-8">
           {/* Image Column */}
-
-          <ProductMedia media={product.images} />
+          <ProductMedia
+            media={product.images}
+            variantImages={selectedVariantImages}
+          />
 
           {/* Details Column */}
           <div className="flex flex-col gap-4">
