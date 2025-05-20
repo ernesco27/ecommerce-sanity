@@ -1,11 +1,15 @@
 "use client";
 
 import React from "react";
-import { motion } from "framer-motion";
+import { delay, motion } from "framer-motion";
 import useSWR from "swr";
 
 import { useRouter } from "next/navigation";
 import { Banner } from "../../../../sanity.types";
+
+type BannerResponse = Banner & {
+  imageUrl: string;
+};
 
 const CtaOne = () => {
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
@@ -16,7 +20,7 @@ const CtaOne = () => {
     data: banners,
     error,
     isLoading,
-  } = useSWR<Banner[]>("/api/banners?type=promo", fetcher);
+  } = useSWR<BannerResponse[]>("/api/banners?type=promo", fetcher);
 
   const handleClick = (link: string) => {
     router.push(link);

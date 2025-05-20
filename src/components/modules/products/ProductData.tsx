@@ -66,10 +66,10 @@ interface Review {
   rating?: number;
 }
 
-interface Tag {
-  id?: string;
-  name: string;
-}
+// interface Tag {
+//   id?: string;
+//   name: string;
+// }
 
 const ProductData = ({ product }: { product: Product }) => {
   // All hooks at the top in consistent order
@@ -80,6 +80,7 @@ const ProductData = ({ product }: { product: Product }) => {
   const [selectedVariants, setSelectedVariants] = useState<
     Record<string, string>
   >({});
+  const [liked, setLiked] = useState<boolean>(false);
   //   const [isInitialized, setIsInitialized] = useState(false);
 
   //   const addItem = useCartStore((state) => state.addItem);
@@ -191,19 +192,19 @@ const ProductData = ({ product }: { product: Product }) => {
     return Boolean(selectedSize && selectedColor);
   }, [selectedVariants]);
 
+  const selectedSize = selectedVariants["Size"];
+  const selectedColor = selectedVariants["Color"];
+
+  const selectedVariant = product.variants?.find((variantRef) => {
+    const variant = variantRef as unknown as ProductVariant;
+    return variant.size === selectedSize;
+  }) as unknown as ProductVariant;
+
   // Get selected variant stock
   const selectedVariantStock = useMemo(() => {
-    const selectedSize = selectedVariants["Size"];
-    const selectedColor = selectedVariants["Color"];
-
     if (!selectedSize || !selectedColor) {
       return 0;
     }
-
-    const selectedVariant = product.variants?.find((variantRef) => {
-      const variant = variantRef as unknown as ProductVariant;
-      return variant.size === selectedSize;
-    }) as unknown as ProductVariant;
 
     if (!selectedVariant) {
       return 0;
@@ -298,6 +299,34 @@ const ProductData = ({ product }: { product: Product }) => {
       progress: undefined,
       theme: "light",
     });
+  };
+
+  const handleAddToWishList = () => {
+    setLiked(!liked);
+
+    if (!liked) {
+      toast.success("Product added to wishlist", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    } else {
+      toast.error("Product removed from Wishlist", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    }
   };
 
   // --- Render Logic ---
@@ -424,12 +453,23 @@ const ProductData = ({ product }: { product: Product }) => {
                   disabled={!isVariantSelected || selectedVariantStock === 0}
                 />
                 {/* Wishlist Heart */}
-                <div className="flex justify-center items-center w-[40px] h-[40px] border border-slate-300 rounded-full hover:bg-yellow-600 transition-all">
-                  <Heart className="text-yellow-600 hover:text-white" />
-                </div>
+                <Heart
+                  className={cn(
+                    "text-yellow-400  cursor-pointer h-8 w-8",
+                    liked && "fill-yellow-400",
+                  )}
+                  onClick={handleAddToWishList}
+                />
               </div>
             </div>
             <Separator className="mt-6" />
+            <div>
+              <p>
+                SKU:
+                {selectedVariant?.sku || "Select size and color to see SKU"}
+              </p>
+              <span></span>
+            </div>
           </div>
         </div>
       </Container>

@@ -9,14 +9,17 @@ import useSWR from "swr";
 import { cn } from "@/lib/utils";
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
+// Extend the Banner type to include the fields from the GROQ projection
+type BannerResponse = Banner & {
+  imageUrl: string;
+};
+
 const CollectionCta = () => {
   const {
     data: banners,
     error,
     isLoading,
-  } = useSWR<Banner[]>("/api/banners?type=promo", fetcher);
-
-  //console.log("banners:", banners);
+  } = useSWR<BannerResponse[]>("/api/banners?type=promo", fetcher);
 
   const casualBanner = banners?.[1]?.imageUrl;
   const specialtyBanner = banners?.[2]?.imageUrl;

@@ -12,8 +12,13 @@ import { toast } from "react-toastify";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { usePages } from "@/store/pagesStore";
+import useSWR from "swr";
+import { CompanySettings } from "../../../../sanity.types";
 
 const index = () => {
+  const fetcher = (url: string) => fetch(url).then((res) => res.json());
+  const { data: company } = useSWR<CompanySettings>("/api/company", fetcher);
+
   const { isSignedIn } = useUser();
 
   const [email, setEmail] = useState("");
@@ -44,6 +49,8 @@ const index = () => {
     }
   };
 
+  console.log("company:", company);
+
   return (
     <motion.footer
       className="bg-yellow-950 py-6 overflow-hidden"
@@ -63,16 +70,17 @@ const index = () => {
         <div className="grid grid-cols-1 lg:grid-cols-4 text-slate-400">
           <ul className="flex flex-col gap-4 ">
             <li className="mt-10 ">
-              <h4 className="text-white">Edimays Couture</h4>
+              <h4 className="text-white">{company?.businessName}</h4>
             </li>
             <li className="flex gap-4">
-              <PhoneCall /> +233 (0) 24000525
+              <PhoneCall /> {`${company?.phone} / ${company?.alternativePhone}`}
             </li>
             <li className="flex gap-4">
-              <Mail /> edimayscouture@testmail.com
+              <Mail /> {company?.email}
             </li>
             <li className="flex gap-4">
-              <MapPin /> Z-10, obedeka Street, Tema - Community One
+              <MapPin />{" "}
+              {`${company?.address?.street}, ${company?.address?.city} - ${company?.address?.state}`}
             </li>
           </ul>
           <ul className="flex flex-col gap-4 ">

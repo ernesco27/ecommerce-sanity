@@ -15,6 +15,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Banner } from "../../../../sanity.types";
 
+type BannerResponse = Banner & {
+  imageUrl: string;
+};
+
 const HomeSlide = () => {
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -33,7 +37,7 @@ const HomeSlide = () => {
     data: banners,
     error,
     isLoading,
-  } = useSWR<Banner[]>("/api/banners?type=hero", fetcher);
+  } = useSWR<BannerResponse[]>("/api/banners?type=hero", fetcher);
 
   if (isLoading)
     return (

@@ -19,16 +19,17 @@ import {
   Box,
   LineChart,
   Users,
+  Building2,
 } from "lucide-react";
 import {
   type StructureBuilder,
   type DefaultDocumentNodeResolver,
 } from "sanity/desk";
-import { type ComponentType } from "react";
+
 import { AuditLogsViewer } from "./components/AuditLogsViewer";
-import { AnalyticsDashboard } from "./components/AnalyticsDashboard";
+
 import { ReportGenerator } from "./components/ReportGenerator";
-import { StockReportViewer } from "./components/StockReportViewer";
+
 import { StockDashboard } from "./components/dashboards/StockDashboard";
 import { SalesDashboard } from "./components/dashboards/SalesDashboard";
 import { CustomerDashboard } from "./components/dashboards/CustomerDashboard";
@@ -185,6 +186,15 @@ export const structure = (S: StructureBuilder) =>
           S.list()
             .title("Settings & Configuration")
             .items([
+              S.listItem()
+                .title("Company Settings")
+                .icon(Building2)
+                .child(
+                  S.editor()
+                    .id("companySettings")
+                    .schemaType("companySettings")
+                    .documentId("companySettings"),
+                ),
               S.listItem()
                 .title("Shipping Methods")
                 .icon(Truck)
