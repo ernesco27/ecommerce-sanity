@@ -956,25 +956,14 @@ export type User = {
   lastName?: string;
   email?: string;
   phone?: string;
-  photo?: {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
-    media?: unknown;
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
-    _type: "image";
-  };
+
   accountStatus?: "active" | "inactive" | "suspended" | "pending";
-  accountType?: "regular" | "premium" | "business";
+
   dateJoined?: string;
   lastLogin?: string;
   preferences?: {
     language?: "en" | "es" | "fr";
-    currency?: "USD" | "EUR" | "GBP";
+    currency?: "GHS" | "USD" | "EUR" | "GBP";
     notifications?: {
       email?: boolean;
       sms?: boolean;
@@ -1029,6 +1018,7 @@ export type User = {
   failedLoginAttempts?: number;
   accountLocked?: boolean;
   lockExpiresAt?: string;
+  clerkUserId: string;
 };
 
 export type Discount = {

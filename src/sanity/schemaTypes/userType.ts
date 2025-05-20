@@ -30,12 +30,12 @@ export const userType = defineType({
       type: "string",
       title: "Phone Number",
     }),
-    defineField({
-      name: "photo",
-      type: "image",
-      title: "Photo",
-      options: { hotspot: true },
-    }),
+    // defineField({
+    //   name: "photo",
+    //   type: "image",
+    //   title: "Photo",
+    //   options: { hotspot: true },
+    // }),
     // Account Status and Details
     defineField({
       name: "accountStatus",
@@ -52,19 +52,19 @@ export const userType = defineType({
       initialValue: "active",
       validation: (Rule) => Rule.required(),
     }),
-    defineField({
-      name: "accountType",
-      type: "string",
-      title: "Account Type",
-      options: {
-        list: [
-          { title: "Regular", value: "regular" },
-          { title: "Premium", value: "premium" },
-          { title: "Business", value: "business" },
-        ],
-      },
-      initialValue: "regular",
-    }),
+    // defineField({
+    //   name: "accountType",
+    //   type: "string",
+    //   title: "Account Type",
+    //   options: {
+    //     list: [
+    //       { title: "Regular", value: "regular" },
+    //       { title: "Premium", value: "premium" },
+    //       { title: "Business", value: "business" },
+    //     ],
+    //   },
+    //   initialValue: "regular",
+    // }),
     defineField({
       name: "dateJoined",
       type: "datetime",
@@ -103,13 +103,14 @@ export const userType = defineType({
           title: "Preferred Currency",
           options: {
             list: [
+              { title: "GHS (₵)", value: "GHS" },
               { title: "USD ($)", value: "USD" },
               { title: "EUR (€)", value: "EUR" },
               { title: "GBP (£)", value: "GBP" },
               // Add more currencies as needed
             ],
           },
-          initialValue: "USD",
+          initialValue: "GHS",
         }),
         defineField({
           name: "notifications",
@@ -276,6 +277,12 @@ export const userType = defineType({
       type: "datetime",
       title: "Lock Expiry Time",
       hidden: true,
+    }),
+    defineField({
+      name: "clerkUserId",
+      type: "string",
+      title: "Clerk User ID",
+      validation: (Rule) => Rule.required(),
     }),
   ],
   preview: {
