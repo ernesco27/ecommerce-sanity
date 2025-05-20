@@ -26,6 +26,8 @@ import ProductMedia from "./ProductMedia";
 import Loading from "./Loading";
 import ProductVariants from "./ProductVariants";
 import { cn } from "@/lib/utils";
+import Services from "../home/Services";
+import ProductInfo from "./ProductInfo";
 
 type ColorName =
   | "red"
@@ -472,9 +474,9 @@ const ProductData = ({ product }: { product: Product }) => {
           </div>
         </div>
       </Container>
-      {/* <ProductInfo product={product} />
+      <ProductInfo product={product} />
       <FeaturedProducts />
-      <Payments /> */}
+      <Services />
     </>
   );
 };
