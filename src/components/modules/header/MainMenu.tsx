@@ -6,16 +6,27 @@ import { cn } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
-import { Category, Subcategory } from "../../../../sanity.types";
+import { Banner, Category, Subcategory } from "../../../../sanity.types";
 import { Button } from "@/components/ui/button";
 import { usePages } from "@/store/pagesStore";
 import { useCategories } from "@/store/categoriesStore";
+import useSWR from "swr";
+
+type BannerResponse = Banner & {
+  imageUrl: string;
+};
 
 const MainMenu = () => {
   const pathname = usePathname();
   const [show, setShow] = useState(false);
   const { pages } = usePages();
   const { categories } = useCategories();
+
+  const fetcher = (url: string) => fetch(url).then((res) => res.json());
+  const { data: banners } = useSWR<BannerResponse[]>(
+    "/api/banners?type=promo",
+    fetcher,
+  );
 
   const router = useRouter();
 
@@ -112,16 +123,23 @@ const MainMenu = () => {
                       </ul>
                     );
                   })}
-                  <div className="flex flex-col items-center gap-4 pt-8 w-[200px] h-[400px]   bg-[url('/assets/catmenu.jpg')] bg-center ">
-                    <p className="text-lg">-Latest Offers</p>
-                    <p>Upto 15% OFF</p>
+                  <div
+                    className="flex flex-col items-center gap-4 pt-8 w-[200px] h-[400px]   bg-center "
+                    style={{
+                      backgroundImage: `url(${banners?.[4]?.imageUrl})`,
+                    }}
+                  >
+                    <p className="text-lg">{banners?.[4]?.subTitle}</p>
+                    <p>{banners?.[4]?.description}</p>
                     <Button
                       variant="default"
                       size="sm"
-                      className="text-lg"
-                      onClick={() => router.push("/products")}
+                      className="text-lg hover:bg-yellow-600 cursor-pointer capitalize"
+                      onClick={() =>
+                        router.push(banners?.[4]?.link || "/products")
+                      }
                     >
-                      Shop Now
+                      {banners?.[4]?.buttonText}
                     </Button>
                   </div>
                 </div>

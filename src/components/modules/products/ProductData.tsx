@@ -468,7 +468,6 @@ const ProductData = ({ product }: { product: Product }) => {
                 SKU:
                 {selectedVariant?.sku || "Select size and color to see SKU"}
               </p>
-              <span></span>
             </div>
           </div>
         </div>
