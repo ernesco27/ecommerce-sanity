@@ -32,14 +32,14 @@ export const productReviewType = defineType({
       type: "reference",
       to: [{ type: "user" }],
       title: "User",
-      validation: (Rule) => Rule.required(),
+      validation: (Rule) => Rule,
     }),
     defineField({
       name: "product",
       type: "reference",
       to: [{ type: "product" }],
       title: "Product",
-      validation: (Rule) => Rule.required(),
+      validation: (Rule) => Rule,
     }),
     defineField({
       name: "productVariant",

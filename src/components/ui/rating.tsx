@@ -22,7 +22,7 @@ const ProductRating = ({ value = 0, onChange }: ProductRatingProps) => {
         <Star
           key={star}
           className={`w-6 h-6 cursor-pointer ${
-            star <= rating ? "text-primary-300" : "text-gray-300"
+            star <= rating ? "text-yellow-300" : "text-gray-300"
           }`}
           onClick={() => handleClick(star)}
         />

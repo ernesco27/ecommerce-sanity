@@ -26,6 +26,7 @@ import type {
   ReviewImage,
   User,
 } from "../../../../sanity.types";
+import ReviewForm from "./ReviewForm";
 
 interface ExpandedImage {
   _type: "image";
@@ -309,7 +310,7 @@ const ProductReview = ({
         </p>
         {isSignedIn ? (
           <div className="p-6 bg-gray-50 rounded-lg">
-            <p>Review form coming soon...</p>
+            <ReviewForm productId={product._id} />
           </div>
         ) : (
           <div className=" p-6 bg-gray-50 rounded-lg">

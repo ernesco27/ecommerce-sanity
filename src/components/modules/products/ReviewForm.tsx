@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useActionState, useState } from "react";
+import React, { useRef, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -13,15 +13,14 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-//import { CldUploadWidget } from "next-cloudinary";
-import { UploadIcon } from "lucide-react";
+import { UploadIcon, X } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import ProductRating from "@/components/ui/rating";
+import Image from "next/image";
 
 const formSchema = z.object({
   reviewTitle: z.string().min(10, {
@@ -37,10 +36,81 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
-const ReviewForm = ({ productId }: { productId: number }) => {
-  const [photos, setPhotos] = useState<any[]>([]);
+interface UploadedImage {
+  _type: "image";
+  asset: {
+    _type: "reference";
+    _ref: string;
+  };
+}
+
+const ReviewForm = ({ productId }: { productId: string }) => {
+  const [photos, setPhotos] = useState<File[]>([]);
+  const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const { user, isLoaded, isSignedIn } = useUser();
   const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const files = event.target.files;
+    if (!files) return;
+
+    const newFiles = Array.from(files);
+
+    // Limit to 3 photos
+    if (photos.length + newFiles.length > 3) {
+      toast.error("Maximum 3 photos allowed");
+      return;
+    }
+
+    // Validate file sizes
+    for (const file of newFiles) {
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error(`File ${file.name} is too large. Maximum size is 5MB`);
+        return;
+      }
+    }
+
+    setPhotos((prev) => [...prev, ...newFiles]);
+
+    try {
+      setUploading(true);
+      const formData = new FormData();
+      newFiles.forEach((file) => {
+        formData.append("files", file);
+      });
+
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to upload images");
+      }
+
+      const data = await response.json();
+      setUploadedImages((prev) => [...prev, ...data.images]);
+      toast.success("Images uploaded successfully");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to upload images",
+      );
+      // Remove the files that failed to upload
+      setPhotos((prev) => prev.filter((p) => !newFiles.includes(p)));
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const removeImage = (index: number) => {
+    setPhotos((prev) => prev.filter((_, i) => i !== index));
+    setUploadedImages((prev) => prev.filter((_, i) => i !== index));
+  };
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -52,31 +122,44 @@ const ReviewForm = ({ productId }: { productId: number }) => {
   });
 
   async function onSubmit(values: FormData) {
-    // if (!user) {
-    //   toast.error("You must be signed in to leave a review");
-    //   return;
-    // }
-    // try {
-    //   const reviewData = {
-    //     ...values,
-    //     reviewImages: photos.map((photo) => photo.secure_url),
-    //     productId,
-    //     userId: user.id,
-    //   };
-    //   console.log("Review Data:", reviewData);
-    //   const result = await createReview(reviewData);
-    //   if (result.success) {
-    //     toast.success("Review submitted successfully!");
-    //     form.reset();
-    //     setPhotos([]);
-    //     router.refresh();
-    //   } else {
-    //     toast.error("Failed to submit review. Please try again.");
-    //   }
-    // } catch (error) {
-    //   console.error("Error submitting review:", error);
-    //   toast.error("Failed to submit review. Please try again.");
-    // }
+    if (!user) {
+      toast.error("You must be signed in to leave a review");
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      const response = await fetch("/api/reviews", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...values,
+          productId,
+          userId: user.id,
+          images: uploadedImages,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to submit review");
+      }
+
+      toast.success("Review submitted successfully!");
+      form.reset();
+      setPhotos([]);
+      setUploadedImages([]);
+      router.refresh();
+    } catch (error) {
+      console.error("Error submitting review:", error);
+      toast.error(
+        error instanceof Error ? error.message : "Failed to submit review",
+      );
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -109,7 +192,7 @@ const ReviewForm = ({ productId }: { productId: number }) => {
                 <Input
                   placeholder="Ex. Best product ever"
                   {...field}
-                  className="border focus-visible:border-primary-300 text-lg lg:text-xl h-12"
+                  className="focus-visible:border-ring focus-visible:ring-yellow-300 text-lg lg:text-xl h-12"
                 />
               </FormControl>
               <FormMessage />
@@ -127,7 +210,7 @@ const ReviewForm = ({ productId }: { productId: number }) => {
                 <Textarea
                   placeholder="Ex. This product is amazing"
                   {...field}
-                  className="outline-none focus-visible:border-primary-300 text-lg lg:text-xl min-h-[100px] max-h-[200px]"
+                  className="outline-none focus-visible:border-ring focus-visible:ring-yellow-300 text-lg lg:text-xl min-h-[100px] max-h-[200px]"
                 />
               </FormControl>
               <FormMessage />
@@ -135,72 +218,63 @@ const ReviewForm = ({ productId }: { productId: number }) => {
           )}
         />
 
-        {/* <div className="space-y-2">
+        <div className="space-y-2">
           <FormLabel>Review Photos (Optional)</FormLabel>
           <div className="space-y-4">
-            <CldUploadWidget
-              uploadPreset="fashionista"
-              onSuccess={(result, { widget }) => {
-                setPhotos((prev) => [...prev, result.info]);
-              }}
-              onQueuesEnd={(result, { widget }) => {
-                widget.close({ quiet: true });
-              }}
-              options={{
-                multiple: true,
-                maxFiles: 3,
-                singleUploadAutoClose: false,
-              }}
+            <div
+              className="flex flex-col justify-center border rounded-md w-full h-[200px] text-lg text-gray-500 items-center gap-2 cursor-pointer"
+              onClick={() => fileInputRef.current?.click()}
             >
-              {({ open }) => (
-                <div className="space-y-4">
-                  <div
-                    className="flex flex-col justify-center border rounded-md w-full h-[200px] text-lg text-gray-500 items-center gap-2 cursor-pointer"
-                    onClick={() => open()}
-                  >
-                    <UploadIcon className="w-6 h-6" />
-                    <span>Upload photos</span>
-                    <p className="text-xs text-black font-medium">
-                      Browse (Max 3 photos)
-                    </p>
-                  </div>
+              <Input
+                type="file"
+                accept="image/*"
+                multiple
+                hidden
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                disabled={uploading || photos.length >= 3}
+              />
+              <UploadIcon className="w-6 h-6" />
+              <span>{uploading ? "Uploading..." : "Upload photos"}</span>
+              <p className="text-xs text-black font-medium">
+                Browse (Max 3 photos, 5MB each)
+              </p>
+            </div>
 
-                  {photos.length > 0 && (
-                    <div className="flex flex-wrap gap-4 mt-4">
-                      {photos.map((photo, index) => (
-                        <div key={index} className="relative group">
-                          <img
-                            src={photo.secure_url}
-                            alt={`Preview ${index + 1}`}
-                            className="w-20 h-20 object-cover rounded-md"
-                          />
-                          <button
-                            type="button"
-                            className="absolute w-4 h-4 flex items-center justify-center top-1 right-1 p-2 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setPhotos(photos.filter((_, i) => i !== index));
-                            }}
-                          >
-                            ✕
-                          </button>
-                        </div>
-                      ))}
+            {photos.length > 0 && (
+              <div className="flex gap-4 flex-wrap">
+                {photos.map((photo, index) => (
+                  <div key={index} className="relative group">
+                    <div className="w-[100px] h-[100px] bg-gray-200 rounded-md overflow-hidden">
+                      <Image
+                        src={URL.createObjectURL(photo)}
+                        alt={`Review photo ${index + 1}`}
+                        width={100}
+                        height={100}
+                        className="w-full h-full object-cover"
+                      />
                     </div>
-                  )}
-                </div>
-              )}
-            </CldUploadWidget>
+                    <button
+                      type="button"
+                      onClick={() => removeImage(index)}
+                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
-        </div> */}
+        </div>
 
         <Button
           type="submit"
           size="lg"
-          disabled={!isLoaded || !isSignedIn}
-          className="bg-primary-900 text-lg"
+          disabled={!isLoaded || !isSignedIn || uploading || submitting}
+          className="bg-yellow-900 text-lg hover:bg-yellow-600 cursor-pointer"
         >
-          Submit Review
+          {submitting ? "Submitting..." : "Submit Review"}
         </Button>
       </form>
     </Form>
