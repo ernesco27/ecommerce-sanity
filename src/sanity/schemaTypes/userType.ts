@@ -30,13 +30,7 @@ export const userType = defineType({
       type: "string",
       title: "Phone Number",
     }),
-    // defineField({
-    //   name: "photo",
-    //   type: "image",
-    //   title: "Photo",
-    //   options: { hotspot: true },
-    // }),
-    // Account Status and Details
+
     defineField({
       name: "accountStatus",
       type: "string",
@@ -52,19 +46,7 @@ export const userType = defineType({
       initialValue: "active",
       validation: (Rule) => Rule.required(),
     }),
-    // defineField({
-    //   name: "accountType",
-    //   type: "string",
-    //   title: "Account Type",
-    //   options: {
-    //     list: [
-    //       { title: "Regular", value: "regular" },
-    //       { title: "Premium", value: "premium" },
-    //       { title: "Business", value: "business" },
-    //     ],
-    //   },
-    //   initialValue: "regular",
-    // }),
+
     defineField({
       name: "dateJoined",
       type: "datetime",

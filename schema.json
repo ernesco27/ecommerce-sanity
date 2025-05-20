@@ -2823,14 +2823,21 @@
       "name": {
         "type": "objectAttribute",
         "value": {
-          "type": "string"
-        },
-        "optional": true
-      },
-      "code": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string"
+          "type": "union",
+          "of": [
+            {
+              "type": "string",
+              "value": "admin"
+            },
+            {
+              "type": "string",
+              "value": "manager"
+            },
+            {
+              "type": "string",
+              "value": "customer"
+            }
+          ]
         },
         "optional": true
       },
@@ -5736,75 +5743,6 @@
         },
         "optional": true
       },
-      "photo": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "object",
-          "attributes": {
-            "asset": {
-              "type": "objectAttribute",
-              "value": {
-                "type": "object",
-                "attributes": {
-                  "_ref": {
-                    "type": "objectAttribute",
-                    "value": {
-                      "type": "string"
-                    }
-                  },
-                  "_type": {
-                    "type": "objectAttribute",
-                    "value": {
-                      "type": "string",
-                      "value": "reference"
-                    }
-                  },
-                  "_weak": {
-                    "type": "objectAttribute",
-                    "value": {
-                      "type": "boolean"
-                    },
-                    "optional": true
-                  }
-                },
-                "dereferencesTo": "sanity.imageAsset"
-              },
-              "optional": true
-            },
-            "media": {
-              "type": "objectAttribute",
-              "value": {
-                "type": "unknown"
-              },
-              "optional": true
-            },
-            "hotspot": {
-              "type": "objectAttribute",
-              "value": {
-                "type": "inline",
-                "name": "sanity.imageHotspot"
-              },
-              "optional": true
-            },
-            "crop": {
-              "type": "objectAttribute",
-              "value": {
-                "type": "inline",
-                "name": "sanity.imageCrop"
-              },
-              "optional": true
-            },
-            "_type": {
-              "type": "objectAttribute",
-              "value": {
-                "type": "string",
-                "value": "image"
-              }
-            }
-          }
-        },
-        "optional": true
-      },
       "accountStatus": {
         "type": "objectAttribute",
         "value": {
@@ -5825,27 +5763,6 @@
             {
               "type": "string",
               "value": "pending"
-            }
-          ]
-        },
-        "optional": true
-      },
-      "accountType": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "union",
-          "of": [
-            {
-              "type": "string",
-              "value": "regular"
-            },
-            {
-              "type": "string",
-              "value": "premium"
-            },
-            {
-              "type": "string",
-              "value": "business"
             }
           ]
         },
@@ -5896,6 +5813,10 @@
               "value": {
                 "type": "union",
                 "of": [
+                  {
+                    "type": "string",
+                    "value": "GHS"
+                  },
                   {
                     "type": "string",
                     "value": "USD"
@@ -6253,6 +6174,13 @@
         "optional": true
       },
       "lockExpiresAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "clerkUserId": {
         "type": "objectAttribute",
         "value": {
           "type": "string"
@@ -7285,6 +7213,13 @@
         "optional": true
       },
       "description": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "materialType": {
         "type": "objectAttribute",
         "value": {
           "type": "string"

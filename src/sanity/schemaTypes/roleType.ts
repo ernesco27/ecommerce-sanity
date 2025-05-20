@@ -11,14 +11,17 @@ export const roleType = defineType({
       name: "name",
       type: "string",
       title: "Role Name",
+      options: {
+        list: [
+          { title: "Admin", value: "admin" },
+          { title: "Manager", value: "manager" },
+          { title: "Customer", value: "customer" },
+        ],
+      },
+      initialValue: "customer",
       validation: (Rule) => Rule.required(),
     }),
-    defineField({
-      name: "code",
-      type: "string",
-      title: "Role Code",
-      validation: (Rule) => Rule.required().uppercase(),
-    }),
+
     defineField({
       name: "description",
       type: "text",
@@ -127,13 +130,11 @@ export const roleType = defineType({
   preview: {
     select: {
       title: "name",
-      subtitle: "code",
     },
     prepare(selection) {
-      const { title, subtitle } = selection;
+      const { title } = selection;
       return {
         title: title || "Untitled Role",
-        subtitle: subtitle ? `Code: ${subtitle}` : "",
       };
     },
   },

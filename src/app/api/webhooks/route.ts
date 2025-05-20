@@ -3,6 +3,75 @@ import { NextRequest } from "next/server";
 import { clerkClient } from "@clerk/nextjs/server";
 import { writeClient } from "@/sanity/lib/client";
 
+// Create or get the role reference
+async function getRoleReference(roleName: string) {
+  // First, check if the role exists
+  const existingRole = await writeClient.fetch(
+    '*[_type == "role" && name == $roleName][0]._id',
+    { roleName },
+  );
+
+  if (existingRole) {
+    return {
+      _type: "reference",
+      _ref: existingRole,
+      _key: existingRole,
+    };
+  }
+
+  // If role doesn't exist, create it with default permissions
+  const newRole = await writeClient.create({
+    _type: "role",
+    name: roleName,
+    description: `Default ${roleName} role`,
+    isActive: true,
+    permissions: {
+      products: {
+        create: roleName === "Admin",
+        read: true,
+        update: roleName === "Admin" || roleName === "Manager",
+        delete: roleName === "Admin",
+        publish: roleName === "Admin" || roleName === "Manager",
+      },
+      orders: {
+        view: true,
+        process: roleName === "Admin" || roleName === "Manager",
+        refund: roleName === "Admin",
+        cancel: roleName === "Admin" || roleName === "Manager",
+      },
+      users: {
+        create: roleName === "Admin",
+        read: roleName === "Admin" || roleName === "Manager",
+        update: roleName === "Admin",
+        delete: roleName === "Admin",
+      },
+      discounts: {
+        create: roleName === "Admin" || roleName === "Manager",
+        read: true,
+        update: roleName === "Admin" || roleName === "Manager",
+        delete: roleName === "Admin",
+      },
+      content: {
+        manage_pages: roleName === "Admin" || roleName === "Manager",
+        manage_banners: roleName === "Admin" || roleName === "Manager",
+        manage_categories: roleName === "Admin" || roleName === "Manager",
+      },
+      reports: {
+        view_sales: roleName === "Admin" || roleName === "Manager",
+        view_inventory: roleName === "Admin" || roleName === "Manager",
+        view_customers: roleName === "Admin" || roleName === "Manager",
+        export_data: roleName === "Admin" || roleName === "Manager",
+      },
+    },
+  });
+
+  return {
+    _type: "reference",
+    _ref: newRole._id,
+    _key: newRole._id,
+  };
+}
+
 export async function POST(req: NextRequest) {
   try {
     const evt = await verifyWebhook(req);
@@ -11,40 +80,30 @@ export async function POST(req: NextRequest) {
       const { id, first_name, last_name, email_addresses, phone_numbers } =
         evt.data;
       const email = email_addresses?.[0]?.email_address;
-
       const emailStatus = email_addresses?.[0]?.verification?.status;
+      const phoneNumber = phone_numbers?.[0]?.phone_number ?? "";
 
       try {
-        const role = "customer";
+        const role = "Customer"; // Default role for new users
         const client = await clerkClient();
         await client.users.updateUser(id, {
           publicMetadata: {
-            role,
+            role: role.toLowerCase(), // Store lowercase in Clerk for consistency
           },
         });
-      } catch (error) {
-        console.error("Error updating user role:", error);
-        return new Response(
-          JSON.stringify({
-            success: false,
-            message: "Error updating user role",
-          }),
-          { status: 500 },
-        );
-      }
 
-      try {
+        // Get role reference for Sanity
+        const roleRef = await getRoleReference(role);
+
         const newUser = await writeClient.create({
           _type: "user",
           firstName: first_name ?? "",
           lastName: last_name ?? "",
           email,
-          phone: phone_numbers ?? "",
-
+          phone: phoneNumber,
           accountStatus: "active",
-
           dateJoined: new Date().toISOString(),
-          isEmailVerified: true,
+          isEmailVerified: emailStatus === "verified",
           preferences: {
             language: "en",
             currency: "GHS",
@@ -60,7 +119,7 @@ export async function POST(req: NextRequest) {
             personalization: true,
             thirdPartySharing: false,
           },
-          roles: ["Customer"],
+          roles: [roleRef],
           clerkUserId: id,
         });
 
@@ -76,10 +135,17 @@ export async function POST(req: NextRequest) {
         );
       }
     } else if (evt.type === "user.updated" && "first_name" in evt.data) {
-      const { id, first_name, last_name, email_addresses, image_url } =
-        evt.data;
+      const {
+        id,
+        first_name,
+        last_name,
+        email_addresses,
+
+        phone_numbers,
+      } = evt.data;
       const email = email_addresses?.[0]?.email_address;
       const emailStatus = email_addresses?.[0]?.verification?.status;
+      const phoneNumber = phone_numbers?.[0]?.phone_number ?? "";
 
       try {
         // First, find the Sanity document with matching clerkUserId
@@ -93,22 +159,23 @@ export async function POST(req: NextRequest) {
           throw new Error("User not found in Sanity");
         }
 
+        // Get the user's role from Clerk metadata
+        const client = await clerkClient();
+        const clerkUser = await client.users.getUser(id);
+        const userRole =
+          (clerkUser.publicMetadata.role as string) || "Customer";
+        const roleRef = await getRoleReference(userRole);
+
         await writeClient
           .patch(sanityUserId)
           .set({
             firstName: first_name ?? "",
             lastName: last_name ?? "",
             email,
-            photo: image_url
-              ? {
-                  _type: "image",
-                  asset: {
-                    _type: "reference",
-                    url: image_url,
-                  },
-                }
-              : undefined,
+            phone: phoneNumber,
+
             isEmailVerified: emailStatus === "verified",
+            roles: [roleRef],
           })
           .commit();
 
