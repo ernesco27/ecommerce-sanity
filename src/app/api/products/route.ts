@@ -10,6 +10,7 @@ const productsQuery = groq`*[_type == "product"] {
   "slug": slug.current,
   description,
   fullDescription,
+  materialType,
   status,
   featured,
   visibility {
@@ -74,13 +75,29 @@ const productsQuery = groq`*[_type == "product"] {
   },
   "reviews": reviews[]->{
     _id,
+    _createdAt,
+    reviewTitle,
+    reviewDetails,
     rating,
-    title,
-    comment,
-    author,
     verifiedPurchase,
-    createdAt,
-    helpful
+    "user": user->{
+      _id,
+      firstName,
+      lastName,
+      email,
+      isEmailVerified,
+      "photo": photo.asset->
+    },
+    "images": images[]->{
+      _id,
+      title,
+      altText,
+      "images": images[]{
+        "asset": {
+          "url": asset->url
+        }
+      }
+    }
   },
   "relatedProducts": relatedProducts[]->{ 
     _id,

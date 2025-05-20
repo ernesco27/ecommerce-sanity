@@ -34,15 +34,35 @@ interface ExpandedImage {
   };
 }
 
-interface ExpandedReviewData extends Omit<ProductReview, "user" | "images"> {
-  user: Omit<User, "photo"> & {
-    photo?: ExpandedImage;
+interface ExpandedReviewData {
+  _id: string;
+  _createdAt: string;
+  reviewTitle: string;
+  reviewDetails: string;
+  rating: number;
+  verifiedPurchase: boolean;
+  user: {
+    _id: string;
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+    isEmailVerified?: boolean;
+    photo?: {
+      asset: {
+        url: string;
+      };
+    };
   };
-  images?: Array<
-    ReviewImage & {
-      images?: Array<ExpandedImage>;
-    }
-  >;
+  images?: Array<{
+    _id: string;
+    title?: string;
+    altText?: string[];
+    images?: Array<{
+      asset: {
+        url: string;
+      };
+    }>;
+  }>;
 }
 
 interface ProductWithExpandedReviews extends Omit<Product, "reviews"> {
@@ -63,6 +83,8 @@ const ProductReview = ({
   const _DATA = usePagination(product?.reviews || [], perPage);
   const maxPage = _DATA.maxPage;
   const currentData = _DATA.currentData();
+
+  console.log("product for review:", product);
 
   return (
     <>
@@ -100,7 +122,7 @@ const ProductReview = ({
                       className={cn(
                         "w-6 h-6",
                         star <= averageRating
-                          ? "text-primary-300 fill-primary-300"
+                          ? "text-yellow-300 fill-yellow-300"
                           : "text-gray-300",
                       )}
                     />
@@ -200,7 +222,7 @@ const ProductReview = ({
               <div key={review._id} className="mt-6">
                 <div className="flex items-center justify-between ">
                   <div className="flex items-center gap-2  ">
-                    <Avatar className="bg-primary-200 overflow-hidden">
+                    <Avatar className="bg-yellow-200 overflow-hidden">
                       {review.user?.photo?.asset?.url ? (
                         <AvatarImage src={review.user.photo.asset.url} />
                       ) : (
@@ -244,7 +266,7 @@ const ProductReview = ({
                         className={cn(
                           "w-6 h-6",
                           star <= (review.rating || 0)
-                            ? "text-primary-300 fill-primary-300"
+                            ? "text-yellow-300 fill-yellow-300"
                             : "text-gray-300",
                         )}
                       />
@@ -293,10 +315,7 @@ const ProductReview = ({
           <div className=" p-6 bg-gray-50 rounded-lg">
             <p className="text-lg mb-4">
               Please{" "}
-              <Link
-                href="/sign-in"
-                className="text-primary-700 hover:underline"
-              >
+              <Link href="/sign-in" className="text-yellow-700 hover:underline">
                 sign in
               </Link>{" "}
               to leave a review.

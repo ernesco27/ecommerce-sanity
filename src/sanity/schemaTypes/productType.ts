@@ -84,6 +84,13 @@ export const productType = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: "materialType",
+      title: "Material Type",
+      type: "string",
+      validation: (Rule) => Rule.required(),
+      description: "The main material used in the product",
+    }),
+    defineField({
       name: "fullDescription",
       type: "blockContent",
       title: "Full Description",

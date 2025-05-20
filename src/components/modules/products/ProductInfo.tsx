@@ -4,7 +4,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -15,12 +14,53 @@ import Container from "@/components/custom/Container";
 import { Product, ProductVariant } from "../../../../sanity.types";
 import ProductReview from "./ProductReview";
 
+// Wrapper component to handle type conversion
+const ProductReviewWrapper = ({ product }: { product: Product }) => {
+  if (!product.reviews)
+    return <ProductReview product={{ ...product, reviews: [] }} />;
+
+  // The reviews are already expanded by the GROQ query
+  return <ProductReview product={product as any} />;
+};
+
 const ProductInfo = ({ product }: { product: Product }) => {
+  // Get unique sizes and colors
+  const sizes = Array.from(
+    new Set(
+      product.variants
+        ?.map((variantRef) => {
+          const variant = variantRef as unknown as ProductVariant;
+          return variant.size;
+        })
+        .filter(Boolean),
+    ),
+  ).join(", ");
+
+  const colors = Array.from(
+    new Set(
+      product.variants
+        ?.flatMap((variantRef) => {
+          const variant = variantRef as unknown as ProductVariant;
+          return variant.colorVariants?.map((c) => c.color);
+        })
+        .filter(Boolean),
+    ),
+  ).join(", ");
+
+  // Table rows data
+  const tableData = [
+    { feature: "Material Type", description: product.materialType || "N/A" },
+    { feature: "Size", description: sizes || "N/A" },
+    { feature: "Color", description: colors || "N/A" },
+    { feature: "Country of Origin", description: "Ghana" },
+    { feature: "Brand", description: product.brand?.name || "N/A" },
+  ];
+
   return (
     <section>
       <Container>
-        <div className="w-full ">
-          <Tabs defaultValue="description" className="w-full  ">
+        <div className="w-full">
+          <Tabs defaultValue="description" className="w-full">
             <TabsList className="flex justify-center w-full">
               <TabsTrigger className="text-lg lg:text-2xl" value="description">
                 Description
@@ -47,66 +87,34 @@ const ProductInfo = ({ product }: { product: Product }) => {
               </div>
             </TabsContent>
             <TabsContent value="additional-info" className="lg:px-10">
-              <div>
-                <Table>
-                  <TableHeader className="bg-primary-300">
-                    <TableRow>
-                      <TableHead className="w-[190px] text-black text-lg lg:text-xl">
-                        Feature
-                      </TableHead>
-                      <TableHead className="text-black text-lg lg:text-xl">
-                        Description
-                      </TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {product.variants &&
-                      product.variants.length > 0 &&
-                      product.variants.map((variantRef) => {
-                        const variant = variantRef as unknown as ProductVariant;
-                        return (
-                          <TableRow key={variant._id}>
-                            <TableCell className="font-medium text-lg lg:text-xl">
-                              {variant.size}
-                            </TableCell>
-                            <TableCell className="text-lg lg:text-xl">
-                              {variant.colorVariants?.map((color, index) => (
-                                <span key={color._key}>
-                                  {color.color}
-                                  {index <
-                                  (variant.colorVariants?.length || 0) - 1
-                                    ? ", "
-                                    : ""}
-                                </span>
-                              ))}
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })}
-
-                    <TableRow>
+              <Table className="my-4">
+                <TableHeader className="bg-yellow-300">
+                  <TableRow>
+                    <TableHead className="w-[190px] lg:w-[300px] text-black text-lg lg:text-xl">
+                      Feature
+                    </TableHead>
+                    <TableHead className="text-black text-lg lg:text-xl">
+                      Description
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {tableData.map((row, index) => (
+                    <TableRow key={row.feature}>
                       <TableCell className="font-medium text-lg lg:text-xl">
-                        Country of Origin
+                        {row.feature}
                       </TableCell>
-                      <TableCell className="text-lg lg:text-xl">
-                        Ghana
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className="font-medium text-lg lg:text-xl">
-                        Brand
-                      </TableCell>
-                      <TableCell className="text-lg lg:text-xl">
-                        {product.brand?._ref || "N/A"}
+                      <TableCell className="text-lg lg:text-xl capitalize">
+                        {row.description}
                       </TableCell>
                     </TableRow>
-                  </TableBody>
-                </Table>
-              </div>
+                  ))}
+                </TableBody>
+              </Table>
             </TabsContent>
 
-            <TabsContent value="review" className="lg:px-10 ">
-              <ProductReview product={product as any} />
+            <TabsContent value="review" className="lg:px-10">
+              <ProductReviewWrapper product={product} />
             </TabsContent>
           </Tabs>
         </div>

@@ -17,6 +17,7 @@ export async function GET(
       "slug": slug.current,
       description,
       fullDescription,
+      materialType,
       status,
       visibility {
         isVisible,
@@ -75,15 +76,31 @@ export async function GET(
           }
         }
       },
-      "reviews": reviews[]->{ 
+      "reviews": reviews[]->{
         _id,
+        _createdAt,
+        reviewTitle,
+        reviewDetails,
         rating,
-        title,
-        comment,
-        author,
         verifiedPurchase,
-        createdAt,
-        helpful
+        "user": user->{
+          _id,
+          firstName,
+          lastName,
+          email,
+          isEmailVerified,
+          "photo": photo.asset->
+        },
+        "images": images[]->{
+          _id,
+          title,
+          altText,
+          "images": images[]{
+            "asset": {
+              "url": asset->url
+            }
+          }
+        }
       },
       seo {
         metaTitle,

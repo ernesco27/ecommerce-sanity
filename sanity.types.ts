@@ -328,8 +328,28 @@ export type AuditLog = {
     _weak?: boolean;
     [internalGroqTypeReferenceTo]?: "user";
   };
-  action?: "create" | "update" | "delete" | "login" | "logout" | "export" | "import" | "permission_change" | "stock_adjustment" | "stock_order_fulfillment" | "stock_return" | "stock_count";
-  entityType?: "product" | "order" | "user" | "inventory" | "category" | "discount" | "role" | "system";
+  action?:
+    | "create"
+    | "update"
+    | "delete"
+    | "login"
+    | "logout"
+    | "export"
+    | "import"
+    | "permission_change"
+    | "stock_adjustment"
+    | "stock_order_fulfillment"
+    | "stock_return"
+    | "stock_count";
+  entityType?:
+    | "product"
+    | "order"
+    | "user"
+    | "inventory"
+    | "category"
+    | "discount"
+    | "role"
+    | "system";
   entityId?: string;
   details?: {
     previousValue?: string;
@@ -377,11 +397,22 @@ export type Inventory = {
   maxStockLevel?: number;
   reorderPoint?: number;
   reorderQuantity?: number;
-  stockStatus?: "in_stock" | "low_stock" | "out_of_stock" | "discontinued" | "on_order";
+  stockStatus?:
+    | "in_stock"
+    | "low_stock"
+    | "out_of_stock"
+    | "discontinued"
+    | "on_order";
   lastStockCheck?: string;
   stockMovements?: Array<{
     date?: string;
-    type?: "stock_in" | "stock_out" | "order_fulfillment" | "order_return" | "adjustment" | "damage";
+    type?:
+      | "stock_in"
+      | "stock_out"
+      | "order_fulfillment"
+      | "order_return"
+      | "adjustment"
+      | "damage";
     quantity?: number;
     order?: {
       _ref: string;
@@ -535,71 +566,85 @@ export type Page = {
   _rev: string;
   title?: string;
   slug?: Slug;
-  pageType?: "about" | "contact" | "terms" | "privacy" | "shipping" | "return" | "faq" | "custom";
-  content?: Array<{
-    children?: Array<{
-      marks?: Array<string>;
-      text?: string;
-      _type: "span";
-      _key: string;
-    }>;
-    style?: "normal" | "h1" | "h2" | "h3" | "h4" | "blockquote";
-    listItem?: "bullet";
-    markDefs?: Array<{
-      href?: string;
-      _type: "link";
-      _key: string;
-    }>;
-    level?: number;
-    _type: "block";
-    _key: string;
-  } | {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
-    media?: unknown;
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
-    alt?: string;
-    _type: "image";
-    _key: string;
-  }>;
+  pageType?:
+    | "about"
+    | "contact"
+    | "terms"
+    | "privacy"
+    | "shipping"
+    | "return"
+    | "faq"
+    | "custom";
+  content?: Array<
+    | {
+        children?: Array<{
+          marks?: Array<string>;
+          text?: string;
+          _type: "span";
+          _key: string;
+        }>;
+        style?: "normal" | "h1" | "h2" | "h3" | "h4" | "blockquote";
+        listItem?: "bullet";
+        markDefs?: Array<{
+          href?: string;
+          _type: "link";
+          _key: string;
+        }>;
+        level?: number;
+        _type: "block";
+        _key: string;
+      }
+    | {
+        asset?: {
+          _ref: string;
+          _type: "reference";
+          _weak?: boolean;
+          [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+        };
+        media?: unknown;
+        hotspot?: SanityImageHotspot;
+        crop?: SanityImageCrop;
+        alt?: string;
+        _type: "image";
+        _key: string;
+      }
+  >;
   sections?: Array<{
     sectionTitle?: string;
-    sectionContent?: Array<{
-      children?: Array<{
-        marks?: Array<string>;
-        text?: string;
-        _type: "span";
-        _key: string;
-      }>;
-      style?: "normal" | "h1" | "h2" | "h3" | "h4" | "blockquote";
-      listItem?: "bullet";
-      markDefs?: Array<{
-        href?: string;
-        _type: "link";
-        _key: string;
-      }>;
-      level?: number;
-      _type: "block";
-      _key: string;
-    } | {
-      asset?: {
-        _ref: string;
-        _type: "reference";
-        _weak?: boolean;
-        [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-      };
-      media?: unknown;
-      hotspot?: SanityImageHotspot;
-      crop?: SanityImageCrop;
-      alt?: string;
-      _type: "image";
-      _key: string;
-    }>;
+    sectionContent?: Array<
+      | {
+          children?: Array<{
+            marks?: Array<string>;
+            text?: string;
+            _type: "span";
+            _key: string;
+          }>;
+          style?: "normal" | "h1" | "h2" | "h3" | "h4" | "blockquote";
+          listItem?: "bullet";
+          markDefs?: Array<{
+            href?: string;
+            _type: "link";
+            _key: string;
+          }>;
+          level?: number;
+          _type: "block";
+          _key: string;
+        }
+      | {
+          asset?: {
+            _ref: string;
+            _type: "reference";
+            _weak?: boolean;
+            [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+          };
+          media?: unknown;
+          hotspot?: SanityImageHotspot;
+          crop?: SanityImageCrop;
+          alt?: string;
+          _type: "image";
+          _key: string;
+        }
+    >;
     _key: string;
   }>;
   seo?: {
@@ -1094,7 +1139,15 @@ export type ProductVariant = {
   price?: number;
   compareAtPrice?: number;
   colorVariants?: Array<{
-    color?: "red" | "green" | "blue" | "black" | "white" | "gray" | "navy" | "brown";
+    color?:
+      | "red"
+      | "green"
+      | "blue"
+      | "black"
+      | "white"
+      | "gray"
+      | "navy"
+      | "brown";
     colorCode?: Color;
     stock?: number;
     images?: Array<{
@@ -1133,6 +1186,7 @@ export type Product = {
   name?: string;
   slug?: Slug;
   status?: "draft" | "active" | "discontinued" | "scheduled";
+  materialType?: string;
   visibility?: {
     isVisible?: boolean;
     publishDate?: string;
@@ -1156,19 +1210,6 @@ export type Product = {
     }>;
     level?: number;
     _type: "block";
-    _key: string;
-  } | {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
-    media?: unknown;
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
-    alt?: string;
-    _type: "image";
     _key: string;
   }>;
   images?: {
@@ -1221,10 +1262,9 @@ export type Product = {
     [internalGroqTypeReferenceTo]?: "subcategory";
   }>;
   brand?: {
-    _ref: string;
-    _type: "reference";
-    _weak?: boolean;
-    [internalGroqTypeReferenceTo]?: "brand";
+    _id: string;
+    name?: string;
+    slug?: Slug;
   };
   seo?: {
     metaTitle?: string;
@@ -1389,37 +1429,40 @@ export type Slug = {
   source?: string;
 };
 
-export type BlockContent = Array<{
-  children?: Array<{
-    marks?: Array<string>;
-    text?: string;
-    _type: "span";
-    _key: string;
-  }>;
-  style?: "normal" | "h1" | "h2" | "h3" | "h4" | "blockquote";
-  listItem?: "bullet";
-  markDefs?: Array<{
-    href?: string;
-    _type: "link";
-    _key: string;
-  }>;
-  level?: number;
-  _type: "block";
-  _key: string;
-} | {
-  asset?: {
-    _ref: string;
-    _type: "reference";
-    _weak?: boolean;
-    [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-  };
-  media?: unknown;
-  hotspot?: SanityImageHotspot;
-  crop?: SanityImageCrop;
-  alt?: string;
-  _type: "image";
-  _key: string;
-}>;
+export type BlockContent = Array<
+  | {
+      children?: Array<{
+        marks?: Array<string>;
+        text?: string;
+        _type: "span";
+        _key: string;
+      }>;
+      style?: "normal" | "h1" | "h2" | "h3" | "h4" | "blockquote";
+      listItem?: "bullet";
+      markDefs?: Array<{
+        href?: string;
+        _type: "link";
+        _key: string;
+      }>;
+      level?: number;
+      _type: "block";
+      _key: string;
+    }
+  | {
+      asset?: {
+        _ref: string;
+        _type: "reference";
+        _weak?: boolean;
+        [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+      };
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      alt?: string;
+      _type: "image";
+      _key: string;
+    }
+>;
 
 export type SanityImageCrop = {
   _type: "sanity.imageCrop";
@@ -1511,48 +1554,93 @@ export type HslaColor = {
   a?: number;
 };
 
-export type AllSanitySchemaTypes = SanityImagePaletteSwatch | SanityImagePalette | SanityImageDimensions | SanityFileAsset | Geopoint | CompanySettings | Analytics | AuditLog | Inventory | Warehouse | Role | Banner | Page | Cart | OrderItem | Order | ShippingMethod | Payment | Address | RelatedProduct | ProductWishlist | ReviewImage | ProductReview | User | Discount | ProductAttribute | ProductVariant | Product | Brand | Subcategory | Category | Slug | BlockContent | SanityImageCrop | SanityImageHotspot | SanityImageAsset | SanityAssetSourceData | SanityImageMetadata | Color | RgbaColor | HsvaColor | HslaColor;
+export type AllSanitySchemaTypes =
+  | SanityImagePaletteSwatch
+  | SanityImagePalette
+  | SanityImageDimensions
+  | SanityFileAsset
+  | Geopoint
+  | CompanySettings
+  | Analytics
+  | AuditLog
+  | Inventory
+  | Warehouse
+  | Role
+  | Banner
+  | Page
+  | Cart
+  | OrderItem
+  | Order
+  | ShippingMethod
+  | Payment
+  | Address
+  | RelatedProduct
+  | ProductWishlist
+  | ReviewImage
+  | ProductReview
+  | User
+  | Discount
+  | ProductAttribute
+  | ProductVariant
+  | Product
+  | Brand
+  | Subcategory
+  | Category
+  | Slug
+  | BlockContent
+  | SanityImageCrop
+  | SanityImageHotspot
+  | SanityImageAsset
+  | SanityAssetSourceData
+  | SanityImageMetadata
+  | Color
+  | RgbaColor
+  | HsvaColor
+  | HslaColor;
 export declare const internalGroqTypeReferenceTo: unique symbol;
 // Source: ./src/app/api/products/[id]/route.ts
 // Variable: query
-// Query: *[_type == "product" && _id == $id][0] {      _id,      _createdAt,      name,      "slug": slug.current,      description,      fullDescription,      status,      visibility {        isVisible,        publishDate,        unpublishDate      },      "category": category->{         _id,         title,         "slug": slug.current      },      "subcategories": subcategory[]->{         _id,         name,         "slug": slug.current,        "parentCategory": parentCategory->{           _id,          title,          "slug": slug.current        }      },      "brand": brand->{         _id,         name,         "slug": slug.current       },      "images": {        "primary": images.primary{          "url": asset->url,          "alt": alt,          "lqip": asset->metadata.lqip,          "dimensions": asset->metadata.dimensions        },        "gallery": images.gallery[]{          "url": asset->url,          "alt": alt,          "lqip": asset->metadata.lqip,          "dimensions": asset->metadata.dimensions        }      },      "variants": variants[]->{         _id,        size,        price,        compareAtPrice,        sku,        colorVariants[] {          color,          colorCode,          stock,          "images": images[]{            "url": asset->url,            "alt": alt,            "lqip": asset->metadata.lqip,            "dimensions": asset->metadata.dimensions          }        }      },      "reviews": reviews[]->{         _id,        rating,        title,        comment,        author,        verifiedPurchase,        createdAt,        helpful      },      seo {        metaTitle,        metaDescription,        keywords,        canonicalUrl      },      taxInfo {        taxCategory,        taxRate,        hsnCode      },      "relatedProducts": relatedProducts[]->{         _id,        name,        "slug": slug.current,        "primaryImage": images.primary{          "url": asset->url,          alt,          "lqip": asset->metadata.lqip        },        "pricing": {          "min": coalesce((variants[]->price)[0], 0),          "max": coalesce((variants[]->price)[-1], 0)        }      }    }
+// Query: *[_type == "product" && _id == $id][0] {      _id,      _createdAt,      name,      "slug": slug.current,      description,      fullDescription,      status,      visibility {        isVisible,        publishDate,        unpublishDate      },      "category": category->{         _id,         title,         "slug": slug.current      },      "subcategories": subcategory[]->{         _id,         name,         "slug": slug.current,\n        "parentCategory": parentCategory->{           _id,          title,          "slug": slug.current        }      },      "brand": brand->{         _id,         name,         "slug": slug.current       },      "images": {        "primary": images.primary{          "url": asset->url,          "alt": alt,          "lqip": asset->metadata.lqip,          "dimensions": asset->metadata.dimensions        },        "gallery": images.gallery[]{          "url": asset->url,          "alt": alt,          "lqip": asset->metadata.lqip,          "dimensions": asset->metadata.dimensions        }      },      "variants": variants[]->{         _id,        size,        price,        compareAtPrice,        sku,        colorVariants[] {          color,          colorCode,          stock,          "images": images[]{            "url": asset->url,            "alt": alt,            "lqip": asset->metadata.lqip,            "dimensions": asset->metadata.dimensions          }        }      },      "reviews": reviews[]->{         _id,        rating,        title,        comment,        author,        verifiedPurchase,        createdAt,        helpful      },      seo {        metaTitle,        metaDescription,        keywords,        canonicalUrl      },      taxInfo {        taxCategory,        taxRate,        hsnCode      },      "relatedProducts": relatedProducts[]->{         _id,        name,        "slug": slug.current,\n        "primaryImage": images.primary{          "url": asset->url,          alt,          "lqip": asset->metadata.lqip        },        "pricing": {          "min": coalesce((variants[]->price)[0], 0),          "max": coalesce((variants[]->price)[-1], 0)        }      }    }
 export type QueryResult = {
   _id: string;
   _createdAt: string;
   name: string | null;
   slug: string | null;
   description: string | null;
-  fullDescription: Array<{
-    children?: Array<{
-      marks?: Array<string>;
-      text?: string;
-      _type: "span";
-      _key: string;
-    }>;
-    style?: "blockquote" | "h1" | "h2" | "h3" | "h4" | "normal";
-    listItem?: "bullet";
-    markDefs?: Array<{
-      href?: string;
-      _type: "link";
-      _key: string;
-    }>;
-    level?: number;
-    _type: "block";
-    _key: string;
-  } | {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
-    media?: unknown;
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
-    alt?: string;
-    _type: "image";
-    _key: string;
-  }> | null;
+  fullDescription: Array<
+    | {
+        children?: Array<{
+          marks?: Array<string>;
+          text?: string;
+          _type: "span";
+          _key: string;
+        }>;
+        style?: "blockquote" | "h1" | "h2" | "h3" | "h4" | "normal";
+        listItem?: "bullet";
+        markDefs?: Array<{
+          href?: string;
+          _type: "link";
+          _key: string;
+        }>;
+        level?: number;
+        _type: "block";
+        _key: string;
+      }
+    | {
+        asset?: {
+          _ref: string;
+          _type: "reference";
+          _weak?: boolean;
+          [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+        };
+        media?: unknown;
+        hotspot?: SanityImageHotspot;
+        crop?: SanityImageCrop;
+        alt?: string;
+        _type: "image";
+        _key: string;
+      }
+  > | null;
   status: "active" | "discontinued" | "draft" | "scheduled" | null;
   visibility: {
     isVisible: boolean | null;
@@ -1600,7 +1688,16 @@ export type QueryResult = {
     compareAtPrice: number | null;
     sku: string | null;
     colorVariants: Array<{
-      color: "black" | "blue" | "brown" | "gray" | "green" | "navy" | "red" | "white" | null;
+      color:
+        | "black"
+        | "blue"
+        | "brown"
+        | "gray"
+        | "green"
+        | "navy"
+        | "red"
+        | "white"
+        | null;
       colorCode: Color | null;
       stock: number | null;
       images: Array<{
@@ -1650,44 +1747,47 @@ export type QueryResult = {
 
 // Source: ./src/app/api/products/route.ts
 // Variable: productsQuery
-// Query: *[_type == "product"] {  _id,  _createdAt,  name,  "slug": slug.current,  description,  fullDescription,  status,  featured,  visibility {    isVisible,    publishDate,    unpublishDate  },  "category": category->{    _id,    title,    "slug": slug.current  },  "subcategories": subcategory[]->{    _id,    name,    "slug": slug.current,    "parentCategory": parentCategory->{      _id,      title    }  },  "brand": brand->{    _id,    name,    "slug": slug.current  },  "images": {    "primary": images.primary{      "url": asset->url,      alt,      "lqip": asset->metadata.lqip,      "dimensions": asset->metadata.dimensions    },    "gallery": images.gallery[]{      "url": asset->url,      alt,      "lqip": asset->metadata.lqip,      "dimensions": asset->metadata.dimensions    }  },  "variants": variants[]->{    _id,    size,    price,    compareAtPrice,    sku,    colorVariants[] {      color,      colorCode,      stock,      "images": images[]{        "url": asset->url,        alt,        "lqip": asset->metadata.lqip,        "dimensions": asset->metadata.dimensions      }    }  },  "pricing": {    "min": coalesce((variants[]->price)[0], 0),    "max": coalesce((variants[]->price)[-1], 0)  },  "reviews": reviews[]->{    _id,    rating,    title,    comment,    author,    verifiedPurchase,    createdAt,    helpful  },  "relatedProducts": relatedProducts[]->{     _id,    name,    "slug": slug.current,    "primaryImage": images.primary{      "url": asset->url,      alt,      "lqip": asset->metadata.lqip    }  }} | order(coalesce((variants[]->price)[0], 0) asc)
+// Query: *[_type == "product"] {  _id,  _createdAt,  name,  "slug": slug.current,  description,  fullDescription,  status,  featured,  visibility {    isVisible,    publishDate,    unpublishDate  },  "category": category->{    _id,    title,    "slug": slug.current  },  "subcategories": subcategory[]->{    _id,    name,    "slug": slug.current,\n    "parentCategory": parentCategory->{      _id,      title    }  },  "brand": brand->{    _id,    name,    "slug": slug.current  },  "images": {    "primary": images.primary{      "url": asset->url,      alt,\n      "lqip": asset->metadata.lqip,      "dimensions": asset->metadata.dimensions    },    "gallery": images.gallery[]{      "url": asset->url,      alt,\n      "lqip": asset->metadata.lqip,      "dimensions": asset->metadata.dimensions    }  },  "variants": variants[]->{    _id,    size,    price,    compareAtPrice,    sku,    colorVariants[] {      color,      colorCode,      stock,      "images": images[]{        "url": asset->url,        alt,\n        "lqip": asset->metadata.lqip,        "dimensions": asset->metadata.dimensions      }    }  },  "pricing": {    "min": coalesce((variants[]->price)[0], 0),    "max": coalesce((variants[]->price)[-1], 0)  },  "reviews": reviews[]->{    _id,    rating,    title,    comment,    author,    verifiedPurchase,    createdAt,    helpful  },  "relatedProducts": relatedProducts[]->{     _id,    name,    "slug": slug.current,\n    "primaryImage": images.primary{      "url": asset->url,      alt,\n      "lqip": asset->metadata.lqip    }  }} | order(coalesce((variants[]->price)[0], 0) asc)
 export type ProductsQueryResult = Array<{
   _id: string;
   _createdAt: string;
   name: string | null;
   slug: string | null;
   description: string | null;
-  fullDescription: Array<{
-    children?: Array<{
-      marks?: Array<string>;
-      text?: string;
-      _type: "span";
-      _key: string;
-    }>;
-    style?: "blockquote" | "h1" | "h2" | "h3" | "h4" | "normal";
-    listItem?: "bullet";
-    markDefs?: Array<{
-      href?: string;
-      _type: "link";
-      _key: string;
-    }>;
-    level?: number;
-    _type: "block";
-    _key: string;
-  } | {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
-    media?: unknown;
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
-    alt?: string;
-    _type: "image";
-    _key: string;
-  }> | null;
+  fullDescription: Array<
+    | {
+        children?: Array<{
+          marks?: Array<string>;
+          text?: string;
+          _type: "span";
+          _key: string;
+        }>;
+        style?: "blockquote" | "h1" | "h2" | "h3" | "h4" | "normal";
+        listItem?: "bullet";
+        markDefs?: Array<{
+          href?: string;
+          _type: "link";
+          _key: string;
+        }>;
+        level?: number;
+        _type: "block";
+        _key: string;
+      }
+    | {
+        asset?: {
+          _ref: string;
+          _type: "reference";
+          _weak?: boolean;
+          [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+        };
+        media?: unknown;
+        hotspot?: SanityImageHotspot;
+        crop?: SanityImageCrop;
+        alt?: string;
+        _type: "image";
+        _key: string;
+      }
+  > | null;
   status: "active" | "discontinued" | "draft" | "scheduled" | null;
   featured: boolean | null;
   visibility: {
@@ -1735,7 +1835,16 @@ export type ProductsQueryResult = Array<{
     compareAtPrice: number | null;
     sku: string | null;
     colorVariants: Array<{
-      color: "black" | "blue" | "brown" | "gray" | "green" | "navy" | "red" | "white" | null;
+      color:
+        | "black"
+        | "blue"
+        | "brown"
+        | "gray"
+        | "green"
+        | "navy"
+        | "red"
+        | "white"
+        | null;
       colorCode: Color | null;
       stock: number | null;
       images: Array<{
@@ -1776,7 +1885,7 @@ export type ProductsQueryResult = Array<{
 import "@sanity/client";
 declare module "@sanity/client" {
   interface SanityQueries {
-    "*[_type == \"product\" && _id == $id][0] {\n      _id,\n      _createdAt,\n      name,\n      \"slug\": slug.current,\n      description,\n      fullDescription,\n      status,\n      visibility {\n        isVisible,\n        publishDate,\n        unpublishDate\n      },\n      \"category\": category->{ \n        _id, \n        title, \n        \"slug\": slug.current\n      },\n      \"subcategories\": subcategory[]->{ \n        _id, \n        name, \n        \"slug\": slug.current,\n        \"parentCategory\": parentCategory->{ \n          _id,\n          title,\n          \"slug\": slug.current\n        }\n      },\n      \"brand\": brand->{ \n        _id, \n        name, \n        \"slug\": slug.current \n      },\n      \"images\": {\n        \"primary\": images.primary{\n          \"url\": asset->url,\n          \"alt\": alt,\n          \"lqip\": asset->metadata.lqip,\n          \"dimensions\": asset->metadata.dimensions\n        },\n        \"gallery\": images.gallery[]{\n          \"url\": asset->url,\n          \"alt\": alt,\n          \"lqip\": asset->metadata.lqip,\n          \"dimensions\": asset->metadata.dimensions\n        }\n      },\n      \"variants\": variants[]->{ \n        _id,\n        size,\n        price,\n        compareAtPrice,\n        sku,\n        colorVariants[] {\n          color,\n          colorCode,\n          stock,\n          \"images\": images[]{\n            \"url\": asset->url,\n            \"alt\": alt,\n            \"lqip\": asset->metadata.lqip,\n            \"dimensions\": asset->metadata.dimensions\n          }\n        }\n      },\n      \"reviews\": reviews[]->{ \n        _id,\n        rating,\n        title,\n        comment,\n        author,\n        verifiedPurchase,\n        createdAt,\n        helpful\n      },\n      seo {\n        metaTitle,\n        metaDescription,\n        keywords,\n        canonicalUrl\n      },\n      taxInfo {\n        taxCategory,\n        taxRate,\n        hsnCode\n      },\n      \"relatedProducts\": relatedProducts[]->{ \n        _id,\n        name,\n        \"slug\": slug.current,\n        \"primaryImage\": images.primary{\n          \"url\": asset->url,\n          alt,\n          \"lqip\": asset->metadata.lqip\n        },\n        \"pricing\": {\n          \"min\": coalesce((variants[]->price)[0], 0),\n          \"max\": coalesce((variants[]->price)[-1], 0)\n        }\n      }\n    }": QueryResult;
-    "*[_type == \"product\"] {\n  _id,\n  _createdAt,\n  name,\n  \"slug\": slug.current,\n  description,\n  fullDescription,\n  status,\n  featured,\n  visibility {\n    isVisible,\n    publishDate,\n    unpublishDate\n  },\n  \"category\": category->{\n    _id,\n    title,\n    \"slug\": slug.current\n  },\n  \"subcategories\": subcategory[]->{\n    _id,\n    name,\n    \"slug\": slug.current,\n    \"parentCategory\": parentCategory->{\n      _id,\n      title\n    }\n  },\n  \"brand\": brand->{\n    _id,\n    name,\n    \"slug\": slug.current\n  },\n  \"images\": {\n    \"primary\": images.primary{\n      \"url\": asset->url,\n      alt,\n      \"lqip\": asset->metadata.lqip,\n      \"dimensions\": asset->metadata.dimensions\n    },\n    \"gallery\": images.gallery[]{\n      \"url\": asset->url,\n      alt,\n      \"lqip\": asset->metadata.lqip,\n      \"dimensions\": asset->metadata.dimensions\n    }\n  },\n  \"variants\": variants[]->{\n    _id,\n    size,\n    price,\n    compareAtPrice,\n    sku,\n    colorVariants[] {\n      color,\n      colorCode,\n      stock,\n      \"images\": images[]{\n        \"url\": asset->url,\n        alt,\n        \"lqip\": asset->metadata.lqip,\n        \"dimensions\": asset->metadata.dimensions\n      }\n    }\n  },\n  \"pricing\": {\n    \"min\": coalesce((variants[]->price)[0], 0),\n    \"max\": coalesce((variants[]->price)[-1], 0)\n  },\n  \"reviews\": reviews[]->{\n    _id,\n    rating,\n    title,\n    comment,\n    author,\n    verifiedPurchase,\n    createdAt,\n    helpful\n  },\n  \"relatedProducts\": relatedProducts[]->{ \n    _id,\n    name,\n    \"slug\": slug.current,\n    \"primaryImage\": images.primary{\n      \"url\": asset->url,\n      alt,\n      \"lqip\": asset->metadata.lqip\n    }\n  }\n} | order(coalesce((variants[]->price)[0], 0) asc)": ProductsQueryResult;
+    '*[_type == "product" && _id == $id][0] {\n      _id,\n      _createdAt,\n      name,\n      "slug": slug.current,\n      description,\n      fullDescription,\n      status,\n      visibility {\n        isVisible,\n        publishDate,\n        unpublishDate\n      },\n      "category": category->{ \n        _id, \n        title, \n        "slug": slug.current\n      },\n      "subcategories": subcategory[]->{ \n        _id, \n        name, \n        "slug": slug.current,\n        "parentCategory": parentCategory->{ \n          _id,\n          title,\n          "slug": slug.current\n        }\n      },\n      "brand": brand->{ \n        _id, \n        name, \n        "slug": slug.current \n      },\n      "images": {\n        "primary": images.primary{\n          "url": asset->url,\n          "alt": alt,\n          "lqip": asset->metadata.lqip,\n          "dimensions": asset->metadata.dimensions\n        },\n        "gallery": images.gallery[]{\n          "url": asset->url,\n          "alt": alt,\n          "lqip": asset->metadata.lqip,\n          "dimensions": asset->metadata.dimensions\n        }\n      },\n      "variants": variants[]->{ \n        _id,\n        size,\n        price,\n        compareAtPrice,\n        sku,\n        colorVariants[] {\n          color,\n          colorCode,\n          stock,\n          "images": images[]{\n            "url": asset->url,\n            "alt": alt,\n            "lqip": asset->metadata.lqip,\n            "dimensions": asset->metadata.dimensions\n          }\n        }\n      },\n      "reviews": reviews[]->{ \n        _id,\n        rating,\n        title,\n        comment,\n        author,\n        verifiedPurchase,\n        createdAt,\n        helpful\n      },\n      seo {\n        metaTitle,\n        metaDescription,\n        keywords,\n        canonicalUrl\n      },\n      taxInfo {\n        taxCategory,\n        taxRate,\n        hsnCode\n      },\n      "relatedProducts": relatedProducts[]->{ \n        _id,\n        name,\n        "slug": slug.current,\n        "primaryImage": images.primary{\n          "url": asset->url,\n          alt,\n          "lqip": asset->metadata.lqip\n        },\n        "pricing": {\n          "min": coalesce((variants[]->price)[0], 0),\n          "max": coalesce((variants[]->price)[-1], 0)\n        }\n      }\n    }': QueryResult;
+    '*[_type == "product"] {\n  _id,\n  _createdAt,\n  name,\n  "slug": slug.current,\n  description,\n  fullDescription,\n  status,\n  featured,\n  visibility {\n    isVisible,\n    publishDate,\n    unpublishDate\n  },\n  "category": category->{\n    _id,\n    title,\n    "slug": slug.current\n  },\n  "subcategories": subcategory[]->{\n    _id,\n    name,\n    "slug": slug.current,\n    "parentCategory": parentCategory->{\n      _id,\n      title\n    }\n  },\n  "brand": brand->{\n    _id,\n    name,\n    "slug": slug.current\n  },\n  "images": {\n    "primary": images.primary{\n      "url": asset->url,\n      alt,\n      "lqip": asset->metadata.lqip,\n      "dimensions": asset->metadata.dimensions\n    },\n    "gallery": images.gallery[]{\n      "url": asset->url,\n      alt,\n      "lqip": asset->metadata.lqip,\n      "dimensions": asset->metadata.dimensions\n    }\n  },\n  "variants": variants[]->{\n    _id,\n    size,\n    price,\n    compareAtPrice,\n    sku,\n    colorVariants[] {\n      color,\n      colorCode,\n      stock,\n      "images": images[]{\n        "url": asset->url,\n        alt,\n        "lqip": asset->metadata.lqip,\n        "dimensions": asset->metadata.dimensions\n      }\n    }\n  },\n  "pricing": {\n    "min": coalesce((variants[]->price)[0], 0),\n    "max": coalesce((variants[]->price)[-1], 0)\n  },\n  "reviews": reviews[]->{\n    _id,\n    rating,\n    title,\n    comment,\n    author,\n    verifiedPurchase,\n    createdAt,\n    helpful\n  },\n  "relatedProducts": relatedProducts[]->{ \n    _id,\n    name,\n    "slug": slug.current,\n    "primaryImage": images.primary{\n      "url": asset->url,\n      alt,\n      "lqip": asset->metadata.lqip\n    }\n  }\n} | order(coalesce((variants[]->price)[0], 0) asc)': ProductsQueryResult;
   }
 }
