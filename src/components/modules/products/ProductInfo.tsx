@@ -1,5 +1,5 @@
 import React from "react";
-
+import { PortableText } from "@portabletext/react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table,
@@ -11,18 +11,17 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import ProductReview from "./ProductReview";
 import Container from "@/components/custom/Container";
-import { Product } from "../../../../sanity.types";
-const ProductInfo = ({ product }: { product: Product }) => {
-  console.log("product", product);
+import { Product, ProductVariant } from "../../../../sanity.types";
+import ProductReview from "./ProductReview";
 
+const ProductInfo = ({ product }: { product: Product }) => {
   return (
     <section>
       <Container>
         <div className="w-full ">
-          <Tabs defaultValue="description" className="w-full">
-            <TabsList className="flex justify-center">
+          <Tabs defaultValue="description" className="w-full  ">
+            <TabsList className="flex justify-center w-full">
               <TabsTrigger className="text-lg lg:text-2xl" value="description">
                 Description
               </TabsTrigger>
@@ -38,11 +37,13 @@ const ProductInfo = ({ product }: { product: Product }) => {
             </TabsList>
             <TabsContent value="description" className="lg:px-10">
               <div>
-                <p className="font-normal text-lg lg:text-xl">
-                  {product.fullDescription
-                    ? product.fullDescription
-                    : product.description}
-                </p>
+                <div className="font-normal text-lg lg:text-xl">
+                  {product.fullDescription ? (
+                    <PortableText value={product.fullDescription} />
+                  ) : (
+                    <p>{product.description || "No description available"}</p>
+                  )}
+                </div>
               </div>
             </TabsContent>
             <TabsContent value="additional-info" className="lg:px-10">
@@ -59,36 +60,29 @@ const ProductInfo = ({ product }: { product: Product }) => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    <TableRow>
-                      <TableCell className="font-medium text-lg lg:text-xl">
-                        Material
-                      </TableCell>
-                      <TableCell className="text-lg lg:text-xl">
-                        {product?.materialType}
-                      </TableCell>
-                    </TableRow>
                     {product.variants &&
                       product.variants.length > 0 &&
-                      product.variants.map((variant) => (
-                        <TableRow key={variant.id}>
-                          <TableCell className="font-medium text-lg lg:text-xl">
-                            {variant.name}
-                          </TableCell>
-                          <TableCell>
-                            {variant.values?.map((value, index) => (
-                              <span
-                                className=" text-lg lg:text-xl"
-                                key={value.id}
-                              >
-                                {value.value}
-                                {index < (variant.values?.length || 0) - 1
-                                  ? ", "
-                                  : ""}
-                              </span>
-                            ))}
-                          </TableCell>
-                        </TableRow>
-                      ))}
+                      product.variants.map((variantRef) => {
+                        const variant = variantRef as unknown as ProductVariant;
+                        return (
+                          <TableRow key={variant._id}>
+                            <TableCell className="font-medium text-lg lg:text-xl">
+                              {variant.size}
+                            </TableCell>
+                            <TableCell className="text-lg lg:text-xl">
+                              {variant.colorVariants?.map((color, index) => (
+                                <span key={color._key}>
+                                  {color.color}
+                                  {index <
+                                  (variant.colorVariants?.length || 0) - 1
+                                    ? ", "
+                                    : ""}
+                                </span>
+                              ))}
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
 
                     <TableRow>
                       <TableCell className="font-medium text-lg lg:text-xl">
@@ -103,7 +97,7 @@ const ProductInfo = ({ product }: { product: Product }) => {
                         Brand
                       </TableCell>
                       <TableCell className="text-lg lg:text-xl">
-                        {product.brand?.name}
+                        {product.brand?._ref || "N/A"}
                       </TableCell>
                     </TableRow>
                   </TableBody>
@@ -112,7 +106,7 @@ const ProductInfo = ({ product }: { product: Product }) => {
             </TabsContent>
 
             <TabsContent value="review" className="lg:px-10 ">
-              <ProductReview product={product} />
+              <ProductReview product={product as any} />
             </TabsContent>
           </Tabs>
         </div>

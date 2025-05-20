@@ -20,28 +20,40 @@ import Zoom from "react-medium-image-zoom";
 import { cn } from "@/lib/utils";
 import { useAuth, useUser } from "@clerk/nextjs";
 import Link from "next/link";
-import { Product } from "../../../../sanity.types";
+import type {
+  Product,
+  ProductReview,
+  ReviewImage,
+  User,
+} from "../../../../sanity.types";
 
-interface Review {
-  rating: number;
-  id: number;
-  images?: {
-    id: number;
-    link: string;
-    slug: string;
-  }[];
-  user: {
-    firstName: string;
-    lastName: string;
-    emailVerified: boolean;
-    photo?: string;
+interface ExpandedImage {
+  _type: "image";
+  asset: {
+    url: string;
   };
-  reviewDetails: string | null;
-  reviewTitle: string | null;
-  createdAt: Date;
 }
 
-const ProductReview = ({ product }: { product: Product }) => {
+interface ExpandedReviewData extends Omit<ProductReview, "user" | "images"> {
+  user: Omit<User, "photo"> & {
+    photo?: ExpandedImage;
+  };
+  images?: Array<
+    ReviewImage & {
+      images?: Array<ExpandedImage>;
+    }
+  >;
+}
+
+interface ProductWithExpandedReviews extends Omit<Product, "reviews"> {
+  reviews?: ExpandedReviewData[];
+}
+
+const ProductReview = ({
+  product,
+}: {
+  product: ProductWithExpandedReviews;
+}) => {
   const { isSignedIn } = useUser();
   const [perPage, setPerPage] = useState<number>(10);
   const [filter, setFilter] = useState<string>("latest");
@@ -51,8 +63,6 @@ const ProductReview = ({ product }: { product: Product }) => {
   const _DATA = usePagination(product?.reviews || [], perPage);
   const maxPage = _DATA.maxPage;
   const currentData = _DATA.currentData();
-
-  console.log("product", product);
 
   return (
     <>
@@ -66,7 +76,8 @@ const ProductReview = ({ product }: { product: Product }) => {
                   {product?.reviews && product?.reviews?.length > 0
                     ? (
                         product?.reviews?.reduce(
-                          (sum: number, review: Review) => sum + review.rating,
+                          (sum: number, review: ExpandedReviewData) =>
+                            sum + (review.rating || 0),
                           0,
                         ) / product.reviews.length
                       ).toFixed(1)
@@ -79,7 +90,7 @@ const ProductReview = ({ product }: { product: Product }) => {
                   const averageRating =
                     product.reviews && product.reviews.length > 0
                       ? product.reviews.reduce(
-                          (sum, review) => sum + review.rating,
+                          (sum, review) => sum + (review.rating || 0),
                           0,
                         ) / product.reviews.length
                       : 0;
@@ -105,7 +116,7 @@ const ProductReview = ({ product }: { product: Product }) => {
               {[5, 4, 3, 2, 1].map((rating) => {
                 const count =
                   product.reviews?.filter(
-                    (review) => Math.round(review.rating) === rating,
+                    (review) => Math.round(review.rating || 0) === rating,
                   ).length || 0;
                 const percentage = product.reviews?.length
                   ? (count / product.reviews.length) * 100
@@ -186,33 +197,33 @@ const ProductReview = ({ product }: { product: Product }) => {
               </div>
             </div>
             {product.reviews?.map((review) => (
-              <div key={review.id} className="mt-6">
+              <div key={review._id} className="mt-6">
                 <div className="flex items-center justify-between ">
                   <div className="flex items-center gap-2  ">
                     <Avatar className="bg-primary-200 overflow-hidden">
-                      {review.user?.photo ? (
-                        <AvatarImage src={review.user?.photo} />
+                      {review.user?.photo?.asset?.url ? (
+                        <AvatarImage src={review.user.photo.asset.url} />
                       ) : (
                         <AvatarFallback>
-                          {review.user?.firstName.charAt(0)}
-                          {review.user?.lastName.charAt(0)}
+                          {review.user?.firstName?.charAt(0)}
+                          {review.user?.lastName?.charAt(0)}
                         </AvatarFallback>
                       )}
                     </Avatar>
 
                     <span className="flex flex-col gap-1">
                       <p className="font-medium text-lg lg:text-lg leading-none">
-                        {`${review.user?.firstName} ${review.user?.lastName}`}
+                        {`${review.user?.firstName || ""} ${review.user?.lastName || ""}`}
                       </p>
                       <p className="text-sm text-gray-500 leading-none">
-                        {review.user.emailVerified
+                        {review.user?.isEmailVerified
                           ? "(Verified)"
                           : "(Not Verified)"}
                       </p>
                     </span>
                   </div>
                   <p className="text-sm lg:text-lg text-gray-500 leading-none">
-                    {new Date(review.createdAt).toLocaleDateString("en-GB", {
+                    {new Date(review._createdAt).toLocaleDateString("en-GB", {
                       month: "long",
                       day: "numeric",
                       year: "numeric",
@@ -232,7 +243,7 @@ const ProductReview = ({ product }: { product: Product }) => {
                         key={star}
                         className={cn(
                           "w-6 h-6",
-                          star <= review.rating
+                          star <= (review.rating || 0)
                             ? "text-primary-300 fill-primary-300"
                             : "text-gray-300",
                         )}
@@ -240,19 +251,19 @@ const ProductReview = ({ product }: { product: Product }) => {
                     ))}
                   </div>
                   <p className="text-sm lg:text-lg text-gray-500 leading-none">
-                    {review.rating} out of 5
+                    {review.rating || 0} out of 5
                   </p>
                 </div>
                 <div className="flex gap-4 mt-4">
-                  {(review as Review).images?.map((image) => (
+                  {review.images?.map((image) => (
                     <div
-                      key={image.id}
+                      key={image._id}
                       className="bg-gray-300 w-[100px] h-[100px] rounded-md overflow-hidden"
                     >
                       <Zoom>
                         <img
-                          src={image.link}
-                          alt={image.slug}
+                          src={image.images?.[0]?.asset?.url || ""}
+                          alt={image.altText?.[0] || image.title || ""}
                           className="w-full h-full object-cover"
                         />
                       </Zoom>
@@ -269,14 +280,15 @@ const ProductReview = ({ product }: { product: Product }) => {
           <p className="text-lg font-medium">No reviews yet</p>
         </div>
       )}
-      {/* <Separator className="mt-6" /> */}
       <div className=" flex flex-col gap-4 mt-6">
         <p className="text-lg lg:text-2xl font-medium">Add your review</p>
         <p className="text-sm lg:text-lg text-gray-500">
           Your email address will not be published. Required fields are marked *
         </p>
         {isSignedIn ? (
-          <ReviewForm productId={product?._id} />
+          <div className="p-6 bg-gray-50 rounded-lg">
+            <p>Review form coming soon...</p>
+          </div>
         ) : (
           <div className=" p-6 bg-gray-50 rounded-lg">
             <p className="text-lg mb-4">

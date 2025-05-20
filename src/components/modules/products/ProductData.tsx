@@ -28,6 +28,7 @@ import ProductVariants from "./ProductVariants";
 import { cn } from "@/lib/utils";
 import Services from "../home/Services";
 import ProductInfo from "./ProductInfo";
+import { PortableText } from "@portabletext/react";
 
 type ColorName =
   | "red"
@@ -384,9 +385,17 @@ const ProductData = ({ product }: { product: Product }) => {
             {/* Description */}
             <div className="mb-6">
               <h2 className="text-xl font-semibold mb-2">Description</h2>
-              <p className="text-lg text-gray-700 font-normal">
-                {product.description || "No description available"}
-              </p>
+              <div className="text-lg text-gray-700 font-normal">
+                {product.description ? (
+                  typeof product.description === "string" ? (
+                    product.description
+                  ) : (
+                    <PortableText value={product.description} />
+                  )
+                ) : (
+                  "No description available"
+                )}
+              </div>
             </div>
 
             {/* Product Variants */}
@@ -475,8 +484,8 @@ const ProductData = ({ product }: { product: Product }) => {
         </div>
       </Container>
       <ProductInfo product={product} />
-      <FeaturedProducts />
-      <Services />
+      {/* <FeaturedProducts />
+      <Services /> */}
     </>
   );
 };
