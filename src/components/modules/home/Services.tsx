@@ -8,7 +8,8 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 
-import "./style.css";
+// import "./style.css";
+
 import {
   Calendar,
   CreditCard,
@@ -52,7 +53,7 @@ const Services = () => {
           className="shadow-xl w-full flex items-center justify-center border border-gray-200 rounded-md px-20 py-10 "
         >
           <SwiperSlide className="relative py-10">
-            <div className="flex items-center gap-4 md:after:h-10 md:after:w-[2px] lg:after:h-10 lg:after:w-[2px] after:translate-x-14 after:bg-neutral-200 ">
+            <div className="flex items-center justify-center gap-4 md:after:h-10 md:after:w-[2px] lg:after:h-10 lg:after:w-[2px] after:translate-x-14 after:bg-neutral-200 ">
               <Headset className="text-yellow-600 h-10 w-10 " />
               <div className="flex flex-col gap-1">
                 <h6 className="uppercase text-base">24/7</h6>
@@ -61,7 +62,7 @@ const Services = () => {
             </div>
           </SwiperSlide>
           <SwiperSlide className="relative py-10">
-            <div className="flex items-center gap-4 lg:after:h-10 lg:after:w-[2px] after:translate-x-14 after:bg-neutral-200 ">
+            <div className="flex items-center justify-center gap-4 lg:after:h-10 lg:after:w-[2px] after:translate-x-14 after:bg-neutral-200 ">
               <CreditCard className="text-yellow-600 h-10 w-10 " />
               <div className="flex flex-col gap-1">
                 <h6 className="uppercase text-base ">Accepted Payments</h6>
@@ -70,7 +71,7 @@ const Services = () => {
             </div>
           </SwiperSlide>
           <SwiperSlide className="relative py-10">
-            <div className="flex items-center gap-4 lg:after:h-10 lg:after:w-[2px] after:translate-x-14 after:bg-neutral-200 ">
+            <div className="flex items-center justify-center gap-4 lg:after:h-10 lg:after:w-[2px] after:translate-x-14 after:bg-neutral-200 ">
               <LockKeyhole className="text-yellow-600 h-10 w-10 " />
               <div className="flex flex-col gap-1">
                 <h6 className="uppercase text-base ">Secured Payment</h6>
@@ -79,7 +80,7 @@ const Services = () => {
             </div>
           </SwiperSlide>
           <SwiperSlide className="relative py-10">
-            <div className="flex items-center gap-4 lg:after:h-10 lg:after:w-[2px] after:translate-x-14 after:bg-neutral-200 ">
+            <div className="flex items-center justify-center gap-4 lg:after:h-10 lg:after:w-[2px] after:translate-x-14 after:bg-neutral-200 ">
               <Truck className="text-yellow-600 h-10 w-10 " />
               <div className="flex flex-col gap-1">
                 <h6 className="uppercase text-base">Free Shipping</h6>
@@ -88,7 +89,7 @@ const Services = () => {
             </div>
           </SwiperSlide>
           <SwiperSlide className="relative py-10">
-            <div className="flex items-center gap-4 lg:after:h-10 lg:after:w-[2px] after:translate-x-14 after:bg-neutral-200 ">
+            <div className="flex items-center justify-center gap-4 lg:after:h-10 lg:after:w-[2px] after:translate-x-14 after:bg-neutral-200 ">
               <Calendar className="text-yellow-600 h-10 w-10 " />
               <div className="flex flex-col gap-1">
                 <h6 className="uppercase text-base">Product Returns</h6>

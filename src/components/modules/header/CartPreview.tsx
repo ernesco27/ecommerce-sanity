@@ -3,106 +3,114 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { Trash } from "lucide-react";
-//import CurrencyFormat from "@/components/custom/CurrencyFormat";
+import CurrencyFormat from "@/components/custom/CurrencyFormat";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
   SheetContent,
-  SheetTrigger,
-  SheetClose,
-  SheetTitle,
   SheetHeader,
+  SheetTitle,
 } from "@/components/ui/sheet";
-//import { useCartStore } from "@/store/cartStore";
+import { useCartStore } from "@/store/cartStore";
 
 const CartPreview = ({
   cartOpen,
   setCartOpen,
   side = "bottom",
-  cartItemsCount = 0,
 }: {
   cartOpen: boolean;
   setCartOpen: (open: boolean) => void;
   side?: "bottom" | "right";
-  cartItemsCount?: number;
 }) => {
-  const [isMounted, setIsMounted] = useState(false);
-  // const { items, removeItem, getTotalPrice } = useCartStore();
+  const [mounted, setMounted] = useState(false);
+  const { items, removeItem, getTotalPrice, getTotalItems, hydrated } =
+    useCartStore();
 
   useEffect(() => {
-    setIsMounted(true);
+    setMounted(true);
   }, []);
 
-  const handleRemoveItem = (productId: number) => {
-    // removeItem(productId);
+  const handleRemoveItem = (productId: string, variantId: string) => {
+    removeItem(productId, variantId);
   };
 
   const handleCheckout = () => {
     console.log("checkout");
   };
 
-  if (!isMounted) {
+  // Don't render anything until after hydration
+  if (!mounted || !hydrated) {
     return null;
   }
 
   return (
     <Sheet open={cartOpen} onOpenChange={setCartOpen}>
       <SheetContent side={side}>
-        <SheetHeader className="mb-6 ">
+        <SheetHeader>
           <SheetTitle className="text-xl font-bold">
-            Cart ({/* {items.length} */})
+            Cart ({getTotalItems()})
           </SheetTitle>
         </SheetHeader>
 
-        <div className="flex flex-col h-full justify-between gap-8 py-8">
-          {/* <div className="flex flex-col snap-y gap-6 max-h-[360px] border-b border-gray-200 pb-4 overflow-y-auto">
+        <div className="flex flex-col h-full justify-between gap-8">
+          <div className="flex flex-col snap-y gap-6 max-h-[360px] border-b border-gray-200 p-4 overflow-y-auto">
             {items.map((item) => (
               <div
-                key={`${item.id}-${JSON.stringify(item.selectedVariants)}`}
-                className="flex justify-between gap-4 snap-center cursor-grab"
+                key={`${item._id}-${item.selectedVariant._id}-${item.selectedVariant.color}`}
+                className="flex justify-between gap-4 snap-center "
               >
-                <Image
-                  src={item.selectedImage || item.images[0]?.link}
-                  alt={item.name}
-                  width={200}
-                  height={200}
-                  className="h-20 w-20 object-cover"
-                />
+                {item.selectedVariant.imageUrl && (
+                  <div className="relative h-20 w-20">
+                    <Image
+                      src={item.selectedVariant.imageUrl}
+                      alt={item.name}
+                      fill
+                      className="object-cover"
+                      sizes="80px"
+                    />
+                  </div>
+                )}
                 <div className="flex flex-col flex-1 gap-1">
-                  <span className="capitalize text-lg">{item.name}</span>
+                  <span className="capitalize text-lg">
+                    {item.name.substring(0, 30)}...
+                  </span>
                   <div className="inline-flex gap-4 font-bold">
                     <span className="font-semibold text-base">
                       {item.quantity}
                     </span>
                     <span>x</span>
                     <CurrencyFormat
-                      value={parseFloat(
-                        (item.salesPrice || item.price).toString(),
-                      )}
+                      value={item.selectedVariant.price}
                       className="font-semibold text-base"
                     />
                   </div>
-                  {item.selectedVariants &&
-                    item.selectedVariants.length > 0 && (
-                      <div className="inline-flex gap-4">
-                        {item.selectedVariants.map((variant, index) => (
-                          <div key={index} className="inline-flex gap-1">
-                            <span className="text-sm">{variant.name}:</span>
-                            <span className="font-semibold text-sm">
-                              {variant.value}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
+                  <div className="inline-flex gap-4">
+                    <div className="inline-flex gap-1">
+                      <span className="text-sm">Size:</span>
+                      <span className="font-semibold text-sm">
+                        {item.selectedVariant.size}
+                      </span>
+                    </div>
+                    <div className="inline-flex gap-1">
+                      <span className="text-sm">Color:</span>
+                      <span className="font-semibold text-sm capitalize">
+                        {item.selectedVariant.color}
+                      </span>
+                    </div>
+                  </div>
                 </div>
                 <div
                   className="flex items-start"
                   role="button"
-                  onClick={() => handleRemoveItem(item.id)}
+                  onClick={() =>
+                    handleRemoveItem(item._id, item.selectedVariant._id)
+                  }
                 >
-                  <Trash className="hover:text-primary-500" size={15} />
+                  <Trash
+                    className="hover:text-red-500 cursor-pointer"
+                    size={15}
+                  />
                 </div>
               </div>
             ))}
@@ -111,31 +119,27 @@ const CartPreview = ({
                 <p>Your cart is empty</p>
               </div>
             )}
-          </div> */}
+          </div>
 
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-6 p-4">
             <div className="flex justify-between">
               <div className="text-xl font-bold">Subtotal</div>
-              <strong>
-                {/* <CurrencyFormat
-                  value={getTotalPrice()}
-                  className="text-right"
-                /> */}
-              </strong>
+
+              <CurrencyFormat value={getTotalPrice()} className="text-right" />
             </div>
             <div className="flex flex-col gap-4">
               <Link
                 href="/cart"
-                className="rounded-sm py-4 justify-center hover:bg-primary-500 text-center hover:text-white capitalize border border-border text-base"
+                className="rounded-sm py-2 justify-center hover:bg-yellow-500 text-center hover:text-white capitalize border border-border text-base transition-all duration-300 ease-in-out"
               >
                 View Cart
               </Link>
               <Button
                 variant="default"
                 size="lg"
-                className="rounded-sm py-8 capitalize text-base"
+                className="rounded-sm py-4 capitalize text-base hover:bg-yellow-500 hover:text-white transition-all duration-300 ease-in-out cursor-pointer"
                 onClick={handleCheckout}
-                // disabled={items.length === 0}
+                disabled={items.length === 0}
               >
                 Checkout
               </Button>

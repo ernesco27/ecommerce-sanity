@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import CartPreview from "./CartPreview";
 import Row from "@/components/custom/Row";
 import SearchBar from "./SearchBar";
+import { useCartStore } from "@/store/cartStore";
 //import { useCartStore } from "@/store/cartStore";
 
 const IconsGroup = ({
@@ -27,7 +28,7 @@ const IconsGroup = ({
 }) => {
   const router = useRouter();
 
-  //const { items } = useCartStore();
+  const { getTotalItems } = useCartStore();
 
   return (
     <section>
@@ -48,7 +49,7 @@ const IconsGroup = ({
         >
           <CiShoppingCart size={40} className="hover:text-yellow-600" />
           <span className="absolute -top-1 -right-1 bg-yellow-500 text-white text-sm w-6 h-6 rounded-full flex items-center justify-center">
-            {/* {items.length} */}4
+            {getTotalItems()}
           </span>
         </div>
         <div
@@ -62,7 +63,6 @@ const IconsGroup = ({
           cartOpen={cartOpen}
           setCartOpen={setCartOpen}
           side="right"
-          cartItemsCount={cartItemsCount}
         />
       </Row>
     </section>

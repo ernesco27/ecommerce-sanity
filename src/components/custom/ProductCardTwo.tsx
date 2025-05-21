@@ -29,21 +29,21 @@ const ProductCardTwo = ({ item }: ProductCardProps) => {
   const rating = reviewCount > 0 ? averageRating / reviewCount : 0;
 
   return (
-    <Card className="w-[650px] max-h-[400px] overflow-hidden grid grid-cols-2 mb-6  gap-0  ">
-      <CardHeader className="group/image relative h-[350px] overflow-hidden ">
+    <Card className="w-[380px] max-h-[400px] overflow-hidden grid grid-cols-2 mb-6  gap-0  ">
+      <CardHeader className="group/image relative h-[450px] overflow-hidden bg-red-500 ">
         <Image
           src={item.images?.gallery?.[0]?.url ?? "/placeholder.jpg"}
           alt={item.images?.gallery?.[0]?.alt ?? item.name ?? "Product image"}
-          width="400"
-          height="400"
-          className="absolute inset-0 object-cover duration-300 ease-linear group-hover/image:translate-x-full "
+          width="450"
+          height="450"
+          className="absolute inset-0 object-cover duration-300 ease-linear group-hover/image:translate-x-full h-full w-full"
         />
         <Image
           src={item.images?.gallery?.[1]?.url ?? "/placeholder.jpg"}
           alt={item.images?.gallery?.[1]?.alt ?? item.name ?? "Product image"}
-          width="350"
-          height="350"
-          className="absolute inset-0 object-cover duration-300 ease-linear -translate-x-full group-hover/image:translate-x-0"
+          width="450"
+          height="450"
+          className="absolute inset-0 object-cover duration-300 ease-linear -translate-x-full group-hover/image:translate-x-0 h-full w-full"
         />
         <motion.div
           initial={{
@@ -98,10 +98,10 @@ const ProductCardTwo = ({ item }: ProductCardProps) => {
           </div>
         </motion.div>
       </CardHeader>
-      <div className="flex flex-col gap-2 items-start justify-center ">
+      <div className="flex flex-col gap-8 items-start pt-4  ">
         <CardContent className="flex flex-col gap-4 text-start py-2">
           <h5 className="capitalize text-lg">
-            {item.name?.substring(0, 20)}...{" "}
+            {item.name?.substring(0, 30)}...{" "}
           </h5>
           <div className=" w-full">
             {item.pricing?.min ? (
@@ -140,7 +140,7 @@ const ProductCardTwo = ({ item }: ProductCardProps) => {
           <Button
             variant="outline"
             size="sm"
-            className="text-lg bg-yellow-400 text-white"
+            className="text-lg bg-yellow-400 text-white transition-all duration-300 ease-in-out cursor-pointer"
             onClick={() => router.push(`/products/${item._id}`)}
           >
             Shop Now

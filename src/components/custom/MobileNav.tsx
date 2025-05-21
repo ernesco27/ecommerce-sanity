@@ -10,8 +10,8 @@ import Container from "./Container";
 import { motion } from "framer-motion";
 import Row from "./Row";
 import CartPreview from "../modules/header/CartPreview";
-//import { useCartStore } from "@/store/cartStore";
 import { useRouter } from "next/navigation";
+import { useCartStore } from "@/store/cartStore";
 
 const MobileNav = () => {
   const pathname = usePathname();
@@ -20,7 +20,7 @@ const MobileNav = () => {
 
   const [cartOpen, setCartOpen] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
-  const [cartItemsCount, setCartItemsCount] = useState(1);
+  const { getTotalItems } = useCartStore();
 
   //const { items } = useCartStore();
 
@@ -87,11 +87,11 @@ const MobileNav = () => {
                     transition={{ type: "spring", stiffness: 500 }}
                   >
                     <Icon size={24} />
-                    {/* {item.name === "Cart" && items.length > 0 && (
-                      <span className="absolute -top-1 right-6 bg-primary-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center">
-                        {items.length}
+                    {item.name === "Cart" && getTotalItems() > 0 && (
+                      <span className="absolute -top-1 right-6 bg-yellow-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center">
+                        {getTotalItems()}
                       </span>
-                    )} */}
+                    )}
                   </motion.div>
                   <motion.span
                     className="text-xs mt-1"
@@ -110,7 +110,6 @@ const MobileNav = () => {
           cartOpen={cartOpen}
           setCartOpen={setCartOpen}
           side="bottom"
-          cartItemsCount={cartItemsCount}
         />
       </Container>
     </nav>

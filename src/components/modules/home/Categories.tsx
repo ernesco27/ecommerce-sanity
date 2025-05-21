@@ -100,7 +100,7 @@ const Categories = () => {
               }}
             >
               <div
-                className="absolute bg-white rounded-lg p-4 bottom-10 shadow-xl cursor-pointer hover:bg-yellow-600 hover:text-white drop-shadow-xl duration-200 ease-linear capitalize"
+                className="absolute bg-white rounded-lg p-4 bottom-[20%] left-[30%] lg:left-[40%] shadow-xl cursor-pointer hover:bg-yellow-600 hover:text-white drop-shadow-xl duration-200 ease-linear capitalize "
                 onClick={() => handleClick(banner.link || "")}
               >
                 <motion.h6
@@ -109,6 +109,7 @@ const Categories = () => {
                   transition={{
                     delay: 0.1 + index / 6,
                   }}
+                  className="text-2xl font-medium"
                 >
                   {banner.title}
                 </motion.h6>

@@ -36,7 +36,7 @@ const ProductCard = ({ item }: ProductCardProps) => {
   const rating = reviewCount > 0 ? averageRating / reviewCount : 0;
 
   return (
-    <Card className="w-[400px] mb-8 relative">
+    <Card className="w-[380px] mb-8 relative">
       {item.pricing?.max && item.pricing?.min && (
         <Badge
           variant="default"
@@ -167,7 +167,7 @@ const ProductCard = ({ item }: ProductCardProps) => {
         <Button
           variant="outline"
           size="lg"
-          className="w-full text-lg bg-yellow-400 text-white mb-4"
+          className="w-full text-lg bg-yellow-400 text-white mb-4 cursor-pointer transition-all duration-300 ease-in-out"
           onClick={() => router.push(`/products/${item._id}`)}
         >
           Shop Now

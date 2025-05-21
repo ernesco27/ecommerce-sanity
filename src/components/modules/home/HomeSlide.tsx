@@ -14,6 +14,7 @@ import { motion } from "framer-motion";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Banner } from "../../../../sanity.types";
+import "../products/style.css";
 
 type BannerResponse = Banner & {
   imageUrl: string;
