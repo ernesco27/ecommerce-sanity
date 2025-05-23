@@ -64,7 +64,7 @@ const ProductsCatAccordion: React.FC<ProductsCatAccordionProps> = ({
       {loading ? (
         <Skeleton className="w-full" height={600} />
       ) : (
-        <Accordion type="single" collapsible className="w-full ml-10">
+        <Accordion type="single" collapsible className="w-full pl-10">
           {categories?.map((item) => (
             <AccordionItem key={item._id} value={item._id}>
               <AccordionTrigger className="!py-2">

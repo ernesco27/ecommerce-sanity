@@ -1,5 +1,6 @@
 import React from "react";
 import { Check } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface ColorOption {
   name: string;
@@ -20,11 +21,13 @@ const COLORS: ColorOption[] = [
 interface ColorFilterProps {
   selectedColors: string[];
   onColorChange: (colors: string[]) => void;
+  className?: string;
 }
 
 const ColorFilter: React.FC<ColorFilterProps> = ({
   selectedColors,
   onColorChange,
+  className,
 }) => {
   const toggleColor = (colorName: string) => {
     if (selectedColors.includes(colorName)) {
@@ -35,7 +38,7 @@ const ColorFilter: React.FC<ColorFilterProps> = ({
   };
 
   return (
-    <div className="w-full flex flex-col gap-3 justify-center ml-10">
+    <div className={cn("w-full  gap-3  ", className)}>
       {COLORS.map((color) => (
         <button
           key={color.name}

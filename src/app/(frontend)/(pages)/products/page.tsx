@@ -17,31 +17,6 @@ const page = () => {
     <>
       <section className="my-10">
         <PageHeader heading="Shop" link1="shop" />
-        <Container>
-          <Row>
-            <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem>
-                  <Link
-                    href="/"
-                    className="text-xl hover:text-primary-500 hover:font-bold"
-                  >
-                    Home
-                  </Link>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  <Link
-                    href="/products"
-                    className="text-xl hover:text-primary-500 hover:font-bold"
-                  >
-                    Store
-                  </Link>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
-          </Row>
-        </Container>
       </section>
 
       <ProductsContainer />

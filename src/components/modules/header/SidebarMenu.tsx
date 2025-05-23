@@ -30,8 +30,6 @@ const SidebarMenu = ({
   const [subCategory, setSubCategory] = useState<Subcategory[]>([]);
   const [open, setOpen] = useState(false);
 
-  console.log("categories:", categories);
-
   const router = useRouter();
 
   return (

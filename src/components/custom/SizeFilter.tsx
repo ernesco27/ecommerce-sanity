@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import React from "react";
 
 const SIZES = ["S", "M", "L", "XL", "XXL", "XXXL"];
@@ -5,11 +6,13 @@ const SIZES = ["S", "M", "L", "XL", "XXL", "XXXL"];
 interface SizeFilterProps {
   selectedSizes: string[];
   onSizeChange: (sizes: string[]) => void;
+  className?: string;
 }
 
 const SizeFilter: React.FC<SizeFilterProps> = ({
   selectedSizes,
   onSizeChange,
+  className,
 }) => {
   const toggleSize = (size: string) => {
     if (selectedSizes.includes(size)) {
@@ -20,7 +23,7 @@ const SizeFilter: React.FC<SizeFilterProps> = ({
   };
 
   return (
-    <div className="w-full flex flex-col gap-2 justify-center ml-10">
+    <div className={cn("w-full ", className)}>
       {SIZES.map((size) => (
         <button
           key={size}

@@ -10,7 +10,7 @@ import {
 import ProductsContent from "@/components/modules/products/ProductsContent";
 import type { ProductsQueryResult } from "../../../../sanity.types";
 import { Loader2 } from "lucide-react";
-
+import MobileFilters from "@/components/custom/MobileFilters";
 interface FilterState {
   minPrice: number;
   maxPrice: number;
@@ -21,6 +21,7 @@ interface FilterState {
 
 interface ProductsMainContentProps {
   filters: FilterState;
+  onFilterChange: (filterType: keyof FilterState, value: any) => void;
   loading: boolean;
   setLoading: (v: boolean) => void;
   products: ProductsQueryResult[0][];
@@ -33,6 +34,7 @@ interface ProductsMainContentProps {
 
 const ProductsMainContent = ({
   filters,
+  onFilterChange,
   loading,
   setLoading,
   products,
@@ -45,24 +47,30 @@ const ProductsMainContent = ({
   return (
     <div className={cn("w-full", className)}>
       <div className="flex justify-between items-center mb-6">
-        <p className="text-sm text-gray-500">
-          Showing {products.length} results
-        </p>
-        <Select value={filter} onValueChange={setFilter}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Sort by" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="latest">Latest</SelectItem>
-            <SelectItem value="price_low_to_high">
-              Price: Low to High
-            </SelectItem>
-            <SelectItem value="price_high_to_low">
-              Price: High to Low
-            </SelectItem>
-          </SelectContent>
-        </Select>
+        <MobileFilters
+          filters={filters}
+          onFilterChange={onFilterChange}
+          loading={loading}
+          setLoading={setLoading}
+        />
+        <div>
+          <Select value={filter} onValueChange={setFilter}>
+            <SelectTrigger className="w-[150px]">
+              <SelectValue placeholder="Sort by" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="latest">Latest</SelectItem>
+              <SelectItem value="price_low_to_high">
+                Price: Low to High
+              </SelectItem>
+              <SelectItem value="price_high_to_low">
+                Price: High to Low
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
+      <p className="text-sm text-gray-500">Showing {products.length} results</p>
       <div className="relative">
         <ProductsContent
           products={products}

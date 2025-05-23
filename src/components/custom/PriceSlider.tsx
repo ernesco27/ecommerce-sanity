@@ -49,7 +49,7 @@ const PriceSlider: React.FC<PriceSliderProps> = ({
   }
 
   return (
-    <div className="w-full flex flex-col gap-2 ml-10">
+    <div className="w-full flex flex-col gap-2 pl-10">
       <p className="text-lg font-normal">{`GHC${value[0]}.00 - GHC${value[1]}.00`}</p>
       <Slider
         aria-label="Price range"

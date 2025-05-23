@@ -1,11 +1,22 @@
-import HeadingSidebar from "@/components/custom/HeadingSidebar";
-import { cn } from "@/lib/utils";
-import React from "react";
+"use client";
+
+import React, { useState } from "react";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetClose,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { Filter } from "lucide-react";
+import ProductsCatAccordion from "./ProductsCatAccordion";
+import PriceSlider from "./PriceSlider";
+import SizeFilter from "./SizeFilter";
+import ColorFilter from "./ColorFilter";
 import { Separator } from "@/components/ui/separator";
-import PriceSlider from "@/components/custom/PriceSlider";
-import ProductsCatAccordion from "@/components/custom/ProductsCatAccordion";
-import SizeFilter from "@/components/custom/SizeFilter";
-import ColorFilter from "@/components/custom/ColorFilter";
+import HeadingSidebar from "./HeadingSidebar";
 
 interface FilterState {
   minPrice: number;
@@ -15,7 +26,7 @@ interface FilterState {
   selectedCategories: string[];
 }
 
-interface ProductsSidebarLeftProps {
+interface MobileFiltersProps {
   filters: FilterState;
   onFilterChange: (filterType: keyof FilterState, value: any) => void;
   loading: boolean;
@@ -23,22 +34,34 @@ interface ProductsSidebarLeftProps {
   className?: string;
 }
 
-const ProductsSidebarLeft = ({
+const MobileFilters = ({
   filters,
   onFilterChange,
   loading,
   setLoading,
   className,
-}: ProductsSidebarLeftProps) => {
+}: MobileFiltersProps) => {
+  const [open, setOpen] = useState(false);
   const handlePriceChange = (values: [number, number]) => {
     onFilterChange("minPrice", values[0]);
     onFilterChange("maxPrice", values[1]);
   };
 
   return (
-    <div className={cn("lg:max-w-[300px] h-full", className)}>
-      <div className="flex flex-col gap-8 items-center">
-        <div className="flex flex-col gap-4 items-center w-full">
+    <div className="w-full">
+      <Sheet open={open} onOpenChange={setOpen}>
+        <SheetTrigger asChild className="lg:hidden">
+          <Button variant="outline">
+            <Filter /> Filters
+          </Button>
+        </SheetTrigger>
+        <SheetContent
+          side="bottom"
+          className="max-h-[90vh] overflow-y-auto p-4 w-full  "
+        >
+          <SheetHeader>
+            <SheetTitle className="text-xl font-bold">Filters</SheetTitle>
+          </SheetHeader>
           <HeadingSidebar name="Product Categories" />
           <ProductsCatAccordion
             selectedCategories={filters.selectedCategories}
@@ -46,6 +69,7 @@ const ProductsSidebarLeft = ({
               onFilterChange("selectedCategories", categories)
             }
           />
+          <Separator />
           <HeadingSidebar name="Price" />
           <PriceSlider
             initialMin={filters.minPrice}
@@ -57,19 +81,28 @@ const ProductsSidebarLeft = ({
           <SizeFilter
             selectedSizes={filters.selectedSizes}
             onSizeChange={(sizes) => onFilterChange("selectedSizes", sizes)}
-            className="flex flex-col gap-2"
+            className="flex flex-wrap gap-2"
           />
           <Separator />
           <HeadingSidebar name="Color" />
           <ColorFilter
             selectedColors={filters.selectedColors}
             onColorChange={(colors) => onFilterChange("selectedColors", colors)}
-            className="flex flex-col ml-10"
+            className="flex flex-wrap"
           />
-        </div>
-      </div>
+          <Button
+            variant="outline"
+            className="w-full mt-4 bg-yellow-300 hover:bg-yellow-400"
+            onClick={() => {
+              setOpen(false);
+            }}
+          >
+            Apply Filters
+          </Button>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 };
 
-export default ProductsSidebarLeft;
+export default MobileFilters;

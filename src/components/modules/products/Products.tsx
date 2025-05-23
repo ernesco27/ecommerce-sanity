@@ -55,6 +55,7 @@ const Products = ({
           {/* main content */}
           <ProductsMainContent
             filters={filters}
+            onFilterChange={onFilterChange}
             loading={loading}
             setLoading={setLoading}
             products={products}
