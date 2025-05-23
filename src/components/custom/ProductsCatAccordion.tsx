@@ -36,12 +36,57 @@ const ProductsCatAccordion: React.FC<ProductsCatAccordionProps> = ({
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
 
-  const toggleCategory = (categoryId: string) => {
+  const toggleCategory = (categoryId: string, parentId?: string) => {
+    let newSelectedCategories: string[];
+
     if (selectedCategories.includes(categoryId)) {
-      onCategoryChange(selectedCategories.filter((c) => c !== categoryId));
+      // If unchecking a main category, remove it and all its subcategories
+      if (!parentId) {
+        const category = categories.find((c) => c._id === categoryId);
+        const subCategoryIds =
+          category?.subcategories.map((sub) => sub._id) || [];
+        newSelectedCategories = selectedCategories.filter(
+          (id) => id !== categoryId && !subCategoryIds.includes(id),
+        );
+      } else {
+        // If unchecking a subcategory, just remove it
+        newSelectedCategories = selectedCategories.filter(
+          (id) => id !== categoryId,
+        );
+        // If no other subcategories of the parent are selected, remove the parent too
+        const parentCategory = categories.find((c) => c._id === parentId);
+        const siblingIds =
+          parentCategory?.subcategories.map((sub) => sub._id) || [];
+        const hasSelectedSiblings = siblingIds.some(
+          (id) => id !== categoryId && newSelectedCategories.includes(id),
+        );
+        if (!hasSelectedSiblings) {
+          newSelectedCategories = newSelectedCategories.filter(
+            (id) => id !== parentId,
+          );
+        }
+      }
     } else {
-      onCategoryChange([...selectedCategories, categoryId]);
+      // If checking a main category, add it and all its subcategories
+      if (!parentId) {
+        const category = categories.find((c) => c._id === categoryId);
+        const subCategoryIds =
+          category?.subcategories.map((sub) => sub._id) || [];
+        newSelectedCategories = [
+          ...selectedCategories,
+          categoryId,
+          ...subCategoryIds,
+        ];
+      } else {
+        // If checking a subcategory, add it and its parent
+        newSelectedCategories = [...selectedCategories, categoryId];
+        if (!selectedCategories.includes(parentId)) {
+          newSelectedCategories.push(parentId);
+        }
+      }
     }
+
+    onCategoryChange([...new Set(newSelectedCategories)]);
   };
 
   useEffect(() => {
@@ -94,7 +139,9 @@ const ProductsCatAccordion: React.FC<ProductsCatAccordionProps> = ({
                       <Checkbox
                         id={itemSub._id}
                         checked={selectedCategories.includes(itemSub._id)}
-                        onCheckedChange={() => toggleCategory(itemSub._id)}
+                        onCheckedChange={() =>
+                          toggleCategory(itemSub._id, item._id)
+                        }
                         className="data-[state=checked]:bg-yellow-600"
                       />
                       <Label

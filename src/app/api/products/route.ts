@@ -2,6 +2,12 @@ import { client } from "@/sanity/lib/client";
 import { groq } from "next-sanity";
 import { NextResponse } from "next/server";
 
+interface CategoryQueryResult {
+  _id: string;
+  _type: "category" | "subcategory";
+  parentCategoryId?: string | null;
+}
+
 // Define the product query with all necessary fields
 const productsQuery = groq`*[_type == "product"] {
   _id,
@@ -127,13 +133,13 @@ export async function GET(request: Request) {
       searchParams.get("selectedSizes")?.split(",").filter(Boolean) || [];
     const selectedColors =
       searchParams.get("selectedColors")?.split(",").filter(Boolean) || [];
-    const selectedCategories =
+    const selectedCategoriesFromURL =
       searchParams.get("selectedCategories")?.split(",").filter(Boolean) || [];
 
     // Build filter conditions
     const filterConditions = [];
 
-    // Price filter - updated to handle variant prices correctly
+    // Price filter
     if (minPrice > 0 || maxPrice < 10000) {
       filterConditions.push(
         `count((variants[]->price)[@ >= ${minPrice} && @ <= ${maxPrice}]) > 0`,
@@ -154,11 +160,53 @@ export async function GET(request: Request) {
       );
     }
 
-    // Category filter
-    if (selectedCategories.length > 0) {
-      filterConditions.push(
-        `_id in *[_type == "category" && _id in [${selectedCategories.map((c) => `"${c}"`).join(",")}]]->products[]._ref`,
+    // Category and Subcategory filtering logic
+    if (selectedCategoriesFromURL.length > 0) {
+      const categoryQueryResults: CategoryQueryResult[] = await client.fetch(
+        `*[_id in $ids] {
+          _id,
+          _type,
+          "parentCategoryId": select(_type == "subcategory" => parentCategory._ref, null)
+        }`,
+        { ids: selectedCategoriesFromURL },
       );
+
+      const selectedMainCategoryIds = new Set<string>();
+      const selectedSubCategoryIds = new Set<string>();
+
+      categoryQueryResults.forEach((item) => {
+        if (item._type === "category") {
+          selectedMainCategoryIds.add(item._id);
+        } else if (item._type === "subcategory") {
+          selectedSubCategoryIds.add(item._id);
+        }
+      });
+
+      const effectiveFilterClauses: string[] = [];
+
+      // Add subcategory filters first
+      if (selectedSubCategoryIds.size > 0) {
+        effectiveFilterClauses.push(
+          `count(subcategory[_ref in ["${Array.from(selectedSubCategoryIds).join('","')}"]]) > 0`,
+        );
+      }
+
+      // Add main category filters only if they don't have an explicitly selected subcategory
+      selectedMainCategoryIds.forEach((mainCatId) => {
+        const hasChildSubcategorySelected = categoryQueryResults.some(
+          (item) =>
+            item._type === "subcategory" &&
+            item.parentCategoryId === mainCatId &&
+            selectedSubCategoryIds.has(item._id),
+        );
+        if (!hasChildSubcategorySelected) {
+          effectiveFilterClauses.push(`category._ref == "${mainCatId}"`);
+        }
+      });
+
+      if (effectiveFilterClauses.length > 0) {
+        filterConditions.push(`(${effectiveFilterClauses.join(" || ")})`);
+      }
     }
 
     // Combine all filters
@@ -185,6 +233,15 @@ export async function GET(request: Request) {
         _id, 
         title, 
         "slug": slug.current
+      },
+      "subcategories": subcategory[]->{ 
+        _id, 
+        name, 
+        "slug": slug.current,
+        "parentCategory": parentCategory->{ 
+          _id,
+          title
+        }
       },
       "brand": brand->{ 
         _id, 
