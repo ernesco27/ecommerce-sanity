@@ -12,7 +12,8 @@ export async function GET() {
         _id,
         name,
         "slug": slug.current
-      }
+      },
+      "productCount": count(*[_type == "product" && references(^._id)])
     }`;
 
     const categories = await client.fetch(query);

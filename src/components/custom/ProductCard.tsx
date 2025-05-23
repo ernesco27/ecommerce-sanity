@@ -22,6 +22,8 @@ type ProductCardProps = {
 const ProductCard = ({ item }: ProductCardProps) => {
   const router = useRouter();
 
+  console.log("item:", item);
+
   // Calculate min and max prices from variants
   const prices =
     item.variants?.map((variant) => Number(variant.price) || 0) || [];
