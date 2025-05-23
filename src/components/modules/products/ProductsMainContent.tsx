@@ -1,82 +1,91 @@
-import usePagination from "@/hooks/usePagination";
+import React from "react";
 import { cn } from "@/lib/utils";
-
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-//import Loading from "@/components/custom/Loading";
-import ProductsTopBar from "@/components/modules/products/ProductsTopBar";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import ProductsContent from "@/components/modules/products/ProductsContent";
-import Pagination from "@mui/material/Pagination";
 import type { ProductsQueryResult } from "../../../../sanity.types";
+import { Loader2 } from "lucide-react";
 
-function ProductsMainContent({
-  minPrice,
-  maxPrice,
-  loading,
-  setMinPrice,
-  setMaxPrice,
-  setLoading,
-  products,
-  filter,
-  setFilter,
-  className,
-}: {
+interface FilterState {
   minPrice: number;
   maxPrice: number;
+  selectedSizes: string[];
+  selectedColors: string[];
+  selectedCategories: string[];
+}
+
+interface ProductsMainContentProps {
+  filters: FilterState;
   loading: boolean;
-  setMinPrice: (v: number) => void;
-  setMaxPrice: (v: number) => void;
   setLoading: (v: boolean) => void;
   products: ProductsQueryResult[0][];
   filter: string;
   setFilter: (v: string) => void;
+  lastProductElementRef: (node: HTMLElement | null) => void;
+  hasMore: boolean;
   className?: string;
-}) {
-  const [perPage, setPerPage] = useState<number>(10);
-  const [page, setPage] = useState<number>(1);
-
-  const count = Math.ceil(products?.length / perPage);
-  const _DATA = usePagination(products, perPage);
-
-  const handleChange = (e: React.ChangeEvent<unknown>, p: number) => {
-    setPage(p);
-    _DATA.jump(p);
-  };
-
-  return (
-    <>
-      {/* {loading && <Loading isLoading={loading} />} */}
-      <div className={cn("w-full", className)}>
-        <div className="flex flex-col gap-4 ">
-          <ProductsTopBar
-            minPrice={minPrice}
-            maxPrice={maxPrice}
-            setMinPrice={setMinPrice}
-            setMaxPrice={setMaxPrice}
-            loading={loading}
-            setLoading={setLoading}
-            perPage={perPage}
-            filter={filter}
-            setPerPage={setPerPage}
-            setFilter={setFilter}
-            maxPage={_DATA.maxPage}
-            page={page}
-            products={products}
-          />
-          <ProductsContent products={_DATA.currentData()} />
-          <div className="py-10 flex justify-center mt-auto ">
-            <Pagination
-              count={count}
-              page={page}
-              color="primary"
-              variant="outlined"
-              onChange={handleChange}
-            />
-          </div>
-        </div>
-      </div>
-    </>
-  );
 }
+
+const ProductsMainContent = ({
+  filters,
+  loading,
+  setLoading,
+  products,
+  filter,
+  setFilter,
+  lastProductElementRef,
+  hasMore,
+  className,
+}: ProductsMainContentProps) => {
+  return (
+    <div className={cn("w-full", className)}>
+      <div className="flex justify-between items-center mb-6">
+        <p className="text-sm text-gray-500">
+          Showing {products.length} results
+        </p>
+        <Select value={filter} onValueChange={setFilter}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Sort by" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="latest">Latest</SelectItem>
+            <SelectItem value="price_low_to_high">
+              Price: Low to High
+            </SelectItem>
+            <SelectItem value="price_high_to_low">
+              Price: High to Low
+            </SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="relative">
+        <ProductsContent
+          products={products}
+          lastProductElementRef={lastProductElementRef}
+        />
+        {loading && (
+          <div className="absolute bottom-0 left-0 right-0 flex justify-center py-4 bg-white/80">
+            <Loader2 className="h-6 w-6 animate-spin text-yellow-600" />
+          </div>
+        )}
+        {!loading && !hasMore && products.length > 0 && (
+          <p className="text-center text-gray-500 py-4">
+            No more products to load
+          </p>
+        )}
+        {!loading && products.length === 0 && (
+          <p className="text-center text-gray-500 py-4">
+            No products found matching your filters
+          </p>
+        )}
+      </div>
+    </div>
+  );
+};
 
 export default ProductsMainContent;

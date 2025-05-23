@@ -47,10 +47,10 @@ const MainMenu = () => {
         </li>
         <li className="relative">
           <Link
-            href="/"
+            href="/products"
             className={cn(
               "text-xl h-full duration-300 after:absolute after:top-[26px] after:left-0 after:w-0 after:h-1 after:bg-yellow-700 after:duration-100 after:ease-linear hover:after:w-full ",
-              pathname === `${"/home"}` &&
+              pathname === `${"/products"}` &&
                 "border-b-4 border-yellow-400 capitalize",
             )}
           >

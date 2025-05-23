@@ -113,92 +113,108 @@ const productsQuery = groq`*[_type == "product"] {
 
 export async function GET(request: Request) {
   try {
-    // Extract query parameters
     const { searchParams } = new URL(request.url);
-    const limit = searchParams.get("limit")
-      ? parseInt(searchParams.get("limit")!)
-      : undefined;
-    const category = searchParams.get("category");
-    const subcategory = searchParams.get("subcategory");
-    const featured = searchParams.get("featured") === "true";
-    const isVisible = searchParams.get("visible");
-    const size = searchParams.get("size");
-    const color = searchParams.get("color");
-    const minPrice = searchParams.get("minPrice")
-      ? parseFloat(searchParams.get("minPrice")!)
-      : undefined;
-    const maxPrice = searchParams.get("maxPrice")
-      ? parseFloat(searchParams.get("maxPrice")!)
-      : undefined;
-    const sortBy = searchParams.get("sort") || "default";
 
-    // Build filters array
-    const filters: string[] = [];
+    // Get filter parameters
+    const filter = searchParams.get("filter") || "latest";
+    const page = Number(searchParams.get("page")) || 1;
+    const limit = Number(searchParams.get("limit")) || 10;
+    const skip = (page - 1) * limit;
 
-    if (category) {
-      filters.push(`category->slug.current == "${category}"`);
-    }
-    if (subcategory) {
-      filters.push(`"${subcategory}" in subcategory[]->slug.current`);
-    }
-    if (featured) {
-      filters.push(`featured == true`);
-    }
-    if (isVisible !== null) {
-      filters.push(`visibility.isVisible == ${isVisible === "true"}`);
-    }
-    if (size) {
-      filters.push(`"${size}" in variants[]->size`);
-    }
-    if (color) {
-      filters.push(`"${color}" in variants[]->colorVariants[].color`);
-    }
-    if (minPrice !== undefined) {
-      filters.push(`coalesce((variants[]->price)[0], 0) >= ${minPrice}`);
-    }
-    if (maxPrice !== undefined) {
-      filters.push(`coalesce((variants[]->price)[-1], 0) <= ${maxPrice}`);
+    const minPrice = Number(searchParams.get("minPrice")) || 0;
+    const maxPrice = Number(searchParams.get("maxPrice")) || 10000;
+    const selectedSizes =
+      searchParams.get("selectedSizes")?.split(",").filter(Boolean) || [];
+    const selectedColors =
+      searchParams.get("selectedColors")?.split(",").filter(Boolean) || [];
+    const selectedCategories =
+      searchParams.get("selectedCategories")?.split(",").filter(Boolean) || [];
+
+    // Build filter conditions
+    const filterConditions = [];
+
+    // Price filter - updated to handle variant prices correctly
+    if (minPrice > 0 || maxPrice < 10000) {
+      filterConditions.push(
+        `count((variants[]->price)[@ >= ${minPrice} && @ <= ${maxPrice}]) > 0`,
+      );
     }
 
-    // Build the order clause
-    let orderClause = "| order(_createdAt desc)";
-    switch (sortBy) {
-      case "price-asc":
-        orderClause = "| order(coalesce((variants[]->price)[0], 0) asc)";
-        break;
-      case "price-desc":
-        orderClause = "| order(coalesce((variants[]->price)[0], 0) desc)";
-        break;
-      case "newest":
-        orderClause = "| order(_createdAt desc)";
-        break;
-      case "oldest":
-        orderClause = "| order(_createdAt asc)";
-        break;
+    // Size filter
+    if (selectedSizes.length > 0) {
+      filterConditions.push(
+        `count((variants[]->size)[@ in [${selectedSizes.map((s) => `"${s}"`).join(",")}]]) > 0`,
+      );
     }
 
-    // Apply filters if any exist
-    let finalQuery = productsQuery;
-    if (filters.length > 0) {
-      const filterString = filters.join(" && ");
-      const baseQuery = productsQuery.substring(productsQuery.indexOf("{"));
-      finalQuery = groq`*[_type == "product" && ${filterString}]${baseQuery}`;
+    // Color filter
+    if (selectedColors.length > 0) {
+      filterConditions.push(
+        `count((variants[]->colorVariants[].color)[@ in [${selectedColors.map((c) => `"${c}"`).join(",")}]]) > 0`,
+      );
     }
 
-    // Remove the default order from productsQuery and apply the new order clause
-    finalQuery =
-      finalQuery.replace(
-        "| order(coalesce((variants[]->price)[0], 0) asc)",
-        "",
-      ) + orderClause;
+    // Category filter
+    if (selectedCategories.length > 0) {
+      filterConditions.push(
+        `_id in *[_type == "category" && _id in [${selectedCategories.map((c) => `"${c}"`).join(",")}]]->products[]._ref`,
+      );
+    }
 
-    // Fetch products from Sanity with parameters
-    const products = await client.fetch(finalQuery);
+    // Combine all filters
+    const filterString =
+      filterConditions.length > 0 ? ` && ${filterConditions.join(" && ")}` : "";
 
-    // Apply limit if specified
-    const limitedProducts = limit ? products.slice(0, limit) : products;
+    // Order by based on filter type
+    const orderBy =
+      filter === "latest"
+        ? "order(_createdAt desc)"
+        : filter === "price_low_to_high"
+          ? "order(coalesce((variants[]->price)[0], 0) asc)"
+          : filter === "price_high_to_low"
+            ? "order(coalesce((variants[]->price)[0], 0) desc)"
+            : "order(_createdAt desc)";
 
-    return NextResponse.json(limitedProducts, {
+    const query = groq`*[_type == "product"${filterString}] | ${orderBy} [${skip}...${skip + limit}] {
+      _id,
+      _createdAt,
+      name,
+      "slug": slug.current,
+      description,
+      "category": category->{ 
+        _id, 
+        title, 
+        "slug": slug.current
+      },
+      "brand": brand->{ 
+        _id, 
+        name, 
+        "slug": slug.current 
+      },
+      "images": {
+        "primary": images.primary{
+          "url": asset->url,
+          "alt": alt,
+          "lqip": asset->metadata.lqip
+        }
+      },
+      "variants": variants[]->{ 
+        _id,
+        size,
+        price,
+        compareAtPrice,
+        sku,
+        colorVariants[] {
+          color,
+          colorCode,
+          stock
+        }
+      }
+    }`;
+
+    const products = await client.fetch(query);
+
+    return NextResponse.json(products, {
       status: 200,
       headers: {
         "Cache-Control": "public, s-maxage=60, stale-while-revalidate=30",

@@ -4,11 +4,15 @@ import React from "react";
 import ProductCard from "@/components/custom/ProductCard";
 import type { ProductsQueryResult } from "../../../../sanity.types";
 
+interface ProductsContentProps {
+  products: ProductsQueryResult[0][];
+  lastProductElementRef: (node: HTMLElement | null) => void;
+}
+
 const ProductsContent = ({
   products,
-}: {
-  products: ProductsQueryResult[0][];
-}) => {
+  lastProductElementRef,
+}: ProductsContentProps) => {
   if (products?.length === 0) {
     return (
       <div className="flex flex-col justify-center items-center py-20 px-20 w-full">
@@ -17,9 +21,20 @@ const ProductsContent = ({
       </div>
     );
   }
+
   return (
     <div className="flex justify-center gap-4 flex-wrap p-4">
-      {products?.map((item) => <ProductCard key={item._id} item={item} />)}
+      {products?.map((item, index) => {
+        if (products.length === index + 1) {
+          return (
+            <div key={item._id} ref={lastProductElementRef}>
+              <ProductCard item={item} />
+            </div>
+          );
+        } else {
+          return <ProductCard key={item._id} item={item} />;
+        }
+      })}
     </div>
   );
 };

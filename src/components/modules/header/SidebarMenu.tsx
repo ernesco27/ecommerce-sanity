@@ -86,11 +86,20 @@ const SidebarMenu = ({
               </TabsContent>
               <TabsContent value="page">
                 <div className="flex flex-col gap-4 h-full">
+                  <span
+                    onClick={() => {
+                      router.push("/products");
+                      setOpen(false);
+                    }}
+                    className="px-4 py-2 cursor-pointer hover:text-yellow-700 capitalize"
+                  >
+                    Shop
+                  </span>
                   {/* TODO: API call */}
                   {pages.map((page: Page) => (
                     <div
                       key={page._id}
-                      className="group inline-flex items-center px-4 py-2 gap-4 w-full hover:text-primary-700 capitalize"
+                      className="group inline-flex items-center px-4 py-2 gap-4 w-full hover:text-yellow-700 capitalize"
                     >
                       <div className="flex items-center gap-2 w-full">
                         <span
@@ -98,7 +107,7 @@ const SidebarMenu = ({
                             router.push(`${page.slug?.current}`);
                             setOpen(false);
                           }}
-                          className=""
+                          className="cursor-pointer"
                         >
                           {page.title}
                         </span>

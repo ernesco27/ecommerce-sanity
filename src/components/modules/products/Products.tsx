@@ -2,42 +2,51 @@
 
 import Container from "@/components/custom/Container";
 import Row from "@/components/custom/Row";
-import React, { useState } from "react";
+import React from "react";
 import ProductsSidebarLeft from "@/components/modules/products/ProductsSidebarLeft";
 import ProductsMainContent from "@/components/modules/products/ProductsMainContent";
 import type { ProductsQueryResult } from "../../../../sanity.types";
 
-const index = ({
-  minPrice,
-  setMinPrice,
-  maxPrice,
-  setMaxPrice,
-  loading,
-  setLoading,
-  filter,
-  setFilter,
-  products,
-}: {
+interface FilterState {
   minPrice: number;
-  setMinPrice: (v: number) => void;
   maxPrice: number;
-  setMaxPrice: (v: number) => void;
+  selectedSizes: string[];
+  selectedColors: string[];
+  selectedCategories: string[];
+}
+
+interface ProductsProps {
+  filters: FilterState;
+  onFilterChange: (filterType: keyof FilterState, value: any) => void;
   loading: boolean;
   setLoading: (v: boolean) => void;
   filter: string;
   setFilter: (v: string) => void;
   products: ProductsQueryResult[0][];
-}) => {
+  lastProductElementRef: (node: HTMLElement | null) => void;
+  hasMore: boolean;
+}
+
+const Products = ({
+  filters,
+  onFilterChange,
+  loading,
+  setLoading,
+  filter,
+  setFilter,
+  products,
+  lastProductElementRef,
+  hasMore,
+  className,
+}: ProductsProps & { className?: string }) => {
   return (
     <section className="my-10">
       <Container>
         <Row className="gap-12 items-start ">
           {/* sidebar */}
           <ProductsSidebarLeft
-            minPrice={minPrice}
-            maxPrice={maxPrice}
-            setMinPrice={setMinPrice}
-            setMaxPrice={setMaxPrice}
+            filters={filters}
+            onFilterChange={onFilterChange}
             loading={loading}
             setLoading={setLoading}
             className="hidden lg:flex"
@@ -45,15 +54,14 @@ const index = ({
 
           {/* main content */}
           <ProductsMainContent
-            minPrice={minPrice}
-            maxPrice={maxPrice}
-            setMinPrice={setMinPrice}
-            setMaxPrice={setMaxPrice}
+            filters={filters}
             loading={loading}
             setLoading={setLoading}
             products={products}
             filter={filter}
             setFilter={setFilter}
+            lastProductElementRef={lastProductElementRef}
+            hasMore={hasMore}
             className="flex-1"
           />
         </Row>
@@ -62,4 +70,4 @@ const index = ({
   );
 };
 
-export default index;
+export default Products;

@@ -1,29 +1,32 @@
-import { NextResponse } from "next/server";
-import { Category } from "../../../../sanity.types";
 import { client } from "@/sanity/lib/client";
+import { groq } from "next-sanity";
+import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    const categories = await client.fetch<Category[]>(`*[_type == "category"] {
+    const query = groq`*[_type == "category"] {
       _id,
       title,
-      slug,
-      description,
-      "image": image.asset->url,
-      subcategories[]->{
+      "slug": slug.current,
+      "subcategories": subcategories[]-> {
         _id,
         name,
-        slug,
-        description,
-        "image": image.asset->url
+        "slug": slug.current
       }
-    }`);
+    }`;
 
-    return NextResponse.json(categories);
+    const categories = await client.fetch(query);
+
+    return NextResponse.json(categories, {
+      status: 200,
+      headers: {
+        "Cache-Control": "public, s-maxage=60, stale-while-revalidate=30",
+      },
+    });
   } catch (error) {
     console.error("Error fetching categories:", error);
     return NextResponse.json(
-      { error: "Failed to fetch categories" },
+      { message: "Error fetching categories", error: (error as Error).message },
       { status: 500 },
     );
   }

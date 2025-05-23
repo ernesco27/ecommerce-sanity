@@ -22,12 +22,13 @@ type ProductCardProps = {
 const ProductCard = ({ item }: ProductCardProps) => {
   const router = useRouter();
 
+  // Calculate min and max prices from variants
+  const prices =
+    item.variants?.map((variant) => Number(variant.price) || 0) || [];
+  const minPrice = prices.length > 0 ? Math.min(...prices) : 0;
+  const maxPrice = prices.length > 0 ? Math.max(...prices) : 0;
   const discount =
-    item.pricing?.max && item.pricing?.min
-      ? ((Number(item.pricing.max) - Number(item.pricing.min)) /
-          Number(item.pricing.max)) *
-        100
-      : 0;
+    maxPrice && minPrice ? ((maxPrice - minPrice) / maxPrice) * 100 : 0;
 
   // Calculate average rating
   const averageRating =
@@ -37,7 +38,7 @@ const ProductCard = ({ item }: ProductCardProps) => {
 
   return (
     <Card className="w-[380px] mb-8 relative">
-      {item.pricing?.max && item.pricing?.min && (
+      {maxPrice > minPrice && (
         <Badge
           variant="default"
           className="absolute top-4 left-2 z-10 text-lg bg-white text-green-600 font-semibold"
@@ -48,19 +49,15 @@ const ProductCard = ({ item }: ProductCardProps) => {
 
       <CardHeader className="group/image relative h-[350px] overflow-hidden ">
         <Image
-          src={item.images?.gallery?.[0]?.url ?? "/placeholder.jpg"}
-          alt={item.images?.gallery?.[0]?.alt ?? item.name ?? "Product image"}
+          src={item.images?.primary?.url ?? "/placeholder.jpg"}
+          alt={item.images?.primary?.alt ?? item.name ?? "Product image"}
           width="400"
           height="350"
           className="absolute inset-0 object-cover duration-300 ease-linear group-hover/image:translate-x-full "
         />
         <Image
-          src={
-            item.images?.gallery?.[1]?.url ??
-            item.images?.gallery?.[1]?.alt ??
-            "/placeholder.jpg"
-          }
-          alt={item.images?.gallery?.[1]?.alt ?? item.name ?? "Product image"}
+          src={item.images?.primary?.url ?? "/placeholder.jpg"}
+          alt={item.images?.primary?.alt ?? item.name ?? "Product image"}
           width="400"
           height="350"
           className="absolute inset-0 object-cover duration-300 ease-linear -translate-x-full group-hover/image:translate-x-0"
@@ -121,17 +118,15 @@ const ProductCard = ({ item }: ProductCardProps) => {
       <CardContent className="flex flex-col items-start">
         <div className="flex justify-between items-center mt-2 w-full">
           <p className="text-lg font-normal text-gray-400">
-            {item.subcategories?.[0]?.name ?? "Uncategorized"}
+            {item.category?.title ?? "Uncategorized"}
           </p>
-          {rating ? (
+          {rating > 0 && (
             <span className="text-yellow-400 flex items-center gap-1">
               <Star className="w-5 h-5 fill-yellow-400" />
               <p className="text-lg font-semibold text-black">
                 {rating.toFixed(1)}
               </p>
             </span>
-          ) : (
-            ""
           )}
         </div>
         <h5
@@ -143,21 +138,21 @@ const ProductCard = ({ item }: ProductCardProps) => {
             : item.name}
         </h5>
 
-        <div className=" w-full">
-          {item.pricing?.min ? (
+        <div className="w-full">
+          {maxPrice > minPrice ? (
             <div className="flex flex-wrap justify-between">
               <CurrencyFormat
-                value={Number(item.pricing?.min)}
+                value={minPrice}
                 className="font-bold text-yellow-600 text-left w-20 text-lg lg:text-xl"
               />
               <CurrencyFormat
-                value={Number(item.pricing?.max)}
+                value={maxPrice}
                 className="line-through text-lg lg:text-xl text-slate-600"
               />
             </div>
           ) : (
             <CurrencyFormat
-              value={Number(item.pricing.max)}
+              value={maxPrice || 0}
               className="font-bold text-yellow-600 text-left w-20 text-lg lg:text-xl"
             />
           )}

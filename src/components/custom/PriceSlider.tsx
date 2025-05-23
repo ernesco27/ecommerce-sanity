@@ -49,7 +49,7 @@ const PriceSlider: React.FC<PriceSliderProps> = ({
   }
 
   return (
-    <div className="w-full flex flex-col gap-2">
+    <div className="w-full flex flex-col gap-2 ml-10">
       <p className="text-lg font-normal">{`GHC${value[0]}.00 - GHC${value[1]}.00`}</p>
       <Slider
         aria-label="Price range"
@@ -61,7 +61,7 @@ const PriceSlider: React.FC<PriceSliderProps> = ({
         max={max}
         step={step}
         sx={{
-          color: "#92400e", // primary color
+          color: "#d3a306", // primary color
           "& .MuiSlider-thumb": {
             backgroundColor: "#fff",
             border: "2px solid currentColor",
