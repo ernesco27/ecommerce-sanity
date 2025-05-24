@@ -79,7 +79,7 @@ const CustomButton = ({
       </svg>
       <span
         className={cn(
-          "text-[14px] lg:text-lg relative z-[1] -translate-x-3 transition-all duration-600 ease-[cubic-bezier(0.23,1,0.32,1)]",
+          "text-[12px] lg:text-lg relative z-[1] -translate-x-3 transition-all duration-600 ease-[cubic-bezier(0.23,1,0.32,1)]",
           !disabled && "group-hover:translate-x-3",
         )}
       >

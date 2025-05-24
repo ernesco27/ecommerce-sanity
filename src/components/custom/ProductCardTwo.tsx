@@ -84,7 +84,7 @@ const ProductCardTwo = ({ item }: ProductCardProps) => {
               <Button
                 variant="outline"
                 size="icon"
-                onClick={() => router.push(`/products/${item._id}`)}
+                onClick={() => router.push(`/products/${item.slug}`)}
                 className="hover:bg-yellow-200 hover:text-black"
               >
                 <Eye />
@@ -94,7 +94,7 @@ const ProductCardTwo = ({ item }: ProductCardProps) => {
               <Button
                 variant="outline"
                 size="icon"
-                onClick={() => router.push(`/products/${item._id}`)}
+                onClick={() => router.push(`/products/${item.slug}`)}
                 className="hover:bg-yellow-200 hover:text-black"
               >
                 <HeartIcon />
@@ -104,7 +104,7 @@ const ProductCardTwo = ({ item }: ProductCardProps) => {
               <Button
                 variant="outline"
                 size="icon"
-                onClick={() => router.push(`/products/${item._id}`)}
+                onClick={() => router.push(`/products/${item.slug}`)}
                 className="hover:bg-yellow-200 hover:text-black"
               >
                 <Share2 />
@@ -158,7 +158,7 @@ const ProductCardTwo = ({ item }: ProductCardProps) => {
             variant="outline"
             size="sm"
             className="text-lg bg-slate-100 text-black hover:bg-slate-200 transition-all duration-300 ease-in-out cursor-pointer"
-            onClick={() => router.push(`/products/${item._id}`)}
+            onClick={() => router.push(`/products/${item.slug}`)}
           >
             Shop Now
             <ArrowRight />

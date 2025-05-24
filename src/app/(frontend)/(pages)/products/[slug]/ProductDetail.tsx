@@ -7,18 +7,19 @@ import { useAnalytics } from "@/hooks/useAnalytics";
 import PageHeader from "@/components/modules/products/PageHeader";
 import ProductData from "@/components/modules/products/ProductData";
 import { Product } from "../../../../../../sanity.types";
+
 interface ProductDetailProps {
-  id: string;
+  slug: string;
 }
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-export function ProductDetail({ id }: ProductDetailProps) {
+export default function ProductDetail({ slug }: ProductDetailProps) {
   const { trackProductView } = useAnalytics();
 
   // Use SWR for real-time updates while passing initial data
   const { data: product, error } = useSWR<Product>(
-    `/api/products/${id}`,
+    `/api/products/${slug}`,
     fetcher,
   );
 
@@ -39,8 +40,6 @@ export function ProductDetail({ id }: ProductDetailProps) {
 
   if (error) return <div>Failed to load product</div>;
   if (!product) return <div>Loading...</div>;
-
-  console.log("product:", product);
 
   return (
     <>

@@ -442,7 +442,7 @@ const ProductData = ({ product }: { product: Product }) => {
               <div className="flex gap-4 mt-2 items-center w-full">
                 <CustomButton
                   size="default"
-                  name="Add to Cart"
+                  name="Add Cart"
                   primaryColor="white"
                   secondColor="#eab308"
                   outlineColor="#eab308"

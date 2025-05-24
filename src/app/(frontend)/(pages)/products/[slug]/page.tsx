@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { client } from "@/sanity/lib/client";
 import { groq } from "next-sanity";
-import { ProductDetail } from "./ProductDetail";
+import ProductDetail from "@/app/(frontend)/(pages)/products/[slug]/ProductDetail";
 import React from "react";
 
 // This type should match your Sanity schema
@@ -24,9 +24,9 @@ export type Product = {
 };
 
 // Fetch product data
-async function getProduct(id: string): Promise<Product | null> {
+async function getProduct(slug: string): Promise<Product | null> {
   return await client.fetch(
-    groq`*[_type == "product" && _id == $id][0]{
+    groq`*[_type == "product" && slug.current == $slug][0]{
         _id,
         name,
         description,
@@ -38,17 +38,17 @@ async function getProduct(id: string): Promise<Product | null> {
           }
         }
       }`,
-    { id },
+    { slug },
   );
 }
 
 export const generateMetadata = async ({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: { slug: string };
 }): Promise<Metadata> => {
-  const id = (await params).id;
-  const product = await getProduct(id);
+  const slug = params.slug;
+  const product = await getProduct(slug);
 
   if (!product) {
     return {
@@ -72,10 +72,7 @@ export const generateMetadata = async ({
   };
 };
 
-const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
-  const id = (await params).id;
-
-  return <ProductDetail id={id} />;
-};
-
-export default Page;
+export default async function Page({ params }: { params: { slug: string } }) {
+  const slug = params.slug;
+  return <ProductDetail slug={slug} />;
+}

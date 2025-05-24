@@ -97,7 +97,7 @@ const ProductCard = ({ item }: ProductCardProps) => {
               <Button
                 variant="outline"
                 size="icon"
-                onClick={() => router.push(`/products/${item._id}`)}
+                onClick={() => router.push(`/products/${item.slug}`)}
                 className="hover:bg-yellow-200"
               >
                 <Eye />
@@ -142,7 +142,7 @@ const ProductCard = ({ item }: ProductCardProps) => {
         </div>
         <h5
           className="capitalize cursor-pointer text-xl lg:text-xl mt-2"
-          onClick={() => router.push(`/products/${item._id}`)}
+          onClick={() => router.push(`/products/${item.slug}`)}
         >
           {item.name && item.name.length > 28
             ? `${item.name.substring(0, 28)}...`
@@ -174,7 +174,7 @@ const ProductCard = ({ item }: ProductCardProps) => {
           variant="outline"
           size="lg"
           className="w-full text-lg bg-slate-100 text-black hover:bg-slate-200 mb-4 cursor-pointer transition-all duration-300 ease-in-out"
-          onClick={() => router.push(`/products/${item._id}`)}
+          onClick={() => router.push(`/products/${item.slug}`)}
         >
           Shop Now
           <ArrowRight />
