@@ -120,98 +120,33 @@ const productsQuery = groq`*[_type == "product" && !(_id in path("drafts.**")) &
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-
-    // Get filter parameters
+    const category = searchParams.get("category");
+    const subcategory = searchParams.get("subcategory");
+    const featured = searchParams.get("featured");
     const filter = searchParams.get("filter") || "latest";
-    const page = Number(searchParams.get("page")) || 1;
-    const limit = Number(searchParams.get("limit")) || 10;
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "10");
     const skip = (page - 1) * limit;
 
-    const minPrice = Number(searchParams.get("minPrice")) || 0;
-    const maxPrice = Number(searchParams.get("maxPrice")) || 10000;
-    const selectedSizes =
-      searchParams.get("selectedSizes")?.split(",").filter(Boolean) || [];
-    const selectedColors =
-      searchParams.get("selectedColors")?.split(",").filter(Boolean) || [];
-    const selectedCategoriesFromURL =
-      searchParams.get("selectedCategories")?.split(",").filter(Boolean) || [];
-
-    // Build filter conditions
+    // Build filter string
+    let filterString = "";
     const filterConditions = [];
 
-    // Price filter
-    if (minPrice > 0 || maxPrice < 10000) {
-      filterConditions.push(
-        `count((variants[]->price)[@ >= ${minPrice} && @ <= ${maxPrice}]) > 0`,
-      );
+    if (category) {
+      filterConditions.push(`category._ref == "${category}"`);
     }
 
-    // Size filter
-    if (selectedSizes.length > 0) {
-      filterConditions.push(
-        `count((variants[]->size)[@ in [${selectedSizes.map((s) => `"${s}"`).join(",")}]]) > 0`,
-      );
+    if (subcategory) {
+      filterConditions.push(`"${subcategory}" in subcategory[]._ref`);
     }
 
-    // Color filter
-    if (selectedColors.length > 0) {
-      filterConditions.push(
-        `count((variants[]->colorVariants[].color)[@ in [${selectedColors.map((c) => `"${c}"`).join(",")}]]) > 0`,
-      );
+    if (featured === "true") {
+      filterConditions.push("featured == true");
     }
 
-    // Category and Subcategory filtering logic
-    if (selectedCategoriesFromURL.length > 0) {
-      const categoryQueryResults: CategoryQueryResult[] = await client.fetch(
-        `*[_id in $ids] {
-          _id,
-          _type,
-          "parentCategoryId": select(_type == "subcategory" => parentCategory._ref, null)
-        }`,
-        { ids: selectedCategoriesFromURL },
-      );
-
-      const selectedMainCategoryIds = new Set<string>();
-      const selectedSubCategoryIds = new Set<string>();
-
-      categoryQueryResults.forEach((item) => {
-        if (item._type === "category") {
-          selectedMainCategoryIds.add(item._id);
-        } else if (item._type === "subcategory") {
-          selectedSubCategoryIds.add(item._id);
-        }
-      });
-
-      const effectiveFilterClauses: string[] = [];
-
-      // Add subcategory filters first
-      if (selectedSubCategoryIds.size > 0) {
-        effectiveFilterClauses.push(
-          `count(subcategory[_ref in ["${Array.from(selectedSubCategoryIds).join('","')}"]]) > 0`,
-        );
-      }
-
-      // Add main category filters only if they don't have an explicitly selected subcategory
-      selectedMainCategoryIds.forEach((mainCatId) => {
-        const hasChildSubcategorySelected = categoryQueryResults.some(
-          (item) =>
-            item._type === "subcategory" &&
-            item.parentCategoryId === mainCatId &&
-            selectedSubCategoryIds.has(item._id),
-        );
-        if (!hasChildSubcategorySelected) {
-          effectiveFilterClauses.push(`category._ref == "${mainCatId}"`);
-        }
-      });
-
-      if (effectiveFilterClauses.length > 0) {
-        filterConditions.push(`(${effectiveFilterClauses.join(" || ")})`);
-      }
+    if (filterConditions.length > 0) {
+      filterString = ` && ${filterConditions.join(" && ")}`;
     }
-
-    // Combine all filters
-    const filterString =
-      filterConditions.length > 0 ? ` && ${filterConditions.join(" && ")}` : "";
 
     // Order by based on filter type
     const orderBy =
@@ -287,7 +222,7 @@ export async function GET(request: Request) {
   } catch (error) {
     console.error("Error fetching products:", error);
     return NextResponse.json(
-      { message: "Error fetching products", error: (error as Error).message },
+      { error: "Failed to fetch products" },
       { status: 500 },
     );
   }

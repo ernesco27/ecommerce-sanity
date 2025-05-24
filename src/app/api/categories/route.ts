@@ -8,6 +8,7 @@ export async function GET() {
       _id,
       title,
       "slug": slug.current,
+      "image": image.asset->url,
       "subcategories": subcategories[]-> {
         _id,
         name,

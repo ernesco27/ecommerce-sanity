@@ -3,20 +3,29 @@ import { groq } from "next-sanity";
 import { client } from "@/lib/client";
 import { Category } from "../../../../../../sanity.types";
 import { Metadata } from "next";
-import CategoryDetail from "./categoryDetail";
+import CategoryDetail from "./CategoryDetail";
 
 // Fetch category data
 async function getCategory(id: string): Promise<Category | null> {
   return await client.fetch(
     groq`*[_type == "category" && _id == $id][0]{
           _id,
-          name,
+          title,
           description,
           seo,
           "images": {
             "primary": {
-              "url": images.primary.asset->url,
-              "alt": images.primary.alt
+              "url": image.asset->url,
+              "alt": image.alt
+            }
+          },
+          "subcategories": subcategories[]->{
+            _id,
+            name,
+            description,
+            "image": {
+              "url": image.asset->url,
+              "alt": image.alt
             }
           }
         }`,
@@ -27,10 +36,9 @@ async function getCategory(id: string): Promise<Category | null> {
 export const generateMetadata = async ({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: { categoryId: string };
 }): Promise<Metadata> => {
-  const id = (await params).id;
-  const category = await getCategory(id);
+  const category = await getCategory(params.categoryId);
 
   if (!category) {
     return {
@@ -50,10 +58,14 @@ export const generateMetadata = async ({
   };
 };
 
-const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
-  const id = (await params).id;
+const Page = async ({ params }: { params: { categoryId: string } }) => {
+  const category = await getCategory(params.categoryId);
 
-  return <CategoryDetail id={id} />;
+  if (!category) {
+    return <div>Category not found</div>;
+  }
+
+  return <CategoryDetail category={category} />;
 };
 
 export default Page;
