@@ -157,7 +157,7 @@ const ProductCardTwo = ({ item }: ProductCardProps) => {
           <Button
             variant="outline"
             size="sm"
-            className="text-lg bg-yellow-400 text-white transition-all duration-300 ease-in-out cursor-pointer"
+            className="text-lg bg-slate-100 text-black hover:bg-slate-200 transition-all duration-300 ease-in-out cursor-pointer"
             onClick={() => router.push(`/products/${item._id}`)}
           >
             Shop Now

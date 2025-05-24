@@ -319,6 +319,8 @@ export const structure = (S: StructureBuilder) =>
             "page",
             "auditLog",
             "analytics",
+            "role",
+            "companySettings",
           ].includes(listItem.getId() ?? ""),
       ),
     ]);

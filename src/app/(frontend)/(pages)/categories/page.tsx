@@ -10,8 +10,10 @@ import useSWR from "swr";
 import { useCategories } from "@/store/categoriesStore";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 type BannerResponse = Banner & {
   imageUrl: string;
+  link: string;
 };
 
 const page = () => {
@@ -28,6 +30,7 @@ const page = () => {
   const banner1 = banners?.[7];
   const banner2 = banners?.[5];
   const banner3 = banners?.[6];
+  const banner4 = banners?.[8];
 
   const category1 = categories?.[0];
   const category2 = categories?.[1];
@@ -35,7 +38,30 @@ const page = () => {
 
   return (
     <div>
-      <div className="bg-gray-300 h-[500px] w-full">banner</div>
+      <div
+        className="bg-gray-300 h-[300px] w-full"
+        style={{
+          backgroundImage: `url(${banner4?.imageUrl})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        <div className="bg-white/50 h-full w-full flex flex-col justify-center items-center">
+          <h1 className="text-xl font-bold bg-white rounded-sm text-yellow-600 ">
+            {banner4?.title}
+          </h1>
+          <p className="text-black text-wrap font-semibold text-center text-lg">
+            {banner4?.subTitle}
+          </p>
+          <Button
+            onClick={() => router.push(banner4?.link || "")}
+            variant="outline"
+            className=" text-black hover:bg-yellow-700 mt-4"
+          >
+            {banner4?.buttonText}
+          </Button>
+        </div>
+      </div>
       <Container>
         <Services />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full mb-8">

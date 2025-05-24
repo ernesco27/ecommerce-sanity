@@ -173,7 +173,7 @@ const ProductCard = ({ item }: ProductCardProps) => {
         <Button
           variant="outline"
           size="lg"
-          className="w-full text-lg bg-yellow-400 text-white mb-4 cursor-pointer transition-all duration-300 ease-in-out"
+          className="w-full text-lg bg-slate-100 text-black hover:bg-slate-200 mb-4 cursor-pointer transition-all duration-300 ease-in-out"
           onClick={() => router.push(`/products/${item._id}`)}
         >
           Shop Now
