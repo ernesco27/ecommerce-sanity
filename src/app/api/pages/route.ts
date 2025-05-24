@@ -4,7 +4,9 @@ import { client } from "@/sanity/lib/client";
 
 export async function GET() {
   try {
-    const pages = await client.fetch<Page[]>(`*[_type == "page"] {
+    const pages = await client.fetch<
+      Page[]
+    >(`*[_type == "page" && !(_id in path("drafts.**"))] {
       _id,
       name,
       title,

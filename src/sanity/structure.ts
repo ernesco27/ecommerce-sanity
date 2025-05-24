@@ -315,6 +315,7 @@ export const structure = (S: StructureBuilder) =>
             "orderItem",
             "relatedProduct",
             "productVariantValue",
+            "productAttribute",
             "page",
             "auditLog",
             "analytics",

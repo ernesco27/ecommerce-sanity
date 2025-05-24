@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    const query = groq`*[_type == "category"] {
+    const query = groq`*[_type == "category" && !(_id in path("drafts.**"))] {
       _id,
       title,
       "slug": slug.current,

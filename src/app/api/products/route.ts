@@ -9,7 +9,7 @@ interface CategoryQueryResult {
 }
 
 // Define the product query with all necessary fields
-const productsQuery = groq`*[_type == "product"] {
+const productsQuery = groq`*[_type == "product" && !(_id in path("drafts.**")) && status == "active"] {
   _id,
   _createdAt,
   name,
@@ -223,7 +223,7 @@ export async function GET(request: Request) {
             ? "order(coalesce((variants[]->price)[0], 0) desc)"
             : "order(_createdAt desc)";
 
-    const query = groq`*[_type == "product"${filterString}] | ${orderBy} [${skip}...${skip + limit}] {
+    const query = groq`*[_type == "product" && !(_id in path("drafts.**")) && status == "active"${filterString}] | ${orderBy} [${skip}...${skip + limit}] {
       _id,
       _createdAt,
       name,

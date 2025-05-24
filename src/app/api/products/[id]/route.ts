@@ -10,7 +10,7 @@ export async function GET(
     const id = (await params).id;
 
     // Use the same query structure as the products list but filter by ID
-    const query = groq`*[_type == "product" && _id == $id][0] {
+    const query = groq`*[_type == "product" && !(_id in path("drafts.**")) && status == "active" && _id == $id][0] {
       _id,
       _createdAt,
       name,
