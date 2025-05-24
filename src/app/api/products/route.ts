@@ -252,7 +252,14 @@ export async function GET(request: Request) {
         "primary": images.primary{
           "url": asset->url,
           "alt": alt,
-          "lqip": asset->metadata.lqip
+          "lqip": asset->metadata.lqip,
+          "dimensions": asset->metadata.dimensions
+        },
+        "gallery": images.gallery[]{
+          "url": asset->url,
+          alt,
+          "lqip": asset->metadata.lqip,
+          "dimensions": asset->metadata.dimensions
         }
       },
       "variants": variants[]->{ 

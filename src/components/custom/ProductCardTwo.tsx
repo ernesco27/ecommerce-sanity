@@ -38,15 +38,24 @@ const ProductCardTwo = ({ item }: ProductCardProps) => {
     <Card className="w-[380px] max-h-[400px] overflow-hidden grid grid-cols-2 mb-6  gap-0  ">
       <CardHeader className="group/image relative h-[450px] overflow-hidden bg-red-500 ">
         <Image
-          src={item.images?.primary?.url ?? "/placeholder.jpg"}
-          alt={item.images?.primary?.alt ?? item.name ?? "Product image"}
+          src={item.images?.gallery?.[0]?.url ?? "/placeholder.jpg"}
+          alt={item.images?.gallery?.[0]?.alt ?? item.name ?? "Product image"}
           width="450"
           height="450"
           className="absolute inset-0 object-cover duration-300 ease-linear group-hover/image:translate-x-full h-full w-full"
         />
         <Image
-          src={item.images?.primary?.url ?? "/placeholder.jpg"}
-          alt={item.images?.primary?.alt ?? item.name ?? "Product image"}
+          src={
+            item.images?.gallery?.[1]?.url ??
+            item.images?.gallery?.[0]?.url ??
+            "/placeholder.jpg"
+          }
+          alt={
+            item.images?.gallery?.[1]?.alt ??
+            item.images?.gallery?.[0]?.alt ??
+            item.name ??
+            "Product image"
+          }
           width="450"
           height="450"
           className="absolute inset-0 object-cover duration-300 ease-linear -translate-x-full group-hover/image:translate-x-0 h-full w-full"

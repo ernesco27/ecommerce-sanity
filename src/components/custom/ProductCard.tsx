@@ -51,15 +51,24 @@ const ProductCard = ({ item }: ProductCardProps) => {
 
       <CardHeader className="group/image relative h-[350px] overflow-hidden ">
         <Image
-          src={item.images?.primary?.url ?? "/placeholder.jpg"}
-          alt={item.images?.primary?.alt ?? item.name ?? "Product image"}
+          src={item.images?.gallery?.[0]?.url ?? "/placeholder.jpg"}
+          alt={item.images?.gallery?.[0]?.alt ?? item.name ?? "Product image"}
           width="400"
           height="350"
           className="absolute inset-0 object-cover duration-300 ease-linear group-hover/image:translate-x-full "
         />
         <Image
-          src={item.images?.primary?.url ?? "/placeholder.jpg"}
-          alt={item.images?.primary?.alt ?? item.name ?? "Product image"}
+          src={
+            item.images?.gallery?.[1]?.url ??
+            item.images?.gallery?.[0]?.url ??
+            "/placeholder.jpg"
+          }
+          alt={
+            item.images?.gallery?.[1]?.alt ??
+            item.images?.gallery?.[0]?.alt ??
+            item.name ??
+            "Product image"
+          }
           width="400"
           height="350"
           className="absolute inset-0 object-cover duration-300 ease-linear -translate-x-full group-hover/image:translate-x-0"

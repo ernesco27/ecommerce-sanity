@@ -296,12 +296,11 @@ export const productType = defineType({
       title: "name",
       subtitle: "status",
       media: "images.primary",
-      totalStock: "stockSummary.totalStock",
     },
-    prepare({ title, subtitle, media, totalStock }) {
+    prepare({ title, subtitle, media }) {
       return {
         title: title || "Untitled Product",
-        subtitle: `${subtitle || "Draft"} - Stock: ${totalStock || 0}`,
+        subtitle: `${subtitle || "Draft"}`,
         media: media,
       };
     },
