@@ -1,17 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { Category } from "../../../../../../sanity.types";
+import { Category, ProductsQueryResult } from "../../../../../../sanity.types";
 import Container from "@/components/custom/Container";
-import Row from "@/components/custom/Row";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbList,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import Link from "next/link";
-import ProductsContainer from "@/components/modules/products/ProductsContainer";
+
 import { useProducts } from "@/hooks/useProducts";
 import { Loader2 } from "lucide-react";
 import ProductCard from "@/components/custom/ProductCard";
@@ -22,9 +14,9 @@ interface CategoryDetailProps {
 }
 
 const CategoryDetail = ({ category }: CategoryDetailProps) => {
-  const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(
-    null,
-  );
+  const [selectedSubcategory, setSelectedSubcategory] = useState<
+    string | undefined
+  >(undefined);
 
   const { products, isLoading, isError } = useProducts({
     category: category._id,
@@ -49,7 +41,7 @@ const CategoryDetail = ({ category }: CategoryDetailProps) => {
           <Container>
             <div className="flex flex-wrap gap-4 justify-center">
               <button
-                onClick={() => setSelectedSubcategory(null)}
+                onClick={() => setSelectedSubcategory(undefined)}
                 className={`px-4 py-2 rounded-full ${
                   !selectedSubcategory
                     ? "bg-yellow-600 text-white"
@@ -85,7 +77,7 @@ const CategoryDetail = ({ category }: CategoryDetailProps) => {
             </div>
           ) : products && products.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {products.map((product) => (
+              {products.map((product: ProductsQueryResult[0]) => (
                 <ProductCard key={product._id} item={product} />
               ))}
             </div>
