@@ -77,7 +77,7 @@ const page = () => {
               </Badge>
               <h2
                 className="text-2xl font-bold hover:text-yellow-800 cursor-pointer"
-                onClick={() => router.push(`/categories/${category._id}`)}
+                onClick={() => router.push(`/categories/${category.slug}`)}
               >
                 {category.title}
               </h2>
