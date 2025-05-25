@@ -5,7 +5,13 @@ import { NextResponse } from "next/server";
 interface CategoryQueryResult {
   _id: string;
   _type: "category" | "subcategory";
-  parentCategoryId?: string | null;
+  parentCategoryId?: string | null; // For subcategories, this will be parent's _id
+}
+
+interface CategoryResult {
+  _id: string;
+  _type: "category" | "subcategory";
+  parentCategory: string | null;
 }
 
 // Define the product query with all necessary fields
@@ -120,73 +126,148 @@ const productsQuery = groq`*[_type == "product" && !(_id in path("drafts.**")) &
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const category = searchParams.get("category");
-    const subcategory = searchParams.get("subcategory");
-    const featured = searchParams.get("featured");
+
     const filter = searchParams.get("filter") || "latest";
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
     const skip = (page - 1) * limit;
 
-    // Build filter string
-    let filterString = "";
-    const filterConditions = [];
+    const minPrice = searchParams.get("minPrice");
+    const maxPrice = searchParams.get("maxPrice");
+    const selectedSizes =
+      searchParams.get("selectedSizes")?.split(",").filter(Boolean) || [];
+    const selectedColors =
+      searchParams.get("selectedColors")?.split(",").filter(Boolean) || [];
+    const selectedCategoriesFromURL =
+      searchParams.get("selectedCategories")?.split(",").filter(Boolean) || [];
+    const featured = searchParams.get("featured");
 
-    if (category) {
-      filterConditions.push(`category._ref == "${category}"`);
+    const baseFilterConditions = [
+      "_type == 'product'",
+      "!(_id in path('drafts.**'))",
+      "status == 'active'",
+    ];
+    const additionalFilterConditions: string[] = [];
+
+    if (minPrice && maxPrice) {
+      const minPriceNum = parseFloat(minPrice);
+      const maxPriceNum = parseFloat(maxPrice);
+      additionalFilterConditions.push(
+        `coalesce((variants[]->price)[0], 0) >= ${minPriceNum} && coalesce((variants[]->price)[0], 0) <= ${maxPriceNum}`,
+      );
     }
 
-    if (subcategory) {
-      filterConditions.push(`"${subcategory}" in subcategory[]._ref`);
+    if (selectedCategoriesFromURL.length > 0) {
+      const categoryQueryResults: CategoryQueryResult[] = await client.fetch(
+        groq`*[_id in $ids] {
+          _id,
+          _type,
+          "parentCategoryId": select(_type == "subcategory" => parentCategory._ref, null)
+        }`,
+        { ids: selectedCategoriesFromURL },
+      );
+
+      const selectedMainCategoryIds = new Set<string>();
+      const selectedSubCategoryIds = new Set<string>();
+
+      categoryQueryResults.forEach((item) => {
+        if (item._type === "category") {
+          selectedMainCategoryIds.add(item._id);
+        } else if (item._type === "subcategory") {
+          selectedSubCategoryIds.add(item._id);
+        }
+      });
+
+      const effectiveCategoryFilterClauses: string[] = [];
+
+      if (selectedSubCategoryIds.size > 0) {
+        effectiveCategoryFilterClauses.push(
+          `count(subcategory[_ref in [${Array.from(selectedSubCategoryIds)
+            .map((id) => `"${id}"`)
+            .join(",")}]]) > 0`,
+        );
+      }
+
+      selectedMainCategoryIds.forEach((mainCatId) => {
+        const hasDirectlySelectedChildSubcategory = categoryQueryResults.some(
+          (item) =>
+            item._type === "subcategory" &&
+            item.parentCategoryId === mainCatId &&
+            selectedSubCategoryIds.has(item._id),
+        );
+        if (!hasDirectlySelectedChildSubcategory) {
+          effectiveCategoryFilterClauses.push(
+            `category._ref == "${mainCatId}"`,
+          );
+        }
+      });
+
+      if (effectiveCategoryFilterClauses.length > 0) {
+        additionalFilterConditions.push(
+          `(${effectiveCategoryFilterClauses.join(" || ")})`,
+        );
+      }
+    }
+
+    if (selectedSizes.length > 0) {
+      additionalFilterConditions.push(
+        `count(variants[]->[size in [${selectedSizes.map((size) => `"${size}"`).join(",")} ]]) > 0`,
+      );
+    }
+
+    if (selectedColors.length > 0) {
+      additionalFilterConditions.push(
+        `count(variants[]->colorVariants[color in [${selectedColors.map((color) => `"${color}"`).join(",")}]]) > 0`,
+      );
     }
 
     if (featured === "true") {
-      filterConditions.push("featured == true");
+      additionalFilterConditions.push("featured == true");
     }
 
-    if (filterConditions.length > 0) {
-      filterString = ` && ${filterConditions.join(" && ")}`;
-    }
+    const finalFilterConditions = baseFilterConditions.concat(
+      additionalFilterConditions,
+    );
+    const filterString = finalFilterConditions.join(" && ");
 
-    // Order by based on filter type
     const orderBy =
       filter === "latest"
-        ? "order(_createdAt desc)"
+        ? "| order(_createdAt desc)"
         : filter === "price_low_to_high"
-          ? "order(coalesce((variants[]->price)[0], 0) asc)"
+          ? "| order(coalesce((variants[]->price)[0], 0) asc)"
           : filter === "price_high_to_low"
-            ? "order(coalesce((variants[]->price)[0], 0) desc)"
-            : "order(_createdAt desc)";
+            ? "| order(coalesce((variants[]->price)[0], 0) desc)"
+            : "| order(_createdAt desc)";
 
-    const query = groq`*[_type == "product" && !(_id in path("drafts.**")) && status == "active"${filterString}] | ${orderBy} [${skip}...${skip + limit}] {
+    const query = groq`*[${filterString}] ${orderBy} [${skip}...${skip + limit}] {
       _id,
       _createdAt,
       name,
       "slug": slug.current,
       description,
-      "category": category->{ 
-        _id, 
-        title, 
+      "category": category->{
+        _id,
+        title,
         "slug": slug.current
       },
-      "subcategories": subcategory[]->{ 
-        _id, 
-        name, 
+      "subcategories": subcategory[]->{
+        _id,
+        name,
         "slug": slug.current,
-        "parentCategory": parentCategory->{ 
+        "parentCategory": parentCategory->{
           _id,
           title
         }
       },
-      "brand": brand->{ 
-        _id, 
-        name, 
-        "slug": slug.current 
+      "brand": brand->{
+        _id,
+        name,
+        "slug": slug.current
       },
       "images": {
         "primary": images.primary{
           "url": asset->url,
-          "alt": alt,
+          alt,
           "lqip": asset->metadata.lqip,
           "dimensions": asset->metadata.dimensions
         },
@@ -197,7 +278,7 @@ export async function GET(request: Request) {
           "dimensions": asset->metadata.dimensions
         }
       },
-      "variants": variants[]->{ 
+      "variants": variants[]->{
         _id,
         size,
         price,
@@ -211,7 +292,9 @@ export async function GET(request: Request) {
       }
     }`;
 
+    console.log("GROQ Query:", query); // For debugging
     const products = await client.fetch(query);
+    console.log("Products count:", products.length); // For debugging
 
     return NextResponse.json(products, {
       status: 200,

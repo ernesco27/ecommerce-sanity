@@ -38,7 +38,7 @@ const ColorFilter: React.FC<ColorFilterProps> = ({
   };
 
   return (
-    <div className={cn("w-full  gap-3  ", className)}>
+    <div className={cn("w-full  gap-3 pl-6 ", className)}>
       {COLORS.map((color) => (
         <button
           key={color.name}

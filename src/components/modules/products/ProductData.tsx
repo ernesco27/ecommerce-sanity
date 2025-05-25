@@ -161,14 +161,6 @@ const ProductData = ({ product }: { product: Product }) => {
       return;
     }
 
-    console.log("colorVariant:", colorVariant);
-    console.log("colorVariant.images:", colorVariant.images);
-    console.log("colorVariant.images?.[0]:", colorVariant.images?.[0]);
-    console.log(
-      "colorVariant.images?.[0]?.asset:",
-      colorVariant.images?.[0]?.asset,
-    );
-
     // Construct image URL for the selected variant
     const imageUrl = (colorVariant.images?.[0] as any)?.url || undefined;
 

@@ -23,7 +23,7 @@ const SizeFilter: React.FC<SizeFilterProps> = ({
   };
 
   return (
-    <div className={cn("w-full ", className)}>
+    <div className={cn("w-full pl-10 ", className)}>
       {SIZES.map((size) => (
         <button
           key={size}
