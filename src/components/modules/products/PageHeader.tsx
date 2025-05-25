@@ -70,7 +70,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
               <BreadcrumbItem>
                 <Link
                   href={`/${link1}`}
-                  className="text-lg text-black lg:text-2xl hover:text-primary-600 "
+                  className="text-lg text-black lg:text-2xl hover:text-yellow-600 "
                 >
                   {link1.charAt(0).toUpperCase() + link1.slice(1)}
                 </Link>
@@ -81,12 +81,15 @@ const PageHeader: React.FC<PageHeaderProps> = ({
             <>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <Link
-                  href={`/${link1}/${link2}`}
+                <p className="text-lg capitalize text-black lg:text-2xl hover:text-yellow-600 cursor-pointer ">
+                  {link2}
+                </p>
+                {/* <Link
+                  href={`/${link1}`}
                   className="text-lg capitalize text-black lg:text-2xl hover:text-primary-600 "
                 >
                   {link2}
-                </Link>
+                </Link> */}
               </BreadcrumbItem>
             </>
           )}
@@ -96,7 +99,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
               <BreadcrumbItem>
                 <Link
                   href={`/${link1}/${link2}/${link3}`}
-                  className="text-lg capitalize text-black lg:text-2xl hover:text-primary-600 "
+                  className="text-lg capitalize text-black lg:text-2xl hover:text-yellow-600 "
                 >
                   {link3}
                 </Link>

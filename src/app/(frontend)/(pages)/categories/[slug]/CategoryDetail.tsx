@@ -15,10 +15,16 @@ interface CategoryDetailProps {
 
 const CategoryDetail = ({ category }: CategoryDetailProps) => {
   const searchParams = useSearchParams();
-  const initialSubcategory = searchParams.get("subcategory");
+  const subcategorySlug = searchParams.get("subcategory");
+
+  // Find the subcategory ID from the slug
+  const selectedSubcategoryId = subcategorySlug
+    ? category.subcategories?.find((sub) => sub.slug === subcategorySlug)?._id
+    : undefined;
+
   const [selectedSubcategory, setSelectedSubcategory] = useState<
     string | undefined
-  >(initialSubcategory || undefined);
+  >(selectedSubcategoryId);
 
   const { products, isLoading, isError } = useProducts({
     category: category._id,
@@ -33,7 +39,7 @@ const CategoryDetail = ({ category }: CategoryDetailProps) => {
     <>
       <PageHeader
         heading={category?.title || ""}
-        link1="Categories"
+        link1="categories"
         link2={category?.title || ""}
       />
 

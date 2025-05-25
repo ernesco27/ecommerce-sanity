@@ -113,7 +113,7 @@ const MainMenu = () => {
                               >
                                 <Link
                                   className="hover:text-yellow-600"
-                                  href={`/categories/${cat.slug}?subcategory=${sub._id}`}
+                                  href={`/categories/${cat.slug}?subcategory=${sub.slug}`}
                                 >
                                   {sub.name}
                                 </Link>
