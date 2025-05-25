@@ -131,6 +131,7 @@ export async function GET(request: Request) {
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
     const skip = (page - 1) * limit;
+    const search = searchParams.get("search");
 
     const minPrice = searchParams.get("minPrice");
     const maxPrice = searchParams.get("maxPrice");
@@ -149,7 +150,18 @@ export async function GET(request: Request) {
       "!(_id in path('drafts.**'))",
       "status == 'active'",
     ];
-    const additionalFilterConditions: string[] = [];
+
+    // Add search condition if search parameter exists
+    if (search) {
+      const sanitizedSearch = search.replace(/['"\\]/g, "").trim();
+      if (sanitizedSearch) {
+        baseFilterConditions.push(`(
+          lower(name) match "*${sanitizedSearch.toLowerCase()}*" ||
+          lower(description) match "*${sanitizedSearch.toLowerCase()}*" ||
+          lower(materialType) match "*${sanitizedSearch.toLowerCase()}*"
+        )`);
+      }
+    }
 
     if (category) {
       baseFilterConditions.push(`category._ref == "${category}"`);
@@ -164,7 +176,7 @@ export async function GET(request: Request) {
     if (minPrice && maxPrice) {
       const minPriceNum = parseFloat(minPrice);
       const maxPriceNum = parseFloat(maxPrice);
-      additionalFilterConditions.push(
+      baseFilterConditions.push(
         `coalesce((variants[]->price)[0], 0) >= ${minPriceNum} && coalesce((variants[]->price)[0], 0) <= ${maxPriceNum}`,
       );
     }
@@ -215,32 +227,29 @@ export async function GET(request: Request) {
       });
 
       if (effectiveCategoryFilterClauses.length > 0) {
-        additionalFilterConditions.push(
+        baseFilterConditions.push(
           `(${effectiveCategoryFilterClauses.join(" || ")})`,
         );
       }
     }
 
     if (selectedSizes.length > 0) {
-      additionalFilterConditions.push(
+      baseFilterConditions.push(
         `count(variants[]->[size in [${selectedSizes.map((size) => `"${size}"`).join(",")} ]]) > 0`,
       );
     }
 
     if (selectedColors.length > 0) {
-      additionalFilterConditions.push(
+      baseFilterConditions.push(
         `count(variants[]->colorVariants[color in [${selectedColors.map((color) => `"${color}"`).join(",")}]]) > 0`,
       );
     }
 
     if (featured === "true") {
-      additionalFilterConditions.push("featured == true");
+      baseFilterConditions.push("featured == true");
     }
 
-    const finalFilterConditions = baseFilterConditions.concat(
-      additionalFilterConditions,
-    );
-    const filterString = finalFilterConditions.join(" && ");
+    const finalFilterConditions = baseFilterConditions.join(" && ");
 
     const orderBy =
       filter === "latest"
@@ -251,7 +260,7 @@ export async function GET(request: Request) {
             ? "| order(coalesce((variants[]->price)[0], 0) desc)"
             : "| order(_createdAt desc)";
 
-    const query = groq`*[${filterString}] ${orderBy} [${skip}...${skip + limit}] {
+    const query = groq`*[${finalFilterConditions}] ${orderBy} [${skip}...${skip + limit}] {
       _id,
       _createdAt,
       name,

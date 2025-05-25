@@ -58,7 +58,7 @@ const IconsGroup = ({
         >
           <CiUser size={40} className="hover:text-yellow-600 hidden lg:block" />
         </div>
-        {/* <CartMin cartOpen={cartOpen} setCartOpen={setCartOpen} /> */}
+
         <CartPreview
           cartOpen={cartOpen}
           setCartOpen={setCartOpen}
