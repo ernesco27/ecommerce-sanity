@@ -15,12 +15,14 @@ import useSWR from "swr";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import debounce from "lodash/debounce";
-import { Product } from "../../../../sanity.types";
 
 interface SearchProduct {
   _id: string;
   name: string;
   slug: string;
+  description: string;
+  searchScore: number;
+  matchedFields: string[];
   images: {
     primary: {
       url: string;
@@ -30,6 +32,9 @@ interface SearchProduct {
   variants: Array<{
     price: number | null;
   }> | null;
+  brand?: {
+    name: string;
+  };
 }
 
 const fetcher = (url: string) =>
@@ -43,6 +48,25 @@ const fetcher = (url: string) =>
       throw error;
     });
 
+const highlightMatch = (text: string, search: string) => {
+  if (!search) return text;
+  const regex = new RegExp(`(${search})`, "gi");
+  const parts = text.split(regex);
+  return (
+    <>
+      {parts.map((part, i) =>
+        regex.test(part) ? (
+          <mark key={i} className="bg-yellow-100 px-0.5 rounded">
+            {part}
+          </mark>
+        ) : (
+          <span key={i}>{part}</span>
+        ),
+      )}
+    </>
+  );
+};
+
 const SearchBar = ({
   openSearchBar,
   setOpenSearchBar,
@@ -52,8 +76,15 @@ const SearchBar = ({
 }) => {
   const router = useRouter();
   const [search, setSearch] = useState("");
+  const [inputValue, setInputValue] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const searchResultsRef = useRef<HTMLDivElement>(null);
+  const [recentSearches, setRecentSearches] = useState<string[]>(() => {
+    if (typeof window !== "undefined") {
+      return JSON.parse(localStorage.getItem("recentSearches") || "[]");
+    }
+    return [];
+  });
 
   const { data, error, isLoading } = useSWR<SearchProduct[]>(
     search.length > 2
@@ -66,6 +97,12 @@ const SearchBar = ({
     },
   );
 
+  // Sort results by search score
+  const sortedResults = React.useMemo(() => {
+    if (!data) return [];
+    return [...data].sort((a, b) => b.searchScore - a.searchScore);
+  }, [data]);
+
   // Debounced search handler
   const debouncedSearch = useCallback(
     debounce((value: string) => {
@@ -76,16 +113,37 @@ const SearchBar = ({
   );
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    debouncedSearch(e.target.value);
+    const value = e.target.value;
+    setInputValue(value);
+    debouncedSearch(value);
+  };
+
+  const handleSelectResult = (product: SearchProduct) => {
+    // Save search to recent searches
+    const newRecentSearches = [
+      inputValue,
+      ...recentSearches.filter((s) => s !== inputValue),
+    ].slice(0, 5);
+    setRecentSearches(newRecentSearches);
+    localStorage.setItem("recentSearches", JSON.stringify(newRecentSearches));
+
+    // Reset search field
+    setInputValue("");
+    setSearch("");
+
+    router.push(`/products/${product.slug}`);
+    setOpenSearchBar(false);
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-    if (!data?.length) return;
+    if (!sortedResults?.length) return;
 
     switch (e.key) {
       case "ArrowDown":
         e.preventDefault();
-        setSelectedIndex((prev) => (prev < data.length - 1 ? prev + 1 : prev));
+        setSelectedIndex((prev) =>
+          prev < sortedResults.length - 1 ? prev + 1 : prev,
+        );
         break;
       case "ArrowUp":
         e.preventDefault();
@@ -93,9 +151,8 @@ const SearchBar = ({
         break;
       case "Enter":
         e.preventDefault();
-        if (selectedIndex >= 0 && data[selectedIndex]) {
-          router.push(`/products/${data[selectedIndex].slug}`);
-          setOpenSearchBar(false);
+        if (selectedIndex >= 0 && sortedResults[selectedIndex]) {
+          handleSelectResult(sortedResults[selectedIndex]);
         }
         break;
       case "Escape":
@@ -120,16 +177,17 @@ const SearchBar = ({
   return (
     <Dialog open={openSearchBar} onOpenChange={setOpenSearchBar}>
       <DialogContent
-        className="lg:max-w-screen-lg z-[99999] [&>.closeBtn]:hidden"
+        className="lg:max-w-screen-lg z-[99999] w-[800px] [&>button]:hidden"
         onKeyDown={handleKeyDown}
       >
         <div className="flex items-center justify-center w-full gap-4">
           <SearchIcon className="w-8 h-8 text-slate-300" />
           <div className="relative flex-1">
             <Input
-              placeholder="Search for any product (min. 3 characters)"
-              className="text-slate-500 text-lg font-medium lg:text-xl pr-10"
+              placeholder="Search for any product..."
+              className="text-slate-500 text-sm lg:text-lg font-medium lg:text-xl pr-10  focus-visible:ring-yellow-100"
               onChange={handleSearch}
+              value={inputValue}
               autoFocus
             />
             {isLoading && (
@@ -137,12 +195,12 @@ const SearchBar = ({
             )}
           </div>
           <Button
-            className="px-4 hover:bg-primary-500 group"
+            className="px-4 hover:bg-yellow-500 group cursor-pointer"
             variant="outline"
             size="icon"
             onClick={() => setOpenSearchBar(false)}
           >
-            <X className="group-hover:text-white" />
+            <X className="group-hover:text-white " />
           </Button>
         </div>
 
@@ -162,24 +220,48 @@ const SearchBar = ({
             </div>
           )}
 
-          {!error && search.length >= 3 && !isLoading && data?.length === 0 && (
-            <div className="text-center text-slate-500 py-4">
-              No products found matching your search
+          {!error && search.length === 0 && recentSearches.length > 0 && (
+            <div className="mb-4">
+              <h3 className="text-sm font-medium text-slate-500 mb-2">
+                Recent Searches
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {recentSearches.map((term, i) => (
+                  <Button
+                    key={i}
+                    variant="outline"
+                    size="sm"
+                    className="text-sm"
+                    onClick={() => {
+                      setInputValue(term);
+                      setSearch(term);
+                    }}
+                  >
+                    {term}
+                  </Button>
+                ))}
+              </div>
             </div>
           )}
 
           {!error &&
-            data?.map((product, index) => (
+            search.length >= 3 &&
+            !isLoading &&
+            sortedResults?.length === 0 && (
+              <div className="text-center text-slate-500 py-4">
+                No products found matching your search
+              </div>
+            )}
+
+          {!error &&
+            sortedResults?.map((product, index) => (
               <div
                 key={product._id}
-                className={`group flex flex-col justify-start gap-4 px-4 items-center cursor-pointer lg:h-fit lg:flex-row lg:justify-between hover:border-gray-50 hover:scale-105 transition-all hover:shadow-lg py-4 rounded-lg ${
-                  selectedIndex === index ? "bg-slate-50" : ""
+                className={`group flex flex-col justify-start gap-4 px-4 items-center cursor-pointer lg:h-fit lg:flex-row lg:justify-between hover:border-gray-50 hover:scale-102 transition-all hover:shadow-lg py-4 rounded-lg ${
+                  selectedIndex === index ? "bg-slate-100" : ""
                 }`}
                 role="button"
-                onClick={() => {
-                  router.push(`/products/${product.slug}`);
-                  setOpenSearchBar(false);
-                }}
+                onClick={() => handleSelectResult(product)}
                 onMouseEnter={() => setSelectedIndex(index)}
                 tabIndex={0}
               >
@@ -193,11 +275,25 @@ const SearchBar = ({
                   className="object-contain"
                 />
 
-                <span className="text-center text-lg lg:text-left lg:flex-1 px-4">
-                  {product.name}
-                </span>
+                <div className="flex-1 space-y-1 px-4">
+                  <div className="text-lg">
+                    {highlightMatch(product.name, search)}
+                  </div>
 
-                <div className="w-40 text-center font-bold text-xl text-primary-900 lg:text-right">
+                  {product.matchedFields.includes("description") && (
+                    <p className="text-sm text-slate-500 line-clamp-2">
+                      {highlightMatch(product.description, search)}
+                    </p>
+                  )}
+
+                  {product.brand && product.matchedFields.includes("brand") && (
+                    <p className="text-sm text-primary-500">
+                      Brand: {highlightMatch(product.brand.name, search)}
+                    </p>
+                  )}
+                </div>
+
+                <div className="w-40 text-center lg:text-right font-bold text-xl text-yellow-700">
                   GH¢ {product.variants?.[0]?.price?.toFixed(2) || "N/A"}
                 </div>
               </div>

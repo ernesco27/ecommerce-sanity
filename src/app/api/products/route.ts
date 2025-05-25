@@ -155,11 +155,18 @@ export async function GET(request: Request) {
     if (search) {
       const sanitizedSearch = search.replace(/['"\\]/g, "").trim();
       if (sanitizedSearch) {
-        baseFilterConditions.push(`(
-          lower(name) match "*${sanitizedSearch.toLowerCase()}*" ||
-          lower(description) match "*${sanitizedSearch.toLowerCase()}*" ||
-          lower(materialType) match "*${sanitizedSearch.toLowerCase()}*"
-        )`);
+        const searchTerms = sanitizedSearch.toLowerCase().split(/\s+/);
+        const searchConditions = searchTerms.map(
+          (term) => `(
+          lower(name) match "*${term}*" ||
+          lower(description) match "*${term}*" ||
+          lower(materialType) match "*${term}*" ||
+          lower(brand->name) match "*${term}*" ||
+          count(variants[]->colorVariants[lower(color) match "*${term}*"]) > 0
+        )`,
+        );
+
+        baseFilterConditions.push(`(${searchConditions.join(" && ")})`);
       }
     }
 
@@ -266,6 +273,32 @@ export async function GET(request: Request) {
       name,
       "slug": slug.current,
       description,
+      "searchScore": select(
+        ${
+          search
+            ? `
+          (lower(name) match "*${search.toLowerCase()}*") => 5,
+          (lower(brand->name) match "*${search.toLowerCase()}*") => 4,
+          (lower(description) match "*${search.toLowerCase()}*") => 3,
+          (lower(materialType) match "*${search.toLowerCase()}*") => 2,
+          count(variants[]->colorVariants[lower(color) match "*${search.toLowerCase()}*"]) > 0 => 1,
+        `
+            : ""
+        } true => 0
+      ),
+      "matchedFields": select(
+        ${
+          search
+            ? `
+          defined(name) && lower(name) match "*${search.toLowerCase()}*" => ["name"],
+          defined(brand->name) && lower(brand->name) match "*${search.toLowerCase()}*" => ["brand"],
+          defined(description) && lower(description) match "*${search.toLowerCase()}*" => ["description"],
+          defined(materialType) && lower(materialType) match "*${search.toLowerCase()}*" => ["materialType"],
+          count(variants[]->colorVariants[lower(color) match "*${search.toLowerCase()}*"]) > 0 => ["color"],
+        `
+            : ""
+        } true => []
+      ),
       "category": category->{
         _id,
         title,
