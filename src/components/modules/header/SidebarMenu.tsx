@@ -8,6 +8,12 @@ import {
   SheetClose,
 } from "@/components/ui/sheet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 import { CiMenuFries } from "react-icons/ci";
 import { cn } from "@/lib/utils";
@@ -41,7 +47,7 @@ const SidebarMenu = ({
         <SheetContent
           className={cn("px-4 w-full [&>#closeBtn]:text-3xl ", "md:w-[400px]")}
         >
-          <div className="mt-10 ">
+          <div className="mt-10">
             <Tabs defaultValue="category">
               <TabsList className="grid grid-cols-2 w-full">
                 <TabsTrigger value="category">Categories</TabsTrigger>
@@ -49,37 +55,44 @@ const SidebarMenu = ({
               </TabsList>
               <TabsContent value="category">
                 <div className="flex flex-col gap-4 h-full">
-                  {/* TODO: API call */}
-                  {categories.map((item: Category) => (
-                    <div key={item._id} className="group px-4 py-2">
-                      <div className="flex items-center gap-4">
-                        <span
-                          className="capitalize hover:text-yellow-500 cursor-pointer"
-                          onClick={() => {
-                            router.push(`/categories/${item.slug}`);
-                            setOpen(false);
+                  <Accordion type="single" collapsible className="w-full">
+                    {categories.map((category: Category) => (
+                      <AccordionItem value={category._id} key={category._id}>
+                        <AccordionTrigger
+                          onClick={(e) => {
+                            // Prevent accordion toggle when clicking the category name
+                            if ((e.target as HTMLElement).tagName === "SPAN") {
+                              e.stopPropagation();
+                              router.push(`/categories/${category.slug}`);
+                              setOpen(false);
+                            }
                           }}
+                          className="hover:no-underline"
                         >
-                          {item.title}
-                        </span>
-
-                        {item.subcategories &&
-                          item.subcategories.length > 0 && (
-                            <ChevronRight
-                              className={`text-icon ms-auto h-5 w-5`}
-                              onClick={() => {
-                                setShow(!show);
-                                if (item.subcategories) {
-                                  setSubCategory(
-                                    item.subcategories as unknown as Subcategory[],
-                                  );
-                                }
-                              }}
-                            />
+                          <span className="text-lg hover:text-yellow-500">
+                            {category.title}
+                          </span>
+                        </AccordionTrigger>
+                        {category.subcategories &&
+                          category.subcategories.length > 0 && (
+                            <AccordionContent>
+                              <div className="flex flex-col space-y-2 pl-4">
+                                {category.subcategories.map((sub) => (
+                                  <Link
+                                    key={sub._id}
+                                    href={`/categories/${category.slug}?subcategory=${sub.slug}`}
+                                    className="text-lg hover:text-yellow-500 py-2"
+                                    onClick={() => setOpen(false)}
+                                  >
+                                    {sub.name}
+                                  </Link>
+                                ))}
+                              </div>
+                            </AccordionContent>
                           )}
-                      </div>
-                    </div>
-                  ))}
+                      </AccordionItem>
+                    ))}
+                  </Accordion>
                 </div>
               </TabsContent>
               <TabsContent value="page">
@@ -93,7 +106,6 @@ const SidebarMenu = ({
                   >
                     Shop
                   </span>
-                  {/* TODO: API call */}
                   {pages.map((page: Page) => (
                     <div
                       key={page._id}
