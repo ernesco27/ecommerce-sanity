@@ -95,7 +95,7 @@ const MainMenu = () => {
                       >
                         <li>
                           <Link
-                            href={`/categories/${cat.slug?.current}`}
+                            href={`/categories/${cat.slug}`}
                             className="font-bold group/item w-full transition-all flex items-center gap-2 duration-100 ease-linear hover:translate-x-1 capitalize"
                           >
                             <h5 className="transition ease-in-out hover:text-yellow-800">
@@ -113,7 +113,7 @@ const MainMenu = () => {
                               >
                                 <Link
                                   className="hover:text-yellow-600"
-                                  href={`/categories/${sub.slug?.current}`}
+                                  href={`/categories/${cat.slug}?subcategory=${sub._id}`}
                                 >
                                   {sub.name}
                                 </Link>

@@ -1,22 +1,24 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Category, ProductsQueryResult } from "../../../../../../sanity.types";
 import Container from "@/components/custom/Container";
-
 import { useProducts } from "@/hooks/useProducts";
 import { Loader2 } from "lucide-react";
 import ProductCard from "@/components/custom/ProductCard";
 import PageHeader from "@/components/modules/products/PageHeader";
+import { useSearchParams } from "next/navigation";
 
 interface CategoryDetailProps {
   category: Category;
 }
 
 const CategoryDetail = ({ category }: CategoryDetailProps) => {
+  const searchParams = useSearchParams();
+  const initialSubcategory = searchParams.get("subcategory");
   const [selectedSubcategory, setSelectedSubcategory] = useState<
     string | undefined
-  >(undefined);
+  >(initialSubcategory || undefined);
 
   const { products, isLoading, isError } = useProducts({
     category: category._id,
