@@ -19,7 +19,9 @@ const CategoryDetail = ({ category }: CategoryDetailProps) => {
 
   // Find the subcategory ID from the slug
   const selectedSubcategoryId = subcategorySlug
-    ? category.subcategories?.find((sub) => sub.slug === subcategorySlug)?._id
+    ? category.subcategories?.find(
+        (sub) => (sub.slug as unknown as string) === subcategorySlug,
+      )?._id
     : undefined;
 
   const [selectedSubcategory, setSelectedSubcategory] = useState<

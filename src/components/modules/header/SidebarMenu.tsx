@@ -56,7 +56,7 @@ const SidebarMenu = ({
                         <span
                           className="capitalize hover:text-yellow-500 cursor-pointer"
                           onClick={() => {
-                            router.push(`/categories/${item.slug?.current}`);
+                            router.push(`/categories/${item.slug}`);
                             setOpen(false);
                           }}
                         >
