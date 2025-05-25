@@ -141,6 +141,8 @@ export async function GET(request: Request) {
     const selectedCategoriesFromURL =
       searchParams.get("selectedCategories")?.split(",").filter(Boolean) || [];
     const featured = searchParams.get("featured");
+    const category = searchParams.get("category");
+    const subcategory = searchParams.get("subcategory");
 
     const baseFilterConditions = [
       "_type == 'product'",
@@ -148,6 +150,16 @@ export async function GET(request: Request) {
       "status == 'active'",
     ];
     const additionalFilterConditions: string[] = [];
+
+    if (category) {
+      baseFilterConditions.push(`category._ref == "${category}"`);
+    }
+
+    if (subcategory) {
+      baseFilterConditions.push(
+        `count(subcategory[_ref == "${subcategory}"]) > 0`,
+      );
+    }
 
     if (minPrice && maxPrice) {
       const minPriceNum = parseFloat(minPrice);
