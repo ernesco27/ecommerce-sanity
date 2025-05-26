@@ -129,6 +129,7 @@ const CartPreview = ({
             </div>
             <div className="flex flex-col gap-4">
               <Link
+                onClick={() => setCartOpen(false)}
                 href="/cart"
                 className="rounded-sm py-2 justify-center hover:bg-yellow-500 text-center hover:text-white capitalize border border-border text-base transition-all duration-300 ease-in-out"
               >

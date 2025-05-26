@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 
 //import "../globals.css";
-import "../(frontend)/index.css";
+//import "../(frontend)/index.css";
+import "../globals.css";
 
 import Header from "@/components/modules/header";
 import Footer from "@/components/modules/footer";
