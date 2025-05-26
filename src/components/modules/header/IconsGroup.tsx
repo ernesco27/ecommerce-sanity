@@ -84,7 +84,7 @@ const IconsGroup = ({
               ) : (
                 <CiUser
                   size={35}
-                  className="hover:text-yellow-600 hidden lg:block"
+                  className="hover:text-yellow-600 cursor-pointer"
                 />
               )}
             </DropdownMenuTrigger>
