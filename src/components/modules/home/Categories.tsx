@@ -101,7 +101,7 @@ const Categories = () => {
             >
               <div
                 className="absolute bg-white rounded-lg p-4 bottom-[20%] left-[30%] lg:left-[40%] shadow-xl cursor-pointer hover:bg-yellow-600 hover:text-white drop-shadow-xl duration-200 ease-linear capitalize "
-                onClick={() => handleClick(banner.link || "")}
+                onClick={() => router.push(`categories/${banner.link}`)}
               >
                 <motion.h6
                   initial={animation.hide}
