@@ -77,6 +77,8 @@ const ProductData = ({ product }: { product: Product }) => {
   const [liked, setLiked] = useState<boolean>(false);
   const [quantity, setQuantity] = useState<number>(1);
 
+  console.log("product", product);
+
   const addItem = useCartStore((state) => state.addItem);
   //const items = useCartStore((state) => state.items);
   const getItemQuantity = useCartStore((state) => state.getItemQuantity);
@@ -162,7 +164,11 @@ const ProductData = ({ product }: { product: Product }) => {
     }
 
     // Construct image URL for the selected variant
-    const imageUrl = (colorVariant.images?.[0] as any)?.url || undefined;
+    const imageUrl =
+      (colorVariant.images?.[0] as any)?.url ||
+      (product.images?.primary as any)?.url;
+
+    console.log("colorVariant", colorVariant);
 
     console.log("Using direct imageUrl:", imageUrl);
 
