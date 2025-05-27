@@ -2,7 +2,6 @@
 
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import CurrencyFormat from "./CurrencyFormat";
 import { Loader2 } from "lucide-react";
@@ -17,16 +16,19 @@ export interface ShippingMethod {
 
 interface ShippingMethodSelectorProps {
   onSelect: (method: ShippingMethod) => void;
+  selectedMethodId?: string;
 }
 
 export function ShippingMethodSelector({
   onSelect,
+  selectedMethodId,
 }: ShippingMethodSelectorProps) {
   const [shippingMethods, setShippingMethods] = useState<ShippingMethod[]>([]);
   const [selectedMethod, setSelectedMethod] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Effect to fetch shipping methods
   useEffect(() => {
     const fetchShippingMethods = async () => {
       try {
@@ -36,8 +38,19 @@ export function ShippingMethodSelector({
         }
         const data = await response.json();
         setShippingMethods(data);
+
+        // Set initial selection
         if (data.length > 0) {
-          setSelectedMethod(data[0]._id);
+          const initialMethodId = selectedMethodId || data[0]._id;
+          setSelectedMethod(initialMethodId);
+
+          // Call onSelect with the initial method
+          const initialMethod = data.find(
+            (m: ShippingMethod) => m._id === initialMethodId,
+          );
+          if (initialMethod) {
+            onSelect(initialMethod);
+          }
         }
       } catch (err) {
         setError("Unable to load shipping methods. Please try again later.");
@@ -48,12 +61,18 @@ export function ShippingMethodSelector({
     };
 
     fetchShippingMethods();
-  }, []);
+  }, []); // Remove onSelect from dependencies
 
-  console.log("shippingMethods", shippingMethods);
+  // Effect to handle selectedMethodId changes
+  useEffect(() => {
+    if (selectedMethodId && selectedMethodId !== selectedMethod) {
+      setSelectedMethod(selectedMethodId);
+    }
+  }, [selectedMethodId]);
 
-  const handleContinue = () => {
-    const method = shippingMethods.find((m) => m._id === selectedMethod);
+  const handleMethodChange = (methodId: string) => {
+    setSelectedMethod(methodId);
+    const method = shippingMethods.find((m) => m._id === methodId);
     if (method) {
       onSelect(method);
     }
@@ -87,7 +106,7 @@ export function ShippingMethodSelector({
     <div className="space-y-6">
       <RadioGroup
         value={selectedMethod}
-        onValueChange={setSelectedMethod}
+        onValueChange={handleMethodChange}
         className="space-y-4"
       >
         {shippingMethods.map((method) => (
@@ -120,11 +139,6 @@ export function ShippingMethodSelector({
           </div>
         ))}
       </RadioGroup>
-
-      <Button onClick={handleContinue} className="w-full">
-        Continue with{" "}
-        {shippingMethods.find((m) => m._id === selectedMethod)?.name}
-      </Button>
     </div>
   );
 }

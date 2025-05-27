@@ -479,6 +479,7 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
           <Button
             variant="outline"
             onClick={() => (window.location.href = "/sign-in")}
+            className="cursor-pointer bg-yellow-100 hover:bg-yellow-300"
           >
             Sign in to save addresses
           </Button>
@@ -487,7 +488,7 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Shipping Address Selection */}
-        <Card>
+        <Card className="py-4">
           <CardHeader>
             <CardTitle>Shipping Address</CardTitle>
             <CardDescription>
@@ -694,7 +695,10 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
                       </FormItem>
                     )}
                   />
-                  <Button type="submit" className="w-full">
+                  <Button
+                    type="submit"
+                    className="w-full cursor-pointer bg-yellow-500 hover:bg-yellow-600"
+                  >
                     Save Shipping Address
                   </Button>
                 </form>
@@ -704,7 +708,7 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
         </Card>
 
         {/* Billing Address Selection */}
-        <Card>
+        <Card className="py-4">
           <CardHeader>
             <CardTitle>Billing Address</CardTitle>
             <CardDescription>
@@ -938,7 +942,10 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
                         </FormItem>
                       )}
                     />
-                    <Button type="submit" className="w-full">
+                    <Button
+                      type="submit"
+                      className="w-full cursor-pointer bg-yellow-500 hover:bg-yellow-600"
+                    >
                       Save Billing Address
                     </Button>
                   </form>

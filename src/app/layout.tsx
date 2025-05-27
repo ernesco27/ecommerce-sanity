@@ -3,6 +3,8 @@ import "./globals.css";
 import Providers from "../../providers";
 import { Jost } from "next/font/google";
 import { cn } from "@/lib/utils";
+import Script from "next/script";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "Your E-commerce Site",
@@ -21,6 +23,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <Script
+          src="https://js.paystack.co/v1/inline.js"
+          strategy="beforeInteractive"
+        />
+      </head>
       <body
         className={cn(
           "min-h-screen  w-full max-w-full overflow-x-hidden pb-16 lg:pb-0",
@@ -28,6 +36,7 @@ export default function RootLayout({
         )}
       >
         <Providers>{children}</Providers>
+        <Toaster richColors position="top-right" />
       </body>
     </html>
   );

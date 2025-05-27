@@ -65,16 +65,14 @@ export default function CheckoutPage() {
       ...prev,
       shippingMethod: method,
     }));
-    setCurrentStep("payment");
   };
 
-  const handlePaymentSubmit = async (paymentMethod: any) => {
+  const handlePaymentSubmit = async () => {
     setIsProcessing(true);
     try {
-      // TODO: Implement payment processing with Stripe or other payment provider
       setCheckoutData((prev) => ({
         ...prev,
-        paymentMethod,
+        paymentMethod: "paystack",
       }));
       setCurrentStep("confirmation");
     } catch (error) {
@@ -169,7 +167,10 @@ export default function CheckoutPage() {
           {currentStep === "shipping" && (
             <div>
               <h2 className="text-2xl font-bold mb-6">Shipping Method</h2>
-              <ShippingMethodSelector onSelect={handleShippingMethodSelect} />
+              <ShippingMethodSelector
+                onSelect={handleShippingMethodSelect}
+                selectedMethodId={checkoutData.shippingMethod?._id}
+              />
             </div>
           )}
 
@@ -177,7 +178,8 @@ export default function CheckoutPage() {
             <div>
               <h2 className="text-2xl font-bold mb-6">Payment</h2>
               <PaymentForm
-                onSubmit={handlePaymentSubmit}
+                onSuccess={handlePaymentSubmit}
+                onClose={() => setIsProcessing(false)}
                 total={
                   getTotalPrice() + (checkoutData.shippingMethod?.price || 0)
                 }
@@ -225,9 +227,18 @@ export default function CheckoutPage() {
           {currentStep !== "confirmation" && currentStep !== "payment" && (
             <Button
               className="ml-auto"
-              disabled={isProcessing}
+              disabled={
+                isProcessing ||
+                (currentStep === "shipping" && !checkoutData.shippingMethod)
+              }
               onClick={() => {
-                // This is temporary until we implement the actual step handlers
+                if (
+                  currentStep === "shipping" &&
+                  !checkoutData.shippingMethod
+                ) {
+                  toast.error("Please select a shipping method to continue");
+                  return;
+                }
                 const currentIndex = steps.findIndex(
                   (s) => s.id === currentStep,
                 );

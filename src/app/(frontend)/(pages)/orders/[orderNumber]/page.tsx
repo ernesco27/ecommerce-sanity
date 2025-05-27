@@ -26,7 +26,7 @@ interface Order {
   shippingAddress: any;
   billingAddress: any;
   shippingMethod: {
-    id: string;
+    _id: string;
     name: string;
     description: string;
     price: number;
