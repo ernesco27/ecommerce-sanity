@@ -2,7 +2,7 @@
 
 import Container from "@/components/custom/Container";
 import PageHeader from "@/components/modules/products/PageHeader";
-import { Button } from "@/components/ui/button";
+
 import { Separator } from "@/components/ui/separator";
 import {
   Table,
@@ -21,6 +21,9 @@ import CurrencyFormat from "@/components/custom/CurrencyFormat";
 import { BsCartX } from "react-icons/bs";
 import { FaRegTrashCan } from "react-icons/fa6";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import Services from "@/components/modules/home/Services";
 
 const page = () => {
   const [mounted, setMounted] = useState(false);
@@ -71,7 +74,8 @@ const page = () => {
             </Button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 my-10 ">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 my-10 ">
+            {/* Cart Items */}
             <div className="col-span-2">
               <Table className="">
                 <TableHeader className="bg-yellow-400">
@@ -164,10 +168,75 @@ const page = () => {
                   ))}
                 </TableBody>
               </Table>
+              <div className="flex justify-between my-12">
+                <div className="flex flex-col lg:flex-row gap-2 w-1/2">
+                  <Input
+                    placeholder="Enter coupon code"
+                    className="py-5 px-4 md:text-lg focus-visible:ring-yellow-200 "
+                  />
+                  <Button
+                    variant="outline"
+                    className="bg-yellow-800 text-white capitalize cursor-pointer text-lg py-5 px-4 hover:bg-yellow-600 hover:text-white transition-all duration-300 ease-in-out"
+                  >
+                    Apply Coupon
+                  </Button>
+                </div>
+                <p
+                  onClick={() => {}}
+                  className="text-lg underline cursor-pointer text-yellow-800 font-semibold hover:text-red-500 transition-all duration-300 ease-in-out"
+                >
+                  Clear Shopping Cart
+                </p>
+              </div>
             </div>
-            <div className="col-span-1 bg-blue-400">Order summary</div>
+
+            {/* Order Summary */}
+            <div className="col-span-1 p-4 border border-border rounded-md flex flex-col gap-4">
+              <p className="text-lg font-bold">Order Summary</p>
+              <Separator className="my-4" />
+              <div className="flex justify-between">
+                <p className="text-lg text-gray-500">Items</p>
+                <p className="text-lg font-semibold">{getTotalItems()}</p>
+              </div>
+              <div className="flex justify-between">
+                <p className="text-lg text-gray-500">Subtotal</p>
+                <CurrencyFormat
+                  value={getTotalPrice()}
+                  className="text-right font-semibold"
+                />
+              </div>
+              <div className="flex justify-between">
+                <p className="text-lg text-gray-500">Shipping</p>
+                <p className="text-lg font-semibold">GHs 0.00</p>
+              </div>
+              <div className="flex justify-between">
+                <p className="text-lg text-gray-500">Taxes</p>
+                <p className="text-lg font-semibold">GHs 0.00</p>
+              </div>
+              <div className="flex justify-between">
+                <p className="text-lg text-gray-500">Coupon Discount</p>
+                <p className="text-lg font-semibold text-red-500">
+                  ( GHs 0.00)
+                </p>
+              </div>
+              <Separator className="my-4" />
+              <div className="flex justify-between">
+                <p className="text-lg text-gray-500">Total</p>
+                <CurrencyFormat
+                  value={getTotalPrice()}
+                  className="text-right font-semibold"
+                />
+              </div>
+              <Button
+                variant="outline"
+                className="bg-yellow-800 text-white capitalize cursor-pointer text-lg py-7 px-4 hover:bg-yellow-600 hover:text-white transition-all duration-300 ease-in-out"
+              >
+                Proceed to Checkout
+              </Button>
+            </div>
           </div>
         )}
+        <Services />
       </Container>
     </div>
   );
