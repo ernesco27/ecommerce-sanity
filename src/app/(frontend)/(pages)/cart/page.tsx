@@ -16,7 +16,7 @@ import {
 import React, { useEffect, useState } from "react";
 import NumberInput from "@/components/custom/NumberInput";
 import { useCartStore } from "@/store/cartStore";
-import Image from "next/image";
+
 import CurrencyFormat from "@/components/custom/CurrencyFormat";
 import { BsCartX } from "react-icons/bs";
 import { FaRegTrashCan } from "react-icons/fa6";
@@ -24,17 +24,23 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Services from "@/components/modules/home/Services";
+import UserAddress from "@/components/custom/UserAddress";
 
 const page = () => {
   const [mounted, setMounted] = useState(false);
-  const { items, removeItem, getTotalPrice, getTotalItems, hydrated } =
-    useCartStore();
+  const {
+    items,
+    removeItem,
+    getTotalPrice,
+    getTotalItems,
+    hydrated,
+    updateQuantity,
+    clearCart,
+  } = useCartStore();
 
   console.log("items", items);
 
   const router = useRouter();
-
-  const [quantity, setQuantity] = useState<number>(1);
 
   useEffect(() => {
     setMounted(true);
@@ -42,6 +48,18 @@ const page = () => {
 
   const handleRemoveItem = (productId: string, variantId: string) => {
     removeItem(productId, variantId);
+  };
+
+  const handleQuantityChange = (
+    productId: string,
+    variantId: string,
+    newQuantity: number,
+  ) => {
+    const result = updateQuantity(productId, variantId, newQuantity);
+    if (!result.success && result.error) {
+      // You might want to add a toast notification here
+      console.error(result.error);
+    }
   };
 
   const handleCheckout = () => {
@@ -152,15 +170,21 @@ const page = () => {
                       {/* Quantity */}
                       <TableCell>
                         <NumberInput
-                          quantity={quantity}
-                          setQuantity={setQuantity}
-                          max={5}
+                          quantity={item.quantity}
+                          setQuantity={(newQuantity) =>
+                            handleQuantityChange(
+                              item._id,
+                              item.selectedVariant._id,
+                              newQuantity,
+                            )
+                          }
+                          max={item.selectedVariant.stock}
                         />
                       </TableCell>
                       {/* Subtotal */}
                       <TableCell>
                         <CurrencyFormat
-                          value={item.selectedVariant.price * quantity}
+                          value={item.selectedVariant.price * item.quantity}
                           className="font-semibold text-base"
                         />
                       </TableCell>
@@ -182,12 +206,15 @@ const page = () => {
                   </Button>
                 </div>
                 <p
-                  onClick={() => {}}
+                  onClick={clearCart}
                   className="text-lg underline cursor-pointer text-yellow-800 font-semibold hover:text-red-500 transition-all duration-300 ease-in-out"
                 >
                   Clear Shopping Cart
                 </p>
               </div>
+              {/* Shipping & Billing Address */}
+
+              <UserAddress />
             </div>
 
             {/* Order Summary */}
