@@ -27,7 +27,7 @@ export const shippingMethodType = {
     defineField({
       name: "estimatedDays",
       title: "Estimated Delivery Days",
-      type: "number",
+      type: "string",
       validation: (Rule) => Rule.required(),
     }),
     defineField({
@@ -36,18 +36,18 @@ export const shippingMethodType = {
       type: "boolean",
       initialValue: true,
     }),
-    defineField({
-      name: "restrictions",
-      title: "Shipping Restrictions",
-      type: "array",
-      of: [{ type: "string" }],
-    }),
-    defineField({
-      name: "countries",
-      title: "Available Countries",
-      type: "array",
-      of: [{ type: "string" }],
-      validation: (Rule) => Rule.required(),
-    }),
+    // defineField({
+    //   name: "restrictions",
+    //   title: "Shipping Restrictions",
+    //   type: "array",
+    //   of: [{ type: "string" }],
+    // }),
+    // defineField({
+    //   name: "countries",
+    //   title: "Available Countries",
+    //   type: "array",
+    //   of: [{ type: "string" }],
+    //   validation: (Rule) => Rule.required(),
+    // }),
   ],
 };

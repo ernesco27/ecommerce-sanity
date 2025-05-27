@@ -500,9 +500,9 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
             {user ? (
               <RadioGroup
                 defaultValue={getDefaultAddress("shipping")?._id}
-                onValueChange={(value: string) => {
-                  console.log("Selected shipping address:", value);
-                }}
+                // onValueChange={(value: string) => {
+                //   console.log("Selected shipping address:", value);
+                // }}
               >
                 {addresses
                   .filter(
