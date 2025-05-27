@@ -1,16 +1,16 @@
-import { defineField } from "sanity";
+import { defineType, defineField } from "sanity";
 import { HomeIcon } from "@sanity/icons";
 
-export const addressType = {
+export const addressType = defineType({
   name: "address",
-  title: "Addresses",
   type: "document",
+  title: "Address",
   icon: HomeIcon,
   fields: [
     defineField({
       name: "addressType",
-      title: "Address Type",
       type: "string",
+      title: "Address Type",
       options: {
         list: [
           { title: "Shipping", value: "shipping" },
@@ -22,63 +22,75 @@ export const addressType = {
     }),
     defineField({
       name: "user",
-      title: "User",
       type: "reference",
+      title: "User",
       to: [{ type: "user" }],
       validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: "fullName",
-      title: "Full Name",
       type: "string",
+      title: "Full Name",
       validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: "addressLine1",
-      title: "Address Line 1",
       type: "string",
+      title: "Address Line 1",
       validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: "addressLine2",
-      title: "Address Line 2",
       type: "string",
+      title: "Address Line 2",
     }),
     defineField({
       name: "city",
-      title: "City",
       type: "string",
+      title: "City",
       validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: "state",
-      title: "State/Province",
       type: "string",
+      title: "State",
       validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: "postalCode",
-      title: "Postal Code",
       type: "string",
-      validation: (Rule) => Rule.required(),
+      title: "Postal Code",
     }),
     defineField({
       name: "country",
-      title: "Country",
       type: "string",
+      title: "Country",
       validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: "phone",
-      title: "Phone Number",
       type: "string",
+      title: "Phone",
       validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: "isDefault",
-      title: "Is Default Address",
       type: "boolean",
+      title: "Default Address",
       initialValue: false,
     }),
   ],
-};
+  preview: {
+    select: {
+      title: "fullName",
+      subtitle: "addressLine1",
+    },
+    prepare(selection) {
+      const { title, subtitle } = selection;
+      return {
+        title: title || "Unnamed Address",
+        subtitle: subtitle || "No address line",
+      };
+    },
+  },
+});

@@ -214,7 +214,7 @@ const page = () => {
               </div>
               {/* Shipping & Billing Address */}
 
-              <UserAddress />
+              {/* <UserAddress /> */}
             </div>
 
             {/* Order Summary */}
@@ -255,6 +255,7 @@ const page = () => {
                 />
               </div>
               <Button
+                onClick={() => router.push("/checkout")}
                 variant="outline"
                 className="bg-yellow-800 text-white capitalize cursor-pointer text-lg py-7 px-4 hover:bg-yellow-600 hover:text-white transition-all duration-300 ease-in-out"
               >

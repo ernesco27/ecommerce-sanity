@@ -1,9 +1,11 @@
+import { clerkMiddleware } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { AuditService } from "./lib/services/auditService";
 import { AnalyticsService } from "./lib/services/analyticsService";
 
-export async function middleware(request: NextRequest) {
+// Combine Clerk's auth middleware with our custom tracking middleware
+const customMiddleware = async (request: NextRequest) => {
   const response = NextResponse.next();
 
   // Skip tracking for static assets and API routes
@@ -44,7 +46,7 @@ export async function middleware(request: NextRequest) {
   }
 
   return response;
-}
+};
 
 function getPageType(pathname: string): string {
   if (pathname === "/") return "home";
@@ -56,17 +58,10 @@ function getPageType(pathname: string): string {
   return "other";
 }
 
+// Export the combined middleware
+export default clerkMiddleware();
+
 // Configure which paths the middleware will run on
 export const config = {
-  matcher: [
-    /*
-     * Match all request paths except:
-     * 1. /api routes
-     * 2. /_next (Next.js internals)
-     * 3. /static (static files)
-     * 4. /_vercel (Vercel internals)
-     * 5. all root files inside public (e.g. /favicon.ico)
-     */
-    "/((?!api|_next|_vercel|static|[\\w-]+\\.\\w+).*)",
-  ],
+  matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
 };

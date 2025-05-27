@@ -266,6 +266,13 @@ export const userType = defineType({
       title: "Clerk User ID",
       validation: (Rule) => Rule.required(),
     }),
+    defineField({
+      name: "addresses",
+      type: "array",
+      title: "Addresses",
+      of: [{ type: "reference", to: [{ type: "address" }] }],
+      description: "User's shipping and billing addresses",
+    }),
   ],
   preview: {
     select: {
