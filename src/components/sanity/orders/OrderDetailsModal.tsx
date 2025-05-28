@@ -69,11 +69,11 @@ export default function OrderDetailsModal({
             <Stack space={3}>
               <Text weight="semibold">Customer Information</Text>
               <Grid columns={2} gap={3}>
-                <Stack space={2}>
-                  <Text size={1} weight="semibold">
-                    Name
+                <Stack space={4}>
+                  <Text size={2} weight="semibold">
+                    Customer Name
                   </Text>
-                  <Text size={1}>{order.user?.name || "N/A"}</Text>
+                  <Text size={3}>{order.user?.name || "N/A"}</Text>
                 </Stack>
               </Grid>
             </Stack>
@@ -93,28 +93,32 @@ export default function OrderDetailsModal({
                     marginTop={2}
                   >
                     <Flex justify="space-between">
-                      <Stack space={2} style={{ flex: 1 }}>
-                        <Text size={1} weight="semibold">
+                      <Stack space={4} style={{ flex: 1 }} padding={2}>
+                        <Text size={3} weight="semibold">
                           {item.product?.name || "Unknown Product"}
                         </Text>
                         {item.variant && (
-                          <Text size={1} muted>
+                          <Text
+                            size={2}
+                            muted
+                            style={{ textTransform: "capitalize" }}
+                          >
                             Variant:
                             {item.variant.color &&
                               ` Color: ${item.variant.color}`}
                             {item.variant.size &&
                               `, Size: ${item.variant.size}`}
                             {item.variant.price !== undefined &&
-                              `, Price: $${item.variant.price.toFixed(2)}`}
+                              `, Price: GHs${item.variant.price.toFixed(2)}`}
                           </Text>
                         )}
-                        <Text size={1} muted>
+                        <Text size={2} muted>
                           Quantity: {item.quantity || 0}
                         </Text>
                       </Stack>
                       {item.subtotal !== undefined && (
-                        <Text size={1} weight="semibold">
-                          Subtotal: ${item.subtotal.toFixed(2)}
+                        <Text size={2} weight="semibold">
+                          Subtotal: GHs{item.subtotal.toFixed(2)}
                         </Text>
                       )}
                     </Flex>
@@ -127,10 +131,10 @@ export default function OrderDetailsModal({
           </Card>
 
           {/* Shipping Information */}
-          <Card padding={3} border>
-            <Stack space={3}>
+          <Card padding={4} border>
+            <Stack space={4}>
               <Text weight="semibold">Shipping Information</Text>
-              <Text size={1}>
+              <Text size={2}>
                 {order.shippingAddress?.formatted ||
                   formatAddress(order.shippingAddress)}
               </Text>
@@ -138,16 +142,16 @@ export default function OrderDetailsModal({
           </Card>
 
           {/* Order Summary */}
-          <Card padding={3} border>
-            <Stack space={3}>
+          <Card padding={4} border>
+            <Stack space={4}>
               <Text weight="semibold">Order Summary</Text>
               <Stack space={2}>
                 <Flex justify="space-between">
-                  <Text size={1} weight="semibold">
+                  <Text size={2} weight="semibold">
                     Total Amount
                   </Text>
-                  <Text size={1} weight="semibold">
-                    ${(order.total || 0).toFixed(2)}
+                  <Text size={2} weight="semibold">
+                    GHs{(order.total || 0).toFixed(2)}
                   </Text>
                 </Flex>
               </Stack>
@@ -156,7 +160,7 @@ export default function OrderDetailsModal({
 
           {/* Actions */}
           <Flex justify="flex-end" gap={2}>
-            <Button mode="ghost" text="Close" onClick={onClose} />
+            <Button mode="default" text="Close" onClick={onClose} />
           </Flex>
         </Stack>
       </Box>

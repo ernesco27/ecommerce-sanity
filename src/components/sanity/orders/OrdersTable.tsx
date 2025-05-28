@@ -21,11 +21,6 @@ import { format } from "date-fns";
 import { Order, OrderItem, ShippingAddress } from "./types";
 import OrderDetailsModal from "./OrderDetailsModal";
 
-// PDF related imports removed
-// const DynamicPdfWrapper: LazyExoticComponent<React.ComponentType<{ order: Order }>> = React.lazy(() =>
-//   import("./DynamicPdfWrapper")
-// );
-
 type SortField = "createdAt" | "orderNumber" | "total" | "status";
 type SortOrder = "asc" | "desc";
 
@@ -243,10 +238,10 @@ export default function OrdersTable() {
           <>
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+                <thead className="bg-gray-100">
                   <tr>
                     <th
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                      className="px-6 py-3 text-left text-md font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
                       onClick={() => handleSortChange("createdAt")}
                     >
                       Date{" "}
@@ -254,24 +249,24 @@ export default function OrdersTable() {
                         (sortOrder === "asc" ? "↑" : "↓")}
                     </th>
                     <th
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                      className="px-6 py-3 text-left text-md font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
                       onClick={() => handleSortChange("orderNumber")}
                     >
                       Order No.{" "}
                       {sortField === "orderNumber" &&
                         (sortOrder === "asc" ? "↑" : "↓")}
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-md font-medium text-gray-500 uppercase tracking-wider">
                       Customer
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-md font-medium text-gray-500 uppercase tracking-wider">
                       Items
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-md font-medium text-gray-500 uppercase tracking-wider">
                       Delivery Info
                     </th>
                     <th
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                      className="px-6 py-3 text-left text-md font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
                       onClick={() => handleSortChange("total")}
                     >
                       Total{" "}
@@ -279,14 +274,14 @@ export default function OrdersTable() {
                         (sortOrder === "asc" ? "↑" : "↓")}
                     </th>
                     <th
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                      className="px-6 py-3 text-left text-md font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
                       onClick={() => handleSortChange("status")}
                     >
                       Status{" "}
                       {sortField === "status" &&
                         (sortOrder === "asc" ? "↑" : "↓")}
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-md font-medium text-gray-500 uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
@@ -304,29 +299,29 @@ export default function OrdersTable() {
                   ) : (
                     orders.map((order) => (
                       <tr key={order._id}>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-md text-gray-500">
                           {order.createdAt
                             ? format(new Date(order.createdAt), "MMM dd, yyyy")
                             : "N/A"}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-md text-gray-500">
                           {order.orderNumber}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-md text-gray-500">
                           {order.user?.name || "N/A"}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-md text-gray-500">
                           {order.items?.length || 0} items
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-md text-gray-500">
                           {order.shippingAddress?.formatted || "N/A"}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-md text-gray-500">
                           ${(order.total || 0).toFixed(2)}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-md text-gray-500">
                           <span
-                            className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                            className={`px-2 inline-flex text-md leading-5 font-semibold rounded-full ${
                               order.status === "delivered"
                                 ? "bg-green-100 text-green-800"
                                 : order.status === "cancelled"
@@ -341,7 +336,7 @@ export default function OrdersTable() {
                             {order.status}
                           </span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-md text-gray-500">
                           <Flex gap={2}>
                             <Button
                               mode="ghost"
