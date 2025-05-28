@@ -134,6 +134,65 @@ export async function POST(req: Request) {
       updatedAt: new Date().toISOString(),
     });
 
+    // Update stock levels for each ordered item
+    for (const item of items) {
+      const { _id: productId, selectedVariant, quantity } = item;
+
+      // Get the current variant document to find the color variant
+      const variantQuery = `*[_type == "productVariant" && _id == $variantId][0]{
+        colorVariants[color == $color]{
+          _key,
+          stock
+        }
+      }`;
+      const variantDoc = await writeClient.fetch(variantQuery, {
+        variantId: selectedVariant._id,
+        color: selectedVariant.color,
+      });
+
+      if (!variantDoc?.colorVariants?.[0]) {
+        console.error(
+          `Color variant not found for variant ${selectedVariant._id} and color ${selectedVariant.color}`,
+        );
+        continue;
+      }
+
+      const colorVariant = variantDoc.colorVariants[0];
+      const newStock = Math.max(0, (colorVariant.stock || 0) - quantity);
+
+      // Update the stock quantity
+      await writeClient
+        .patch(selectedVariant._id)
+        .set({
+          [`colorVariants[_key=="${colorVariant._key}"].stock`]: newStock,
+        })
+        .commit();
+
+      // Record the stock movement in inventory
+      await writeClient.create({
+        _type: "inventory",
+        product: { _type: "reference", _ref: productId },
+        variant: { _type: "reference", _ref: selectedVariant._id },
+        quantity: newStock,
+        stockStatus:
+          newStock === 0
+            ? "out_of_stock"
+            : newStock < 5
+              ? "low_stock"
+              : "in_stock",
+        stockMovements: [
+          {
+            _key: uuidv4(),
+            date: new Date().toISOString(),
+            type: "order_fulfillment",
+            quantity: -quantity,
+            order: { _type: "reference", _ref: order._id },
+            reference: orderNumber,
+          },
+        ],
+      });
+    }
+
     // Send order confirmation email
     if (customerEmail) {
       await sendOrderConfirmationEmail(customerEmail, {

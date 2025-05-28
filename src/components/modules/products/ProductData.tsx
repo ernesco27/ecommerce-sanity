@@ -20,7 +20,7 @@ import { Input } from "@/components/ui/input";
 
 import NumberInput from "@/components/custom/NumberInput";
 //import { useCartStore } from "@/store/cartStore";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { Product, ProductVariant, Color } from "../../../../sanity.types";
 import ProductMedia from "./ProductMedia";
 import Loading from "./Loading";
@@ -118,30 +118,12 @@ const ProductData = ({ product }: { product: Product }) => {
 
   const handleAddToCart = () => {
     if (!selectedSize || !selectedColor) {
-      toast.error("Please select size and color", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
+      toast.error("Please select size and color");
       return;
     }
 
     if (!selectedVariant) {
-      toast.error("Selected variant not found", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
+      toast.error("Selected variant not found");
       return;
     }
 
@@ -150,16 +132,7 @@ const ProductData = ({ product }: { product: Product }) => {
     );
 
     if (!colorVariant) {
-      toast.error("Selected color variant not found", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
+      toast.error("Selected color variant not found");
       return;
     }
 
@@ -181,56 +154,20 @@ const ProductData = ({ product }: { product: Product }) => {
     );
 
     if (!result.success) {
-      toast.error(result.error || "Failed to add item to cart", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
+      toast.error(result.error || "Failed to add item to cart");
       return;
     }
 
-    toast.success("Product added to cart", {
-      position: "top-right",
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-    });
+    toast.success("Product added to cart");
   };
 
   const handleAddToWishList = () => {
     setLiked(!liked);
 
     if (!liked) {
-      toast.success("Product added to wishlist", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
+      toast.success("Product added to wishlist");
     } else {
-      toast.error("Product removed from Wishlist", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
+      toast.error("Product removed from Wishlist");
     }
   };
 
