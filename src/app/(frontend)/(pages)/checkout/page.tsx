@@ -16,7 +16,12 @@ import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
-type CheckoutStep = "information" | "shipping" | "payment" | "confirmation";
+type CheckoutStep =
+  | "information"
+  | "shipping"
+  | "confirmation"
+  | "payment"
+  | "thankyou";
 
 interface Step {
   id: CheckoutStep;
@@ -26,15 +31,30 @@ interface Step {
 const steps: readonly Step[] = [
   { id: "information", name: "Information" },
   { id: "shipping", name: "Shipping" },
-  { id: "payment", name: "Payment" },
   { id: "confirmation", name: "Confirmation" },
+  { id: "payment", name: "Payment" },
 ] as const;
 
+interface Address {
+  _id?: string;
+  fullName: string;
+  email?: string;
+  addressLine1: string;
+  addressLine2?: string;
+  city: string;
+  state: string;
+  postalCode?: string;
+  country: string;
+  phone: string;
+  isDefault?: boolean;
+}
+
 interface CheckoutData {
-  shippingAddress: any;
-  billingAddress: any;
+  shippingAddress: Address | null;
+  billingAddress: Address | null;
   shippingMethod: ShippingMethod | null;
   paymentMethod: any;
+  orderNumber?: string;
 }
 
 export default function CheckoutPage() {
@@ -51,13 +71,86 @@ export default function CheckoutPage() {
     paymentMethod: null,
   });
 
-  const handleAddressSubmit = (addresses: { shipping: any; billing: any }) => {
+  // Validation functions for each step
+  const validateInformation = () => {
+    console.log("Validating addresses:", {
+      shipping: checkoutData.shippingAddress,
+      billing: checkoutData.billingAddress,
+    });
+
+    if (!checkoutData.shippingAddress || !checkoutData.billingAddress) {
+      toast.error("Please provide both shipping and billing addresses");
+      return false;
+    }
+
+    // Required fields for both shipping and billing addresses
+    const requiredFields: (keyof Address)[] = [
+      "fullName",
+      "addressLine1",
+      "city",
+      "state",
+      "country",
+      "phone",
+    ];
+
+    // Validate shipping address
+    for (const field of requiredFields) {
+      if (!checkoutData.shippingAddress[field]) {
+        toast.error(
+          `Please provide ${field.replace(/([A-Z])/g, " $1").toLowerCase()} for shipping address`,
+        );
+        return false;
+      }
+    }
+
+    // Validate billing address
+    for (const field of requiredFields) {
+      if (!checkoutData.billingAddress[field]) {
+        toast.error(
+          `Please provide ${field.replace(/([A-Z])/g, " $1").toLowerCase()} for billing address`,
+        );
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  const validateShipping = () => {
+    if (!checkoutData.shippingMethod) {
+      toast.error("Please select a shipping method");
+      return false;
+    }
+    return true;
+  };
+
+  const validateConfirmation = () => {
+    if (!items.length) {
+      toast.error("Your cart is empty");
+      return false;
+    }
+    if (
+      !checkoutData.shippingAddress ||
+      !checkoutData.billingAddress ||
+      !checkoutData.shippingMethod
+    ) {
+      toast.error("Please complete all previous steps");
+      return false;
+    }
+    return true;
+  };
+
+  const handleAddressSubmit = (addresses: {
+    shipping: Address;
+    billing: Address;
+  }) => {
+    console.log("Received addresses:", addresses);
+
     setCheckoutData((prev) => ({
       ...prev,
       shippingAddress: addresses.shipping,
       billingAddress: addresses.billing,
     }));
-    setCurrentStep("shipping");
   };
 
   const handleShippingMethodSelect = (method: ShippingMethod) => {
@@ -67,14 +160,16 @@ export default function CheckoutPage() {
     }));
   };
 
-  const handlePaymentSubmit = async () => {
+  const handlePaymentSubmit = async (paymentDetails: any) => {
     setIsProcessing(true);
     try {
+      // Process payment here
       setCheckoutData((prev) => ({
         ...prev,
-        paymentMethod: "paystack",
+        paymentMethod: paymentDetails,
       }));
-      setCurrentStep("confirmation");
+      await handleConfirmOrder();
+      setCurrentStep("thankyou");
     } catch (error) {
       toast.error("Payment processing failed. Please try again.");
     } finally {
@@ -100,7 +195,7 @@ export default function CheckoutPage() {
           total: getTotalPrice() + (checkoutData.shippingMethod?.price || 0),
           customerEmail:
             user?.emailAddresses[0]?.emailAddress ||
-            checkoutData.shippingAddress.email,
+            checkoutData.shippingAddress?.email,
         }),
       });
 
@@ -109,6 +204,10 @@ export default function CheckoutPage() {
       }
 
       const { order } = await response.json();
+      setCheckoutData((prev) => ({
+        ...prev,
+        orderNumber: order.orderNumber,
+      }));
 
       // Clear the cart
       clearCart();
@@ -117,8 +216,8 @@ export default function CheckoutPage() {
         "Order placed successfully! Check your email for confirmation.",
       );
 
-      // Redirect to order confirmation page
-      router.push(`/orders/${order.orderNumber}`);
+      // Redirect to thank you step
+      setCurrentStep("thankyou");
     } catch (error) {
       console.error("Error creating order:", error);
       toast.error("Failed to place order. Please try again.");
@@ -127,7 +226,29 @@ export default function CheckoutPage() {
     }
   };
 
-  if (items.length === 0) {
+  const handleNextStep = () => {
+    switch (currentStep) {
+      case "information":
+        if (validateInformation()) {
+          setCurrentStep("shipping");
+        }
+        break;
+      case "shipping":
+        if (validateShipping()) {
+          setCurrentStep("confirmation");
+        }
+        break;
+      case "confirmation":
+        if (validateConfirmation()) {
+          setCurrentStep("payment");
+        }
+        break;
+      default:
+        break;
+    }
+  };
+
+  if (items.length === 0 && currentStep !== "thankyou") {
     return (
       <Container>
         <div className="flex flex-col items-center justify-center min-h-[400px]">
@@ -147,11 +268,13 @@ export default function CheckoutPage() {
           steps={steps}
           currentStep={currentStep}
           onStepClick={(step: string) => {
-            // Only allow going back to previous steps
-            const currentIndex = steps.findIndex((s) => s.id === currentStep);
-            const clickedIndex = steps.findIndex((s) => s.id === step);
-            if (clickedIndex < currentIndex) {
-              setCurrentStep(step as CheckoutStep);
+            // Only allow going back to previous steps if not processing
+            if (!isProcessing) {
+              const currentIndex = steps.findIndex((s) => s.id === currentStep);
+              const clickedIndex = steps.findIndex((s) => s.id === step);
+              if (clickedIndex < currentIndex) {
+                setCurrentStep(step as CheckoutStep);
+              }
             }
           }}
         />
@@ -161,6 +284,13 @@ export default function CheckoutPage() {
             <div>
               <h2 className="text-2xl font-bold mb-6">Contact Information</h2>
               <UserAddress onSubmit={handleAddressSubmit} />
+              <Button
+                onClick={handleNextStep}
+                className="w-full mt-6 bg-yellow-500 hover:bg-yellow-600 text-white"
+                disabled={isProcessing}
+              >
+                Continue to Shipping
+              </Button>
             </div>
           )}
 
@@ -171,6 +301,33 @@ export default function CheckoutPage() {
                 onSelect={handleShippingMethodSelect}
                 selectedMethodId={checkoutData.shippingMethod?._id}
               />
+              <Button
+                onClick={handleNextStep}
+                className="mt-6"
+                disabled={!checkoutData.shippingMethod || isProcessing}
+              >
+                Continue to Confirmation
+              </Button>
+            </div>
+          )}
+
+          {currentStep === "confirmation" && (
+            <div>
+              <h2 className="text-2xl font-bold mb-6">Order Review</h2>
+              <OrderSummary
+                items={items}
+                shippingAddress={checkoutData.shippingAddress}
+                billingAddress={checkoutData.billingAddress}
+                shippingMethod={checkoutData.shippingMethod!}
+                subtotal={getTotalPrice()}
+              />
+              <Button
+                onClick={handleNextStep}
+                className="w-full mt-6"
+                disabled={isProcessing}
+              >
+                Proceed to Payment
+              </Button>
             </div>
           )}
 
@@ -187,29 +344,24 @@ export default function CheckoutPage() {
             </div>
           )}
 
-          {currentStep === "confirmation" && (
-            <div>
-              <h2 className="text-2xl font-bold mb-6">Order Confirmation</h2>
-              <OrderSummary
-                items={items}
-                shippingAddress={checkoutData.shippingAddress}
-                billingAddress={checkoutData.billingAddress}
-                shippingMethod={checkoutData.shippingMethod!}
-                subtotal={getTotalPrice()}
-              />
-              <Button
-                onClick={handleConfirmOrder}
-                className="w-full mt-6"
-                disabled={isProcessing}
-              >
-                Confirm Order
+          {currentStep === "thankyou" && checkoutData.orderNumber && (
+            <div className="text-center">
+              <h2 className="text-3xl font-bold mb-6">
+                Thank You for Your Order!
+              </h2>
+              <p className="text-xl mb-4">Order #{checkoutData.orderNumber}</p>
+              <p className="mb-8">
+                We've sent a confirmation email with your order details.
+              </p>
+              <Button onClick={() => router.push("/products")}>
+                Continue Shopping
               </Button>
             </div>
           )}
         </div>
 
         <div className="mt-8 flex justify-between items-center">
-          {currentStep !== "information" && (
+          {currentStep !== "information" && currentStep !== "thankyou" && (
             <Button
               variant="outline"
               onClick={() => {
@@ -221,32 +373,6 @@ export default function CheckoutPage() {
               disabled={isProcessing}
             >
               Back
-            </Button>
-          )}
-
-          {currentStep !== "confirmation" && currentStep !== "payment" && (
-            <Button
-              className="ml-auto"
-              disabled={
-                isProcessing ||
-                (currentStep === "shipping" && !checkoutData.shippingMethod)
-              }
-              onClick={() => {
-                if (
-                  currentStep === "shipping" &&
-                  !checkoutData.shippingMethod
-                ) {
-                  toast.error("Please select a shipping method to continue");
-                  return;
-                }
-                const currentIndex = steps.findIndex(
-                  (s) => s.id === currentStep,
-                );
-                setCurrentStep(steps[currentIndex + 1].id as CheckoutStep);
-              }}
-            >
-              Continue to{" "}
-              {steps[steps.findIndex((s) => s.id === currentStep) + 1]?.name}
             </Button>
           )}
         </div>

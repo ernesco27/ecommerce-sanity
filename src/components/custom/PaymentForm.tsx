@@ -21,20 +21,35 @@ import { usePaystackPayment } from "@/lib/hooks/usePaystackPayment";
 import { toast } from "sonner";
 
 const paymentFormSchema = z.object({
-  paymentMethod: z.enum(["card", "paypal"]),
-  email: z.string().email("Please enter a valid email address"),
-  cardholderName: z.string().min(2, "Cardholder name is required"),
+  paymentMethod: z.enum(["card", "delivery"]),
+  cardNumber: z.string().optional(),
+  expiryDate: z.string().optional(),
+  cvv: z.string().optional(),
+  cardholderName: z.string().optional(),
+  email: z.string().email().optional(),
 });
 
 type PaymentFormValues = z.infer<typeof paymentFormSchema>;
 
+interface PaymentDetails {
+  paymentMethod: "card" | "delivery";
+  status: "success" | "failed";
+  cardNumber?: string;
+  cardholderName?: string;
+  email?: string;
+}
+
 interface PaymentFormProps {
-  onSuccess: () => void;
+  onSuccess: (paymentDetails: PaymentDetails) => void;
   onClose: () => void;
   total: number;
 }
 
-export function PaymentForm({ onSuccess, onClose, total }: PaymentFormProps) {
+export const PaymentForm: React.FC<PaymentFormProps> = ({
+  onSuccess,
+  onClose,
+  total,
+}) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const { initializePayment, isScriptLoaded } = usePaystackPayment();
 
@@ -42,12 +57,24 @@ export function PaymentForm({ onSuccess, onClose, total }: PaymentFormProps) {
     resolver: zodResolver(paymentFormSchema),
     defaultValues: {
       paymentMethod: "card",
-      email: "",
-      cardholderName: "",
     },
   });
 
   const handleSubmit = async (data: PaymentFormValues) => {
+    if (data.paymentMethod === "delivery") {
+      onSuccess({
+        paymentMethod: "delivery",
+        status: "success",
+        email: data.email || "",
+      });
+      return;
+    }
+
+    if (!data.email) {
+      toast.error("Email is required for card payment");
+      return;
+    }
+
     if (!isScriptLoaded) {
       toast.error(
         "Payment system is initializing. Please try again in a moment.",
@@ -70,28 +97,33 @@ export function PaymentForm({ onSuccess, onClose, total }: PaymentFormProps) {
 
     setIsProcessing(true);
     try {
-      // Introduce a small delay to ensure Paystack's script is fully ready
-      await new Promise((resolve) => setTimeout(resolve, 100)); // 100ms delay
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       const config = {
         email: data.email,
-        amount: Math.round(total * 100), // Convert to smallest currency unit (kobo)
-        publicKey: publicKey, // Use the validated public key
-        firstname: data.cardholderName.split(" ")[0],
-        lastname: data.cardholderName.split(" ").slice(1).join(" "),
+        amount: Math.round(total * 100),
+        publicKey: publicKey,
+        firstname: data.cardholderName?.split(" ")[0] || "",
+        lastname: data.cardholderName?.split(" ").slice(1).join(" ") || "",
         onSuccess: () => {
           setTimeout(() => {
             setIsProcessing(false);
             toast.success("Payment successful!");
-            onSuccess();
-          }, 100); // Delay to allow Paystack to complete its flow
+            onSuccess({
+              paymentMethod: "card",
+              status: "success",
+              cardNumber: data.cardNumber,
+              cardholderName: data.cardholderName,
+              email: data.email,
+            });
+          }, 100);
         },
         onClose: () => {
           setTimeout(() => {
             setIsProcessing(false);
             toast.info("Payment window closed");
             onClose();
-          }, 100); // Delay to allow Paystack to complete its flow
+          }, 100);
         },
       };
 
@@ -107,6 +139,8 @@ export function PaymentForm({ onSuccess, onClose, total }: PaymentFormProps) {
     }
   };
 
+  const selectedPaymentMethod = form.watch("paymentMethod");
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
@@ -120,9 +154,9 @@ export function PaymentForm({ onSuccess, onClose, total }: PaymentFormProps) {
                 <RadioGroup
                   onValueChange={field.onChange}
                   defaultValue={field.value}
-                  className="flex gap-4 "
+                  className="flex gap-4"
                 >
-                  <div className="flex items-center  space-x-2 rounded-lg border p-4 cursor-pointer hover:bg-gray-50 ">
+                  <div className="flex items-center space-x-2 rounded-lg border p-4 cursor-pointer hover:bg-gray-50">
                     <RadioGroupItem value="card" id="card" />
                     <Label
                       htmlFor="card"
@@ -132,6 +166,16 @@ export function PaymentForm({ onSuccess, onClose, total }: PaymentFormProps) {
                       Pay with Card / Bank Transfer / Mobile Money
                     </Label>
                   </div>
+                  <div className="flex items-center space-x-2 rounded-lg border p-4 cursor-pointer hover:bg-gray-50">
+                    <RadioGroupItem value="delivery" id="delivery" />
+                    <Label
+                      htmlFor="delivery"
+                      className="flex items-center gap-2 cursor-pointer w-full"
+                    >
+                      <CreditCard className="h-4 w-4" />
+                      Pay on Delivery
+                    </Label>
+                  </div>
                 </RadioGroup>
               </FormControl>
               <FormMessage />
@@ -139,57 +183,72 @@ export function PaymentForm({ onSuccess, onClose, total }: PaymentFormProps) {
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input type="email" placeholder="you@example.com" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {selectedPaymentMethod === "card" && (
+          <>
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="email"
+                      placeholder="you@example.com"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-        <FormField
-          control={form.control}
-          name="cardholderName"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Full Name</FormLabel>
-              <FormControl>
-                <Input placeholder="John Doe" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+            <FormField
+              control={form.control}
+              name="cardholderName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Full Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="John Doe" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </>
+        )}
 
         <Button
           type="submit"
           className="w-full cursor-pointer bg-yellow-500 hover:bg-yellow-600 text-lg"
-          disabled={isProcessing || !isScriptLoaded}
+          disabled={
+            isProcessing ||
+            (selectedPaymentMethod === "card" && !isScriptLoaded)
+          }
         >
-          {isProcessing ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Processing...
-            </>
-          ) : !isScriptLoaded ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Loading payment system...
-            </>
+          {selectedPaymentMethod === "card" ? (
+            isProcessing ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Processing...
+              </>
+            ) : !isScriptLoaded ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Loading payment system...
+              </>
+            ) : (
+              `Pay ${new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "GHS",
+              }).format(total)}`
+            )
           ) : (
-            `Pay ${new Intl.NumberFormat("en-US", {
-              style: "currency",
-              currency: "GHS",
-            }).format(total)}`
+            "Proceed to Order Confirmation"
           )}
         </Button>
       </form>
     </Form>
   );
-}
+};

@@ -106,22 +106,24 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
   const { user, isLoaded: isUserLoaded } = useUser();
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [loading, setLoading] = useState(false);
-  const [selectedAddressType, setSelectedAddressType] = useState<
-    "shipping" | "billing"
-  >("shipping");
   const [isAddingAddress, setIsAddingAddress] = useState(false);
   const [guestAddresses, setGuestAddresses] = useState<GuestAddresses>({});
   const [useSameAddress, setUseSameAddress] = useState(true);
   const [sanityUserId, setSanityUserId] = useState<string | null>(null);
+  const [selectedShippingId, setSelectedShippingId] = useState<
+    string | undefined
+  >();
+  const [selectedBillingId, setSelectedBillingId] = useState<
+    string | undefined
+  >();
 
-  const form = useForm<AddressFormValues>({
-    resolver: zodResolver(addressFormSchema),
-    defaultValues: {
-      addressType: "both",
-      email: user?.emailAddresses[0]?.emailAddress || "",
-      isDefault: false,
-    },
-  });
+  const getDefaultAddress = (type: "shipping" | "billing") => {
+    return addresses.find(
+      (address) =>
+        address.isDefault &&
+        (address.addressType === type || address.addressType === "both"),
+    );
+  };
 
   useEffect(() => {
     const fetchAddresses = async () => {
@@ -135,6 +137,36 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
         }
         const data = await response.json();
         setAddresses(data.addresses);
+
+        // Set initial selected addresses
+        const defaultShipping = data.addresses.find(
+          (addr: Address) =>
+            addr.isDefault &&
+            (addr.addressType === "shipping" || addr.addressType === "both"),
+        );
+        const defaultBilling = data.addresses.find(
+          (addr: Address) =>
+            addr.isDefault &&
+            (addr.addressType === "billing" || addr.addressType === "both"),
+        );
+
+        setSelectedShippingId(defaultShipping?._id);
+        setSelectedBillingId(defaultBilling?._id);
+
+        // If we have a default shipping address, trigger the initial selection
+        if (defaultShipping) {
+          if (useSameAddress) {
+            onSubmit?.({
+              shipping: defaultShipping,
+              billing: defaultShipping,
+            });
+          } else if (defaultBilling) {
+            onSubmit?.({
+              shipping: defaultShipping,
+              billing: defaultBilling,
+            });
+          }
+        }
       } catch (error) {
         console.error("Error fetching addresses:", error);
         toast.error("Failed to load addresses");
@@ -144,7 +176,16 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
     };
 
     fetchAddresses();
-  }, [user]);
+  }, [user, useSameAddress]);
+
+  const form = useForm<AddressFormValues>({
+    resolver: zodResolver(addressFormSchema),
+    defaultValues: {
+      addressType: "both",
+      email: user?.emailAddresses[0]?.emailAddress || "",
+      isDefault: false,
+    },
+  });
 
   const handleSubmit = async (data: AddressFormValues) => {
     if (user) {
@@ -224,18 +265,6 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
     }
   };
 
-  const getDefaultAddress = (type: "shipping" | "billing") => {
-    if (user) {
-      return addresses.find(
-        (address) =>
-          address.isDefault &&
-          (address.addressType === type || address.addressType === "both"),
-      );
-    }
-    // For guest users, return undefined since we don't need a selected value
-    return undefined;
-  };
-
   const getSelectedAddress = (type: "shipping" | "billing") => {
     if (type === "shipping" || (type === "billing" && useSameAddress)) {
       return addresses.find(
@@ -245,6 +274,58 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
       );
     }
     return undefined;
+  };
+
+  const handleShippingSelect = (value: string) => {
+    setSelectedShippingId(value);
+    const selectedAddress = addresses.find((addr) => addr._id === value);
+
+    if (selectedAddress && onSubmit) {
+      if (useSameAddress) {
+        onSubmit({
+          shipping: selectedAddress,
+          billing: selectedAddress,
+        });
+      } else {
+        const billingAddress = selectedBillingId
+          ? addresses.find((addr) => addr._id === selectedBillingId)
+          : selectedAddress;
+        onSubmit({
+          shipping: selectedAddress,
+          billing: billingAddress || selectedAddress,
+        });
+      }
+    }
+  };
+
+  const handleBillingSelect = (value: string) => {
+    setSelectedBillingId(value);
+    const selectedAddress = addresses.find((addr) => addr._id === value);
+
+    if (selectedAddress && onSubmit) {
+      const shippingAddress = selectedShippingId
+        ? addresses.find((addr) => addr._id === selectedShippingId)
+        : selectedAddress;
+      onSubmit({
+        shipping: shippingAddress || selectedAddress,
+        billing: selectedAddress,
+      });
+    }
+  };
+
+  const handleUseSameAddress = (checked: boolean) => {
+    setUseSameAddress(checked);
+    if (checked && selectedShippingId) {
+      const shippingAddress = addresses.find(
+        (addr) => addr._id === selectedShippingId,
+      );
+      if (shippingAddress && onSubmit) {
+        onSubmit({
+          shipping: shippingAddress,
+          billing: shippingAddress,
+        });
+      }
+    }
   };
 
   if (!isUserLoaded) {
@@ -500,10 +581,8 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
           <CardContent>
             {user ? (
               <RadioGroup
-                defaultValue={getDefaultAddress("shipping")?._id}
-                // onValueChange={(value: string) => {
-                //   console.log("Selected shipping address:", value);
-                // }}
+                value={selectedShippingId}
+                onValueChange={handleShippingSelect}
               >
                 {addresses
                   .filter(
@@ -724,7 +803,7 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
                   type="checkbox"
                   id="useSameAddress"
                   checked={useSameAddress}
-                  onChange={(e) => setUseSameAddress(e.target.checked)}
+                  onChange={(e) => handleUseSameAddress(e.target.checked)}
                   className="h-4 w-4"
                 />
                 <Label htmlFor="useSameAddress" className="font-normal">
@@ -736,20 +815,8 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
             {!useSameAddress &&
               (user ? (
                 <RadioGroup
-                  defaultValue={getDefaultAddress("billing")?._id}
-                  onValueChange={(value: string) => {
-                    console.log("Selected billing address:", value);
-                    const selectedAddress = addresses.find(
-                      (addr) => addr._id === value,
-                    );
-                    if (selectedAddress && onSubmit) {
-                      onSubmit({
-                        shipping:
-                          getSelectedAddress("shipping") || selectedAddress,
-                        billing: selectedAddress,
-                      });
-                    }
-                  }}
+                  value={selectedBillingId}
+                  onValueChange={handleBillingSelect}
                 >
                   {addresses
                     .filter(
