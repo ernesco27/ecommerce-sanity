@@ -134,42 +134,94 @@ export async function POST(req: Request) {
       updatedAt: new Date().toISOString(),
     });
 
-    // Update stock levels for each ordered item
-    for (const item of items) {
+    interface OrderItem {
+      _id: string;
+      selectedVariant: {
+        _id: string;
+        color: string;
+      };
+      quantity: number;
+    }
+
+    interface VariantDoc {
+      _id: string;
+      colorVariants: Array<{
+        _key: string;
+        color: string;
+        stock: number;
+      }>;
+    }
+
+    interface InventoryDoc {
+      _id: string;
+      _type: "inventory";
+      product: { _type: "reference"; _ref: string };
+      variant: { _type: "reference"; _ref: string };
+      quantity: number;
+      stockStatus: "out_of_stock" | "low_stock" | "in_stock";
+      stockMovements: Array<{
+        _key: string;
+        date: string;
+        type: "order_fulfillment";
+        quantity: number;
+        order: { _type: "reference"; _ref: string };
+        reference: string;
+      }>;
+    }
+
+    // Batch stock updates for better performance
+    const variantIds = items.map((item: OrderItem) => item.selectedVariant._id);
+
+    // Fetch all variants in a single query
+    const variantsQuery = `*[_type == "productVariant" && _id in $variantIds]{
+      _id,
+      colorVariants[] {
+        _key,
+        color,
+        stock
+      }
+    }`;
+    const variants = await writeClient.fetch<VariantDoc[]>(variantsQuery, {
+      variantIds,
+    });
+
+    // Prepare batch operations
+    const transaction = writeClient.transaction();
+    const inventoryDocs: InventoryDoc[] = [];
+
+    for (const item of items as OrderItem[]) {
       const { _id: productId, selectedVariant, quantity } = item;
+      const variantDoc = variants.find(
+        (v: VariantDoc) => v._id === selectedVariant._id,
+      );
 
-      // Get the current variant document to find the color variant
-      const variantQuery = `*[_type == "productVariant" && _id == $variantId][0]{
-        colorVariants[color == $color]{
-          _key,
-          stock
-        }
-      }`;
-      const variantDoc = await writeClient.fetch(variantQuery, {
-        variantId: selectedVariant._id,
-        color: selectedVariant.color,
-      });
+      if (!variantDoc) {
+        console.error(`Variant not found: ${selectedVariant._id}`);
+        continue;
+      }
 
-      if (!variantDoc?.colorVariants?.[0]) {
+      const colorVariant = variantDoc.colorVariants.find(
+        (cv) => cv.color === selectedVariant.color,
+      );
+      if (!colorVariant) {
         console.error(
           `Color variant not found for variant ${selectedVariant._id} and color ${selectedVariant.color}`,
         );
         continue;
       }
 
-      const colorVariant = variantDoc.colorVariants[0];
       const newStock = Math.max(0, (colorVariant.stock || 0) - quantity);
 
-      // Update the stock quantity
-      await writeClient
-        .patch(selectedVariant._id)
-        .set({
+      // Add variant update to transaction
+      transaction.patch(selectedVariant._id, {
+        set: {
           [`colorVariants[_key=="${colorVariant._key}"].stock`]: newStock,
-        })
-        .commit();
+        },
+      });
 
-      // Record the stock movement in inventory
-      await writeClient.create({
+      // Prepare inventory document
+      inventoryDocs.push({
+        _id: uuidv4(), // Add _id for createIfNotExists
         _type: "inventory",
         product: { _type: "reference", _ref: productId },
         variant: { _type: "reference", _ref: selectedVariant._id },
@@ -191,6 +243,14 @@ export async function POST(req: Request) {
           },
         ],
       });
+    }
+
+    // Execute all variant updates in a single transaction
+    await transaction.commit();
+
+    // Create all inventory documents
+    if (inventoryDocs.length > 0) {
+      await Promise.all(inventoryDocs.map((doc) => writeClient.create(doc)));
     }
 
     // Send order confirmation email

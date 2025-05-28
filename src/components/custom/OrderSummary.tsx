@@ -72,7 +72,7 @@ export function OrderSummary({
                   </div>
                   <CurrencyFormat
                     value={item.selectedVariant.price * item.quantity}
-                    className="font-medium"
+                    className="font-medium text-md lg:text-lg"
                   />
                 </div>
               ))}
