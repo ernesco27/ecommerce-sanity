@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from "react";
+import React, { Suspense, lazy, useEffect, useState } from "react";
 import {
   Dialog,
   Box,
@@ -12,6 +12,7 @@ import {
 } from "@sanity/ui";
 import { format } from "date-fns";
 import { Order, OrderItem, ShippingAddress } from "./types";
+import { useClient } from "sanity";
 
 // Helper function to format address (can be moved to a utils file if used elsewhere)
 const formatAddress = (addr: ShippingAddress | null | undefined): string => {
@@ -42,6 +43,33 @@ export default function OrderDetailsModal({
   isOpen,
   onClose,
 }: OrderDetailsModalProps) {
+  const [logoUrl, setLogoUrl] = useState<string | undefined>(undefined);
+  const [loadingLogo, setLoadingLogo] = useState<boolean>(true);
+  const client = useClient();
+
+  useEffect(() => {
+    if (isOpen) {
+      // Fetch company settings for the logo URL
+      const fetchCompanyLogo = async () => {
+        setLoadingLogo(true);
+        try {
+          // Replace with your actual query for company settings
+          const companySettings = await client.fetch(
+            `*[_type == "companySettings"][0]{ logo { asset->{url} } }`,
+          );
+          if (companySettings?.logo?.asset?.url) {
+            setLogoUrl(companySettings.logo.asset.url);
+          }
+        } catch (err) {
+          console.error("Failed to fetch company logo:", err);
+          // Handle error, maybe set a default local logo or none
+        }
+        setLoadingLogo(false);
+      };
+      fetchCompanyLogo();
+    }
+  }, [isOpen, client]);
+
   if (!isOpen) return null;
 
   return (
@@ -175,10 +203,25 @@ export default function OrderDetailsModal({
           <Flex justify="flex-end" gap={3} paddingTop={3}>
             <Suspense
               fallback={
-                <Button text="Loading PDF Option..." mode="ghost" disabled />
+                <Button
+                  text="Loading PDF Option..."
+                  mode="ghost"
+                  disabled
+                  icon={Spinner}
+                />
               }
             >
-              <OrderPdfActions order={order} />
+              {!loadingLogo && (
+                <OrderPdfActions order={order} logoUrl={logoUrl} />
+              )}
+              {loadingLogo && (
+                <Button
+                  text="Loading Logo..."
+                  mode="ghost"
+                  disabled
+                  icon={Spinner}
+                />
+              )}
             </Suspense>
             <Button mode="default" text="Close" onClick={onClose} />
           </Flex>

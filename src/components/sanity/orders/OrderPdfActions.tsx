@@ -6,12 +6,16 @@ import { Button } from "@sanity/ui"; // For a consistent button style
 
 interface OrderPdfActionsProps {
   order: Order;
+  logoUrl?: string; // Add logoUrl prop
 }
 
-const OrderPdfActions: React.FC<OrderPdfActionsProps> = ({ order }) => {
+const OrderPdfActions: React.FC<OrderPdfActionsProps> = ({
+  order,
+  logoUrl,
+}) => {
   return (
     <PDFDownloadLink
-      document={<OrderInvoiceDocument order={order} />}
+      document={<OrderInvoiceDocument order={order} logoUrl={logoUrl} />}
       fileName={`Invoice-${order.orderNumber || "order"}.pdf`}
       style={{ textDecoration: "none" }} // Remove default link styling
     >

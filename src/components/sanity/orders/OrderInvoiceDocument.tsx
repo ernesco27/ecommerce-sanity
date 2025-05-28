@@ -6,6 +6,7 @@ import {
   Document,
   StyleSheet,
   Font,
+  Image,
 } from "@react-pdf/renderer";
 import { Order, OrderItem as OrderItemType } from "./types"; // Assuming types.ts is in the same directory or adjust path
 
@@ -35,11 +36,20 @@ const styles = StyleSheet.create({
     paddingBottom: 30,
     lineHeight: 1.5,
   },
-  header: {
-    fontSize: 20,
+  headerContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
     marginBottom: 20,
-    textAlign: "center",
+  },
+  logo: {
+    width: 50,
+    height: 50,
+  },
+  invoiceTitle: {
+    fontSize: 20,
     fontWeight: "bold",
+    textAlign: "right",
   },
   section: {
     marginBottom: 15,
@@ -113,14 +123,23 @@ const styles = StyleSheet.create({
 
 interface OrderInvoiceDocumentProps {
   order: Order;
+  logoUrl?: string;
 }
 
 const OrderInvoiceDocument: React.FC<OrderInvoiceDocumentProps> = ({
   order,
+  logoUrl,
 }) => (
   <Document title={`Invoice ${order.orderNumber}`}>
     <Page size="A4" style={styles.page}>
-      <Text style={styles.header}>Order Invoice</Text>
+      <View style={styles.headerContainer}>
+        {logoUrl ? (
+          <Image style={styles.logo} src={logoUrl} />
+        ) : (
+          <View style={styles.logo} />
+        )}
+        <Text style={styles.invoiceTitle}>Order Invoice</Text>
+      </View>
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Order Details</Text>
