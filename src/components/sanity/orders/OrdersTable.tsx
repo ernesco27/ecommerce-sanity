@@ -78,7 +78,8 @@ export default function OrdersTable() {
         createdAt,
         "user": user->{
           _id,
-          "name": coalesce(firstName, lastName, "N/A")
+          firstName,
+          lastName,
         },
         items[]{
           "product": product->{_id, name},
@@ -105,13 +106,19 @@ export default function OrdersTable() {
       // Ensure all required fields are present and handle null values
       const sanitizedData: Order[] = rawData.map((order: any): Order => {
         const shipAddr = order.shippingAddress;
+        // Concatenate user's first and last name
+        const userName =
+          [order.user?.firstName, order.user?.lastName]
+            .filter(Boolean)
+            .join(" ") || "N/A";
+
         return {
           _id: order._id || "missing_id",
           orderNumber: order.orderNumber || "N/A",
           createdAt: order.createdAt || new Date().toISOString(),
           user: {
             _id: order.user?._id || "missing_user_id",
-            name: order.user?.name || "N/A",
+            name: userName,
           },
           items: (order.items || []).map(
             (item: any): OrderItem => ({
@@ -317,7 +324,7 @@ export default function OrdersTable() {
                           {order.shippingAddress?.formatted || "N/A"}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-md text-gray-500">
-                          ${(order.total || 0).toFixed(2)}
+                          GHs{(order.total || 0).toFixed(2)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-md text-gray-500">
                           <span
