@@ -34,8 +34,8 @@ export function OrderSummary({
   const total = subtotal + shippingMethod.price;
 
   return (
-    <div className="space-y-6">
-      <Card>
+    <div className="space-y-6 ">
+      <Card className="py-4">
         <CardHeader>
           <CardTitle>Order Summary</CardTitle>
         </CardHeader>

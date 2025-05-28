@@ -345,7 +345,7 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
             <DialogTrigger asChild>
               <Button variant="outline">Add New Address</Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[500px]">
+            <DialogContent className="sm:max-w-[500px] max-h-[95vh] overflow-y-auto py-8  ">
               <DialogHeader>
                 <DialogTitle>Add New Address</DialogTitle>
                 <DialogDescription>
@@ -540,7 +540,7 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
 
                   <Button
                     type="submit"
-                    className="w-full"
+                    className="w-full bg-yellow-500 hover:bg-yellow-600"
                     disabled={isAddingAddress}
                   >
                     {isAddingAddress ? (

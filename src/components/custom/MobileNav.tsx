@@ -1,14 +1,14 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from "next/link";
+
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { CiHeart, CiHome, CiShoppingCart, CiUser } from "react-icons/ci";
 import { BiCategory } from "react-icons/bi";
 import Container from "./Container";
 import { motion } from "framer-motion";
-import Row from "./Row";
+
 import CartPreview from "../modules/header/CartPreview";
 import { useRouter } from "next/navigation";
 import { useCartStore } from "@/store/cartStore";
@@ -85,10 +85,11 @@ const MobileNav = () => {
                       y: isActive ? -2 : 0,
                     }}
                     transition={{ type: "spring", stiffness: 500 }}
+                    className="relative"
                   >
                     <Icon size={24} />
                     {item.name === "Cart" && getTotalItems() > 0 && (
-                      <span className="absolute -top-1 right-6 bg-yellow-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center">
+                      <span className="absolute -top-1 -right-1 bg-yellow-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center">
                         {getTotalItems()}
                       </span>
                     )}

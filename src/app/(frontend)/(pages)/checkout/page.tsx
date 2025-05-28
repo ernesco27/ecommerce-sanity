@@ -284,13 +284,6 @@ export default function CheckoutPage() {
             <div>
               <h2 className="text-2xl font-bold mb-6">Contact Information</h2>
               <UserAddress onSubmit={handleAddressSubmit} />
-              <Button
-                onClick={handleNextStep}
-                className="w-full mt-6 bg-yellow-500 hover:bg-yellow-600 text-white"
-                disabled={isProcessing}
-              >
-                Continue to Shipping
-              </Button>
             </div>
           )}
 
@@ -301,13 +294,6 @@ export default function CheckoutPage() {
                 onSelect={handleShippingMethodSelect}
                 selectedMethodId={checkoutData.shippingMethod?._id}
               />
-              <Button
-                onClick={handleNextStep}
-                className="mt-6"
-                disabled={!checkoutData.shippingMethod || isProcessing}
-              >
-                Continue to Confirmation
-              </Button>
             </div>
           )}
 
@@ -321,13 +307,6 @@ export default function CheckoutPage() {
                 shippingMethod={checkoutData.shippingMethod!}
                 subtotal={getTotalPrice()}
               />
-              <Button
-                onClick={handleNextStep}
-                className="w-full mt-6"
-                disabled={isProcessing}
-              >
-                Proceed to Payment
-              </Button>
             </div>
           )}
 
@@ -340,6 +319,7 @@ export default function CheckoutPage() {
                 total={
                   getTotalPrice() + (checkoutData.shippingMethod?.price || 0)
                 }
+                isCreatingOrder={isProcessing}
               />
             </div>
           )}
@@ -360,22 +340,57 @@ export default function CheckoutPage() {
           )}
         </div>
 
-        <div className="mt-8 flex justify-between items-center">
-          {currentStep !== "information" && currentStep !== "thankyou" && (
-            <Button
-              variant="outline"
-              onClick={() => {
-                const currentIndex = steps.findIndex(
-                  (s) => s.id === currentStep,
-                );
-                setCurrentStep(steps[currentIndex - 1].id as CheckoutStep);
-              }}
-              disabled={isProcessing}
-            >
-              Back
-            </Button>
-          )}
-        </div>
+        {/* Hide the navigation area during payment and thank you steps */}
+        {currentStep !== "payment" && currentStep !== "thankyou" && (
+          <div className="mt-8 flex justify-between items-center">
+            <div>
+              {currentStep !== "information" && (
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    const currentIndex = steps.findIndex(
+                      (s) => s.id === currentStep,
+                    );
+                    setCurrentStep(steps[currentIndex - 1].id as CheckoutStep);
+                  }}
+                  disabled={isProcessing}
+                >
+                  Back
+                </Button>
+              )}
+            </div>
+
+            <div>
+              {currentStep === "information" && (
+                <Button
+                  onClick={handleNextStep}
+                  className="bg-yellow-500 hover:bg-yellow-600 text-white"
+                  disabled={isProcessing}
+                >
+                  Continue to Shipping
+                </Button>
+              )}
+              {currentStep === "shipping" && (
+                <Button
+                  onClick={handleNextStep}
+                  className="bg-yellow-500 hover:bg-yellow-600 text-white"
+                  disabled={!checkoutData.shippingMethod || isProcessing}
+                >
+                  Continue to Confirmation
+                </Button>
+              )}
+              {currentStep === "confirmation" && (
+                <Button
+                  onClick={handleNextStep}
+                  className="bg-yellow-500 hover:bg-yellow-600 text-white"
+                  disabled={isProcessing}
+                >
+                  Proceed to Payment
+                </Button>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </Container>
   );

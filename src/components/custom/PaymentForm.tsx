@@ -45,12 +45,14 @@ interface PaymentFormProps {
   onSuccess: (paymentDetails: PaymentDetails) => void;
   onClose: () => void;
   total: number;
+  isCreatingOrder?: boolean;
 }
 
 export const PaymentForm: React.FC<PaymentFormProps> = ({
   onSuccess,
   onClose,
   total,
+  isCreatingOrder = false,
 }) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const { initializePayment, isScriptLoaded } = usePaystackPayment();
@@ -226,10 +228,16 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({
           className="w-full cursor-pointer bg-yellow-500 hover:bg-yellow-600 text-lg"
           disabled={
             isProcessing ||
+            isCreatingOrder ||
             (selectedPaymentMethod === "card" && !isScriptLoaded)
           }
         >
-          {selectedPaymentMethod === "card" ? (
+          {isCreatingOrder ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Placing your order...
+            </>
+          ) : selectedPaymentMethod === "card" ? (
             isProcessing ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />

@@ -24,7 +24,6 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Services from "@/components/modules/home/Services";
-import UserAddress from "@/components/custom/UserAddress";
 
 const page = () => {
   const [mounted, setMounted] = useState(false);
@@ -207,9 +206,9 @@ const page = () => {
                 </div>
                 <p
                   onClick={clearCart}
-                  className="text-lg underline cursor-pointer text-yellow-800 font-semibold hover:text-red-500 transition-all duration-300 ease-in-out"
+                  className="text-sm lg:text-lg underline cursor-pointer text-yellow-800 font-semibold hover:text-red-500 transition-all duration-300 ease-in-out"
                 >
-                  Clear Shopping Cart
+                  x Clear Shopping Cart
                 </p>
               </div>
               {/* Shipping & Billing Address */}
