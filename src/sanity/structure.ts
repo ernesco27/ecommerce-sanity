@@ -34,6 +34,7 @@ import { StockDashboard } from "./components/dashboards/StockDashboard";
 import { SalesDashboard } from "./components/dashboards/SalesDashboard";
 import { CustomerDashboard } from "./components/dashboards/CustomerDashboard";
 import { OrderDashboard } from "./components/dashboards/OrderDashboard";
+import OrdersTable from "../components/sanity/orders/OrdersTable";
 
 // https://www.sanity.io/docs/structure-builder-cheat-sheet
 export const structure = (S: StructureBuilder) =>
@@ -139,7 +140,24 @@ export const structure = (S: StructureBuilder) =>
               S.listItem()
                 .title("Orders")
                 .icon(PackageIcon)
-                .child(S.documentTypeList("order")),
+                .child(
+                  S.list()
+                    .title("Orders")
+                    .items([
+                      S.listItem()
+                        .title("All Orders")
+                        .child(
+                          S.component(OrdersTable)
+                            .title("Orders")
+                            .id("orders-table"),
+                        ),
+                      S.listItem()
+                        .title("Manage Orders")
+                        .child(
+                          S.documentTypeList("order").title("Manage Orders"),
+                        ),
+                    ]),
+                ),
               S.listItem()
                 .title("Customers")
                 .icon(UserIcon)
