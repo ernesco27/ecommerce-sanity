@@ -20,6 +20,8 @@ import { Loader2, CreditCard } from "lucide-react";
 import { usePaystackPayment } from "@/lib/hooks/usePaystackPayment";
 import { toast } from "sonner";
 
+import { useUser } from "@clerk/nextjs";
+
 const paymentFormSchema = z.object({
   paymentMethod: z.enum(["card", "delivery"]),
   cardNumber: z.string().optional(),

@@ -156,7 +156,6 @@ export async function POST(req: Request) {
     }
 
     // TODO: Update inventory
-    // TODO: Create payment intent with Stripe
 
     return NextResponse.json({ order }, { status: 201 });
   } catch (error) {

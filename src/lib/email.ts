@@ -63,7 +63,7 @@ export async function sendOrderConfirmationEmail(
       .join("");
 
     const response = await resend.emails.send({
-      from: "Your Store <orders@yourdomain.com>",
+      from: "Edimays Couture <orders@edimays.com>",
       to,
       subject: `Order Confirmation - #${orderNumber}`,
       html: `
@@ -88,7 +88,7 @@ export async function sendOrderConfirmationEmail(
               <div class="header">
                 <h1>Thank you for your order!</h1>
                 <p>Hi ${customerName},</p>
-                <p>We've received your order and it's being processed.</p>
+                <p>We\'ve received your order and it\'s being processed.</p>
               </div>
 
               <div class="order-details">
