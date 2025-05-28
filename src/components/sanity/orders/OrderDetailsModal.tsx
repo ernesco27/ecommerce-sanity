@@ -1,13 +1,17 @@
-import React from "react";
-import { Dialog, Box, Stack, Flex, Text, Button, Card, Grid } from "@sanity/ui";
+import React, { Suspense, lazy } from "react";
+import {
+  Dialog,
+  Box,
+  Stack,
+  Flex,
+  Text,
+  Button,
+  Card,
+  Grid,
+  Spinner,
+} from "@sanity/ui";
 import { format } from "date-fns";
 import { Order, OrderItem, ShippingAddress } from "./types";
-
-interface OrderDetailsModalProps {
-  order: Order;
-  isOpen: boolean;
-  onClose: () => void;
-}
 
 // Helper function to format address (can be moved to a utils file if used elsewhere)
 const formatAddress = (addr: ShippingAddress | null | undefined): string => {
@@ -23,6 +27,15 @@ const formatAddress = (addr: ShippingAddress | null | undefined): string => {
   ].filter(Boolean); // Filter out null/undefined/empty strings
   return parts.join(", ") || "N/A";
 };
+
+// Dynamically import the PDF Actions component
+const OrderPdfActions = lazy(() => import("./OrderPdfActions"));
+
+interface OrderDetailsModalProps {
+  order: Order;
+  isOpen: boolean;
+  onClose: () => void;
+}
 
 export default function OrderDetailsModal({
   order,
@@ -66,7 +79,7 @@ export default function OrderDetailsModal({
 
           {/* Customer Information */}
           <Card padding={3} border>
-            <Stack space={3}>
+            <Stack space={4}>
               <Text weight="semibold">Customer Information</Text>
               <Grid columns={2} gap={3}>
                 <Stack space={4}>
@@ -159,7 +172,14 @@ export default function OrderDetailsModal({
           </Card>
 
           {/* Actions */}
-          <Flex justify="flex-end" gap={2}>
+          <Flex justify="flex-end" gap={3} paddingTop={3}>
+            <Suspense
+              fallback={
+                <Button text="Loading PDF Option..." mode="ghost" disabled />
+              }
+            >
+              <OrderPdfActions order={order} />
+            </Suspense>
             <Button mode="default" text="Close" onClick={onClose} />
           </Flex>
         </Stack>
