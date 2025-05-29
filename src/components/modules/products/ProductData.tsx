@@ -157,6 +157,44 @@ const ProductData = ({ product }: { product: Product }) => {
   };
 
   const handleBuyNow = () => {
+    if (!selectedSize || !selectedColor) {
+      toast.error("Please select size and color");
+      return;
+    }
+
+    if (!selectedVariant) {
+      toast.error("Selected variant not found");
+      return;
+    }
+
+    const colorVariant = selectedVariant.colorVariants?.find(
+      (cv) => cv.color === selectedColor,
+    );
+
+    if (!colorVariant) {
+      toast.error("Selected color variant not found");
+      return;
+    }
+
+    // Construct image URL for the selected variant
+    const imageUrl =
+      (colorVariant.images?.[0] as any)?.url ||
+      (product.images?.primary as any)?.url;
+
+    const result = addItem(
+      product,
+      selectedVariant,
+      selectedColor,
+      quantity,
+      imageUrl,
+    );
+
+    if (!result.success) {
+      toast.error(result.error || "Failed to add item to cart");
+      return;
+    }
+
+    // Navigate to checkout after successfully adding to cart
     router.push("/checkout");
   };
 
@@ -385,7 +423,7 @@ const ProductData = ({ product }: { product: Product }) => {
                   secondColor="white"
                   outlineColor="#eab308"
                   disabled={!isVariantSelected || selectedVariantStock === 0}
-                  handleClick={() => router.push("/checkout")}
+                  handleClick={handleBuyNow}
                 />
                 {/* Wishlist Heart */}
                 <Heart
