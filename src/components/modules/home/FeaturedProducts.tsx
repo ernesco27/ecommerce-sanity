@@ -78,7 +78,7 @@ const FeaturedProducts = () => {
           navigation={false}
           pagination={true}
           modules={[Autoplay, Navigation, Pagination]}
-          className=" w-full flex items-center justify-center rounded-md py-10"
+          className=" flex items-center justify-center "
         >
           {products?.map((item) => (
             <SwiperSlide

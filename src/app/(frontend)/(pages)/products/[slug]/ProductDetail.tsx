@@ -7,7 +7,7 @@ import { useAnalytics } from "@/hooks/useAnalytics";
 import PageHeader from "@/components/modules/products/PageHeader";
 import ProductData from "@/components/modules/products/ProductData";
 import { Product } from "../../../../../../sanity.types";
-
+import Loading from "./loading";
 interface ProductDetailProps {
   slug: string;
 }
@@ -39,14 +39,14 @@ export default function ProductDetail({ slug }: ProductDetailProps) {
   }, [product?._id]);
 
   if (error) return <div>Failed to load product</div>;
-  if (!product) return <div>Loading...</div>;
+  if (!product) return <Loading />;
 
   return (
     <>
       <PageHeader
         heading="Product Details"
         link1="products"
-        link2={product.name}
+        link2={product?.name}
       />
       {/* Add your product detail UI implementation here */}
       <ProductData product={product} />

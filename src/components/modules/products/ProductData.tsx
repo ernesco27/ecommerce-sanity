@@ -30,7 +30,7 @@ import Services from "../home/Services";
 import ProductInfo from "./ProductInfo";
 import { PortableText } from "@portabletext/react";
 import { useCartStore } from "@/store/cartStore";
-
+import { useRouter } from "next/navigation";
 type ColorName =
   | "red"
   | "green"
@@ -76,8 +76,7 @@ const ProductData = ({ product }: { product: Product }) => {
   >({});
   const [liked, setLiked] = useState<boolean>(false);
   const [quantity, setQuantity] = useState<number>(1);
-
-  console.log("product", product);
+  const router = useRouter();
 
   const addItem = useCartStore((state) => state.addItem);
   //const items = useCartStore((state) => state.items);
@@ -141,10 +140,6 @@ const ProductData = ({ product }: { product: Product }) => {
       (colorVariant.images?.[0] as any)?.url ||
       (product.images?.primary as any)?.url;
 
-    console.log("colorVariant", colorVariant);
-
-    console.log("Using direct imageUrl:", imageUrl);
-
     const result = addItem(
       product,
       selectedVariant,
@@ -159,6 +154,10 @@ const ProductData = ({ product }: { product: Product }) => {
     }
 
     toast.success("Product added to cart");
+  };
+
+  const handleBuyNow = () => {
+    router.push("/checkout");
   };
 
   const handleAddToWishList = () => {
@@ -260,11 +259,6 @@ const ProductData = ({ product }: { product: Product }) => {
     }, 0);
     return total / product.reviews.length;
   }, [product.reviews]);
-
-  // --- Render Logic ---
-  if (!product) {
-    return <Loading />;
-  }
 
   if (!product) {
     return (
@@ -391,6 +385,7 @@ const ProductData = ({ product }: { product: Product }) => {
                   secondColor="white"
                   outlineColor="#eab308"
                   disabled={!isVariantSelected || selectedVariantStock === 0}
+                  handleClick={() => router.push("/checkout")}
                 />
                 {/* Wishlist Heart */}
                 <Heart

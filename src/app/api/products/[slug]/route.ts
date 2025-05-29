@@ -6,7 +6,7 @@ export async function GET(
   request: NextRequest,
   { params }: { params: { slug: string } },
 ) {
-  const { slug } = params;
+  const { slug } = await params;
 
   try {
     const product = await client.fetch(

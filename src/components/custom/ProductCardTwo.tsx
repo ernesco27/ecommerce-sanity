@@ -35,8 +35,8 @@ const ProductCardTwo = ({ item }: ProductCardProps) => {
   const rating = reviewCount > 0 ? averageRating / reviewCount : 0;
 
   return (
-    <Card className="w-[380px] max-h-[400px] overflow-hidden grid grid-cols-2 mb-6  gap-0  ">
-      <CardHeader className="group/image relative h-[450px] overflow-hidden bg-red-500 ">
+    <Card className="w-[340px]  lg:w-[380px] max-h-[400px] overflow-hidden grid grid-cols-2 mb-6  gap-0  ">
+      <CardHeader className="group/image relative h-[450px] overflow-hidden ">
         <Image
           src={item.images?.gallery?.[0]?.url ?? "/placeholder.jpg"}
           alt={item.images?.gallery?.[0]?.alt ?? item.name ?? "Product image"}
