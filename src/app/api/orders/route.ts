@@ -1,9 +1,79 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-import { writeClient } from "@/sanity/lib/client";
+import { client, writeClient } from "@/sanity/lib/client";
 import { nanoid } from "nanoid";
 import { sendOrderConfirmationEmail } from "@/lib/email";
 import { v4 as uuidv4 } from "uuid";
+
+export async function GET(request: Request) {
+  try {
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Get the Sanity user ID from the query params
+    const { searchParams } = new URL(request.url);
+    const sanityUserId = searchParams.get("userId");
+
+    if (!sanityUserId) {
+      return NextResponse.json(
+        { error: "Missing userId parameter" },
+        { status: 400 },
+      );
+    }
+
+    // Verify that the requesting user owns these orders
+    const user = await client.fetch(
+      `*[_type == "user" && _id == $sanityUserId && clerkUserId == $clerkUserId][0]._id`,
+      { sanityUserId, clerkUserId: userId },
+    );
+
+    if (!user) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    // Fetch orders for the user with all necessary details
+    const orders = await client.fetch(
+      `*[_type == "order" && user._ref == $userId] | order(createdAt desc) {
+        _id,
+        orderNumber,
+        createdAt,
+        status,
+        total,
+        "items": items[] {
+          _key,
+          quantity,
+          "product": product-> {
+            _id,
+            name,
+            "images": {
+              "primary": {
+                "url": images.primary.asset->url,
+                "alt": images.primary.alt
+              }
+            }
+          },
+          variant {
+            size,
+            price,
+            color
+            
+          }
+        }
+      }`,
+      { userId: sanityUserId },
+    );
+
+    return NextResponse.json(orders);
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch orders" },
+      { status: 500 },
+    );
+  }
+}
 
 export async function POST(req: Request) {
   try {

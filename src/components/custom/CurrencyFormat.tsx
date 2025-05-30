@@ -19,7 +19,8 @@ const CurrencyFormat = ({
       decimalSeparator="."
       prefix={"GHs"}
       displayType="text"
-      decimalScale={3}
+      decimalScale={2}
+      fixedDecimalScale
     ></NumericFormat>
   );
 };
