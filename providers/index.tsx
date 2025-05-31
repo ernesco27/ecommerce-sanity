@@ -6,6 +6,8 @@ import { ToastContainer } from "react-toastify";
 import useSWR from "swr";
 import { CompanySettings } from "../sanity.types";
 import { urlFor } from "@/sanity/lib/image";
+import { ThemeProvider } from "@sanity/ui";
+import { buildTheme } from "@sanity/ui/theme";
 
 const Providers = ({ children }: { children: React.ReactNode }) => {
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
@@ -14,6 +16,8 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
   const logoUrl = company?.logo
     ? urlFor(company.logo).url()
     : "/placeholder.png";
+
+  const theme = buildTheme();
 
   return (
     <ClerkProvider
@@ -33,7 +37,7 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
       signUpFallbackRedirectUrl="/"
     >
       <ToastContainer position="top-right" theme="dark" />
-      {children}
+      <ThemeProvider theme={theme}>{children}</ThemeProvider>
     </ClerkProvider>
   );
 };

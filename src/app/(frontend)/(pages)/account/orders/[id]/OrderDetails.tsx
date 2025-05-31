@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { lazy, Suspense, useEffect, useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import useSWR from "swr";
@@ -28,17 +28,42 @@ import {
 import { useOrders } from "@/lib/hooks/orders";
 import Container from "@/components/custom/Container";
 import CurrencyFormat from "@/components/custom/CurrencyFormat";
-import PageHeader from "@/components/modules/products/PageHeader";
+
+import { cn, formatAddress, ShippingAddress } from "@/lib/utils";
+import { CompanySettings } from "../../../../../../../sanity.types";
+import { urlFor } from "@/sanity/lib/image";
+import { Skeleton } from "@/components/ui/skeleton";
+
+// Dynamically import the PDF Actions component
+const OrderPdfActions = lazy(
+  () => import("../../../../../../components/sanity/orders/OrderPdfActions"),
+);
 
 export interface OrderItem {
   _id: string;
   product: {
     _id: string;
     name: string;
-    images: {
-      primary: {
+    image?: string;
+  };
+  variant: {
+    size: string;
+    price: number;
+    color: string;
+  };
+  quantity: number;
+  subtotal: number;
+}
+
+export interface Item {
+  _id: string;
+  product: {
+    _id: string;
+    name: string;
+    images?: {
+      primary?: {
         url: string;
-        alt: string;
+        alt?: string;
       };
     };
   };
@@ -48,6 +73,7 @@ export interface OrderItem {
     color: string;
   };
   quantity: number;
+  subtotal: number;
 }
 
 export interface Order {
@@ -55,8 +81,20 @@ export interface Order {
   orderNumber: string;
   createdAt: string;
   total: number;
-  status: "pending" | "processing" | "shipped" | "delivered" | "cancelled";
+
+  status:
+    | "pending"
+    | "processing"
+    | "shipped"
+    | "delivered"
+    | "cancelled"
+    | "refunded";
   items: OrderItem[];
+  shippingAddress: ShippingAddress;
+  user: {
+    _id: string;
+    name: string;
+  };
 }
 
 const OrderDetails = ({ id }: { id: string }) => {
@@ -64,35 +102,98 @@ const OrderDetails = ({ id }: { id: string }) => {
   const { user } = useUser();
   const { getOrders } = useOrders();
   const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  const fetcher = (url: string) => fetch(url).then((res) => res.json());
+  const { data: company, isLoading } = useSWR<CompanySettings>(
+    "/api/company",
+    fetcher,
+  );
+
+  const logoUrl = company?.logo
+    ? urlFor(company.logo).url()
+    : "/placeholder.png";
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
+        setLoading(true);
         const orders = await getOrders();
 
-        setOrders(orders);
+        const sanitizedData: Order[] = orders.map((order: any): Order => {
+          const shipAddr = order.shippingAddress;
+          // Concatenate user's first and last name
+          const userName =
+            [order.user?.firstName, order.user?.lastName]
+              .filter(Boolean)
+              .join(" ") || "N/A";
+
+          return {
+            _id: order._id || "missing_id",
+            orderNumber: order.orderNumber || "N/A",
+            createdAt: order.createdAt || new Date().toISOString(),
+            user: {
+              _id: order.user?._id || "missing_user_id",
+              name: userName,
+            },
+            items: (order.items || []).map((item: Item) => ({
+              product: {
+                _id: item?.product?._id || "missing_product_id",
+                name: item?.product?.name || "Unknown Product",
+                image: item?.product?.images?.primary?.url,
+              },
+
+              variant: {
+                //variantId: item.variant.variantId,
+                color: item.variant.color,
+                size: item.variant.size,
+                price: item.variant.price,
+              },
+              quantity: item?.quantity || 0,
+              subtotal: item?.subtotal,
+            })),
+            shippingAddress: {
+              _id: shipAddr?._id || "missing_address_id",
+              fullName: shipAddr?.fullName,
+              addressLine1: shipAddr?.addressLine1,
+              addressLine2: shipAddr?.addressLine2,
+              city: shipAddr?.city,
+              state: shipAddr?.state,
+              postalCode: shipAddr?.postalCode,
+              country: shipAddr?.country,
+              formatted: formatAddress(shipAddr),
+            },
+            total: order.total || 0,
+            status: order.status || "pending",
+          };
+        });
+
+        setOrders(sanitizedData);
       } catch (error) {
         console.error("Error fetching orders:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchOrders();
   }, [getOrders]);
 
-  if (!user) {
+  if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p>Please sign in to view order details.</p>
-      </div>
+      <>
+        <Container>
+          <div className="flex justify-between items-center mb-8">
+            <Skeleton className="w-[120px] h-[50px]" />
+            <Skeleton className="w-[120px] h-[50px]" />
+          </div>
+          <div className="grid gap-6">
+            <Skeleton className="w-full h-[150px]" />
+            <Skeleton className="w-full h-[150px]" />
+          </div>
+        </Container>
+      </>
     );
-  }
-
-  //   if (error) {
-  //     return <div>Failed to load order details</div>;
-  //   }
-
-  if (!orders) {
-    return <div>Loading...</div>;
   }
 
   const getStatusColor = (status: Order["status"]) => {
@@ -116,50 +217,64 @@ const OrderDetails = ({ id }: { id: string }) => {
 
   return (
     <>
-      <PageHeader
-        heading="Order Details"
-        link1="Account"
-        link2="Order Details"
-      />
-      <Container className="p-4 my-4">
-        <div className="flex justify-between">
-          <div className="flex items-center gap-8 mb-8">
-            <Button
-              variant="ghost"
-              size="lg"
-              onClick={() => router.back()}
-              className="flex items-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-white cursor-pointer transition-all duration-300"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Back to Orders
-            </Button>
-            <h1 className="text-2xl font-semibold">
-              Order #{order?.orderNumber}
-            </h1>
-          </div>
+      <Container className="p-4 lg:p-12 my-4">
+        <div className="flex justify-between  items-center mb-8">
           <Button
             variant="ghost"
             size="lg"
+            onClick={() => router.back()}
             className="flex items-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-white cursor-pointer transition-all duration-300"
           >
-            Download Invoice
+            <ArrowLeft className="h-4 w-4" />
+            Back to Orders
           </Button>
+
+          <Suspense
+            fallback={
+              <Button
+                variant="ghost"
+                size="lg"
+                disabled
+                className="flex items-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-white cursor-pointer transition-all duration-300"
+              >
+                Loading PDF Option..
+              </Button>
+            }
+          >
+            {!isLoading && order && (
+              <OrderPdfActions order={order} logoUrl={logoUrl} />
+            )}
+            {isLoading && (
+              <Button
+                variant="ghost"
+                size="lg"
+                disabled
+                className="flex items-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-white cursor-pointer transition-all duration-300"
+              >
+                Loading Invoice..
+              </Button>
+            )}
+          </Suspense>
         </div>
 
+        <h1 className="text-xl mb-4 lg:text-2xl font-semibold">
+          Order #{order?.orderNumber}
+        </h1>
+
         <div className="grid gap-6">
-          <Card className="p-6 ">
+          <Card className="py-4 lg:p-6">
             <CardHeader>
-              <CardTitle className="text-2xl font-semibold">
+              <CardTitle className="text-xl lg:text-2xl font-semibold">
                 Order Summary
               </CardTitle>
-              <CardDescription className="text-md">
+              <CardDescription className="text-sm lg:text-md">
                 Order details and status
               </CardDescription>
             </CardHeader>
             <CardContent className="grid gap-4">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-lg ">
+              <div className="grid grid-cols-3 md:grid-cols-4 gap-2 text-md lg:text-lg ">
                 <div>
-                  <p className="text-lg font-medium text-muted-foreground">
+                  <p className="text-md lg:text-lg font-medium text-muted-foreground">
                     Order Date
                   </p>
                   {order?.createdAt && (
@@ -169,13 +284,15 @@ const OrderDetails = ({ id }: { id: string }) => {
                   )}
                 </div>
                 <div>
-                  <p className="text-lg font-medium text-muted-foreground">
+                  <p className="text-md lg:text-lg font-medium text-muted-foreground">
                     Status
                   </p>
                   {order?.status && (
                     <Badge
                       variant="secondary"
-                      className={`${getStatusColor(order?.status || "pending")} text-sm text-white mt-1`}
+                      className={cn(
+                        `text-sm text-white  ${getStatusColor(order?.status || "pending")}`,
+                      )}
                     >
                       {order?.status?.charAt(0).toUpperCase() +
                         order?.status?.slice(1)}
@@ -183,31 +300,34 @@ const OrderDetails = ({ id }: { id: string }) => {
                   )}
                 </div>
                 <div>
-                  <p className="text-lg font-medium text-muted-foreground">
+                  <p className="text-md lg:text-lg font-medium text-muted-foreground">
                     Total Amount
                   </p>
 
                   {order?.total && (
-                    <CurrencyFormat value={order?.total} className="mt-1" />
+                    <CurrencyFormat
+                      value={order?.total}
+                      className="mt-1 text-md lg:text-lg"
+                    />
                   )}
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="p-6">
+          <Card className="py-4 lg:p-6">
             <CardHeader>
-              <CardTitle className="text-2xl font-semibold">
+              <CardTitle className="text-xl lg:text-2xl font-semibold">
                 Order Items
               </CardTitle>
-              <CardDescription className="text-md">
+              <CardDescription className="text-sm lg:text-md">
                 Items included in your order
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Table>
                 <TableHeader>
-                  <TableRow className="text-lg">
+                  <TableRow className="text-md lg:text-lg">
                     <TableHead>Product</TableHead>
                     <TableHead>Size</TableHead>
                     <TableHead>Color</TableHead>
@@ -218,39 +338,45 @@ const OrderDetails = ({ id }: { id: string }) => {
                 </TableHeader>
                 <TableBody>
                   {order?.items.map((item: OrderItem) => (
-                    <TableRow key={item._id}>
+                    <TableRow key={item.product._id}>
                       <TableCell>
                         <div className="flex items-center gap-4">
                           <div className="relative w-16 h-16">
                             <Image
-                              src={item.product.images.primary.url}
-                              alt={item.product.images.primary.alt}
+                              src={item.product?.image || "/placeholder.png"}
+                              alt={item.product?.name}
                               fill
                               className="object-cover rounded"
                             />
                           </div>
                           <div>
-                            <p className="font-medium text-lg ">
+                            <p className="font-medium text-md lg:text-lg ">
                               {item.product.name}
                             </p>
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell className="text-lg">
+                      <TableCell className="text-md lg:text-lg">
                         {item.variant.size}
                       </TableCell>
                       <TableCell>
-                        <span className="capitalize text-lg">
+                        <span className="capitalize text-md lg:text-lg">
                           {item.variant?.color}
                         </span>
                       </TableCell>
                       <TableCell>
-                        <CurrencyFormat value={item.variant.price} />
+                        <CurrencyFormat
+                          value={item.variant.price}
+                          className="text-md lg:text-lg"
+                        />
                       </TableCell>
-                      <TableCell className="text-lg">{item.quantity}</TableCell>
+                      <TableCell className="text-md lg:text-lg">
+                        {item.quantity}
+                      </TableCell>
                       <TableCell>
                         <CurrencyFormat
                           value={item.variant.price * item.quantity}
+                          className="text-md lg:text-lg"
                         />
                       </TableCell>
                     </TableRow>

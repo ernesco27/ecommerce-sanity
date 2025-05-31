@@ -11,6 +11,7 @@ import Link from "next/link";
 import useSWR from "swr";
 import { Banner } from "../../../../sanity.types";
 import { cn } from "@/lib/utils";
+import { Skeleton } from "@mui/material";
 
 interface PageHeaderProps {
   heading: string;
@@ -84,12 +85,6 @@ const PageHeader: React.FC<PageHeaderProps> = ({
                 <p className="text-lg capitalize text-black lg:text-2xl hover:text-yellow-600 cursor-pointer ">
                   {link2}
                 </p>
-                {/* <Link
-                  href={`/${link1}`}
-                  className="text-lg capitalize text-black lg:text-2xl hover:text-primary-600 "
-                >
-                  {link2}
-                </Link> */}
               </BreadcrumbItem>
             </>
           )}

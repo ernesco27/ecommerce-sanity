@@ -14,20 +14,22 @@ import { format } from "date-fns";
 import { Order, OrderItem, ShippingAddress } from "./types";
 import { useClient } from "sanity";
 
+import { formatAddress } from "@/lib/utils";
+
 // Helper function to format address (can be moved to a utils file if used elsewhere)
-const formatAddress = (addr: ShippingAddress | null | undefined): string => {
-  if (!addr) return "N/A";
-  const parts = [
-    addr.fullName,
-    addr.addressLine1,
-    addr.addressLine2,
-    addr.city,
-    addr.state,
-    addr.postalCode,
-    addr.country,
-  ].filter(Boolean); // Filter out null/undefined/empty strings
-  return parts.join(", ") || "N/A";
-};
+// const formatAddress = (addr: ShippingAddress | null | undefined): string => {
+//   if (!addr) return "N/A";
+//   const parts = [
+//     addr.fullName,
+//     addr.addressLine1,
+//     addr.addressLine2,
+//     addr.city,
+//     addr.state,
+//     addr.postalCode,
+//     addr.country,
+//   ].filter(Boolean); // Filter out null/undefined/empty strings
+//   return parts.join(", ") || "N/A";
+// };
 
 // Dynamically import the PDF Actions component
 const OrderPdfActions = lazy(() => import("./OrderPdfActions"));

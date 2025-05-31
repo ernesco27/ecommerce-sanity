@@ -2,6 +2,12 @@ export interface OrderItem {
   product: {
     _id: string;
     name: string;
+    images?: {
+      primary?: {
+        url: string;
+        alt?: string;
+      };
+    };
   };
   variant?: {
     variantId?: string;

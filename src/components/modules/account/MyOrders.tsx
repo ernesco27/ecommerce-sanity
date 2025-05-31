@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useUser } from "@clerk/nextjs";
+
 import {
   Table,
   TableBody,
@@ -11,12 +11,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Eye } from "lucide-react";
+import { Eye, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import useSWR from "swr";
+
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { useOrders } from "@/lib/hooks/orders";
+import Container from "@/components/custom/Container";
 export interface OrderItem {
   _id: string;
   product: {
@@ -66,40 +67,23 @@ const getStatusColor = (status: Order["status"]) => {
 };
 
 const MyOrders = () => {
-  const { user } = useUser();
   const router = useRouter();
   const { getOrders } = useOrders();
 
   const [orders, setOrders] = useState<Order[]>([]);
-
-  // const fetcher = async (url: string) => {
-  //   const response = await fetch(url);
-  //   if (!response.ok) {
-  //     throw new Error("Failed to fetch orders");
-  //   }
-  //   return response.json();
-  // };
-
-  // // First get the Sanity user document using Clerk ID
-  // const { data: sanityUser, error: userError } = useSWR(
-  //   user ? `/api/user/${user.id}` : null,
-  //   fetcher,
-  // );
-
-  // // Then fetch orders using the Sanity user ID
-  // const { data: orders, error: ordersError } = useSWR<Order[]>(
-  //   sanityUser?._id ? `/api/orders?userId=${sanityUser._id}` : null,
-  //   fetcher,
-  // );
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
+        setLoading(true);
         const orders = await getOrders();
 
         setOrders(orders);
       } catch (error) {
         console.error("Error fetching orders:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -110,14 +94,20 @@ const MyOrders = () => {
   //   return <div>Failed to load orders</div>;
   // }
 
-  if (!orders) {
-    return <div>Loading...</div>;
+  if (loading) {
+    return (
+      <Container className="flex items-center justify-center">
+        <Loader2 className=" w-10 h-10  animate-spin text-yellow-500" />
+      </Container>
+    );
   }
 
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-semibold tracking-tight">My Orders</h2>
+        <h2 className="text-lg lg:text-2xl font-semibold tracking-tight">
+          My Orders
+        </h2>
         <p className="text-sm text-muted-foreground">
           View and track your order history
         </p>

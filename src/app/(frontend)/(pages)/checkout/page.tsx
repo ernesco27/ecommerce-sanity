@@ -144,8 +144,6 @@ export default function CheckoutPage() {
     shipping: Address;
     billing: Address;
   }) => {
-    console.log("Received addresses:", addresses);
-
     setCheckoutData((prev) => ({
       ...prev,
       shippingAddress: addresses.shipping,

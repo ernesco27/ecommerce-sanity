@@ -22,16 +22,21 @@ const PersonalInformation: React.FC<PersonalInformationProps> = ({ user }) => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-semibold tracking-tight">
+        <h2 className="text-lg lg:text-2xl font-semibold tracking-tight">
           Personal Information
         </h2>
-        <Button variant="outline" onClick={() => router.push("/user/profile")}>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => router.push("/user/profile")}
+          className="hover:bg-yellow-600 hover:text-white transition-all ease-in-out duration-300"
+        >
           Edit Profile
         </Button>
       </div>
 
       <div className="grid gap-6">
-        <Card>
+        <Card className="py-4">
           <CardHeader>
             <CardTitle>Basic Information</CardTitle>
             <CardDescription>Your personal details</CardDescription>
@@ -54,7 +59,7 @@ const PersonalInformation: React.FC<PersonalInformationProps> = ({ user }) => {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="py-4">
           <CardHeader>
             <CardTitle>Contact Information</CardTitle>
             <CardDescription>
@@ -79,7 +84,7 @@ const PersonalInformation: React.FC<PersonalInformationProps> = ({ user }) => {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="py-4">
           <CardHeader>
             <CardTitle>Account Security</CardTitle>
             <CardDescription>

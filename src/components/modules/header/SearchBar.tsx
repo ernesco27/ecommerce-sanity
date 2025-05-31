@@ -191,7 +191,7 @@ const SearchBar = ({
               autoFocus
             />
             {isLoading && (
-              <Loader2 className="w-5 h-5 absolute right-3 top-1/2 -translate-y-1/2 animate-spin text-primary-500" />
+              <Loader2 className="w-5 h-5 absolute right-3 top-1/2 -translate-y-1/2 animate-spin text-yellow-500" />
             )}
           </div>
           <Button

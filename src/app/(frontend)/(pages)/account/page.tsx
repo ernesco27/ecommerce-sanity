@@ -11,6 +11,7 @@ import MyOrders from "@/components/modules/account/MyOrders";
 import MyWishlist from "@/components/modules/account/MyWishlist";
 import ManageAddresses from "@/components/modules/account/ManageAddresses";
 import Container from "@/components/custom/Container";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const AccountPage = () => {
   const { user } = useUser();
@@ -18,35 +19,35 @@ const AccountPage = () => {
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p>Please sign in to access your account.</p>
+        <Skeleton className="w-full h-[80vh]" />
       </div>
     );
   }
 
   return (
     <div className="container py-8">
-      <PageHeader heading="My Account" link1="/account" />
+      <PageHeader heading="My Account" link1="Account" />
       <Container>
         <div className="mt-8">
           <Tabs defaultValue="personal" className="w-full">
             <TabsList className="grid w-full grid-cols-4 mb-8">
               <TabsTrigger value="personal" className="flex items-center gap-2">
-                <UserCircle className="h-4 w-4" />
+                <UserCircle className="h-4 w-4 hidden lg:block" />
                 Personal Info
               </TabsTrigger>
               <TabsTrigger value="orders" className="flex items-center gap-2">
-                <Package className="h-4 w-4" />
+                <Package className="h-4 w-4 hidden lg:block" />
                 My Orders
               </TabsTrigger>
               <TabsTrigger value="wishlist" className="flex items-center gap-2">
-                <Heart className="h-4 w-4" />
+                <Heart className="h-4 w-4 hidden lg:block" />
                 My Wishlist
               </TabsTrigger>
               <TabsTrigger
                 value="addresses"
                 className="flex items-center gap-2"
               >
-                <MapPin className="h-4 w-4" />
+                <MapPin className="h-4 w-4 hidden lg:block" />
                 Addresses
               </TabsTrigger>
             </TabsList>

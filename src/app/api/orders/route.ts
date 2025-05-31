@@ -41,9 +41,15 @@ export async function GET(request: Request) {
         createdAt,
         status,
         total,
+        "user": user->{
+          _id,
+          firstName,
+          lastName,
+        },
         "items": items[] {
           _key,
           quantity,
+          subtotal,
           "product": product-> {
             _id,
             name,
@@ -59,8 +65,19 @@ export async function GET(request: Request) {
             price,
             color
             
-          }
-        }
+          },
+          
+        },
+         "shippingAddress": shippingAddress->{
+          _id,
+          fullName,
+          addressLine1,
+          addressLine2,
+          city,
+          state,
+          postalCode,
+          country
+        },
       }`,
       { userId: sanityUserId },
     );

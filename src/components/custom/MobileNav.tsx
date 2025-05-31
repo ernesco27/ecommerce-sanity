@@ -52,8 +52,8 @@ const MobileNav = () => {
     {
       name: "Account",
       icon: CiUser,
-      href: "/account/dashboard",
-      onClick: () => router.push("/account/dashboard"),
+      href: "/account",
+      onClick: () => router.push("/account"),
     },
   ];
 
