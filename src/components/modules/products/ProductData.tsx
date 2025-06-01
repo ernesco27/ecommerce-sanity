@@ -202,6 +202,11 @@ const ProductData = ({ product }: { product: Product }) => {
   };
 
   const handleAddToWishList = async () => {
+    if (!user) {
+      toast.error("Please sign in to add items to your wishlist");
+      return;
+    }
+
     setAddingToWishlist(true);
 
     try {
@@ -210,7 +215,9 @@ const ProductData = ({ product }: { product: Product }) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ product, user }),
+        body: JSON.stringify({
+          product,
+        }),
       });
 
       if (!response.ok) {
@@ -219,12 +226,10 @@ const ProductData = ({ product }: { product: Product }) => {
 
       const { wishlistItem } = await response.json();
       console.log("wishlistItem", wishlistItem);
-
-      setAddingToWishlist(false);
+      setLiked(true);
       toast.success("Product added to wishlist successfully!");
     } catch (error) {
       console.error("Error adding product to wishlist:", error);
-
       toast.error("Error adding product to wishlist");
     } finally {
       setAddingToWishlist(false);

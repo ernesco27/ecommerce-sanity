@@ -83,12 +83,12 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { product, user } = body;
+    const { product } = body;
 
     // Validate required fields
-    if (!product || !user) {
+    if (!product?._id) {
       return NextResponse.json(
-        { error: "Missing required fields" },
+        { error: "Missing required product data" },
         { status: 400 },
       );
     }
@@ -107,6 +107,22 @@ export async function POST(req: Request) {
       sanityUserId = newUser._id;
     }
 
+    // Check if the product already exists in the user's wishlist
+    const existingWishlistItem = await client.fetch(
+      `*[_type == "productWishlist" && user._ref == $sanityUserId && product._ref == $productId][0]`,
+      {
+        sanityUserId,
+        productId: product._id,
+      },
+    );
+
+    if (existingWishlistItem) {
+      return NextResponse.json(
+        { error: "Product already in wishlist" },
+        { status: 400 },
+      );
+    }
+
     // Create the wishlist item
     const wishlistItem = await writeClient.create({
       _type: "productWishlist",
@@ -116,8 +132,9 @@ export async function POST(req: Request) {
       },
       user: {
         _type: "reference",
-        _ref: user._id,
+        _ref: sanityUserId,
       },
+      createdAt: new Date().toISOString(),
     });
 
     return NextResponse.json({ wishlistItem }, { status: 201 });

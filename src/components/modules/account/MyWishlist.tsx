@@ -27,15 +27,6 @@ const MyWishlist = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const addToCart = useCartStore((state) => state.addItem);
 
-  // const fetcher = (url: string) => fetch(url).then((res) => res.json());
-  // const {
-  //   data: wishlist,
-  //   error,
-  //   mutate,
-  // } = useSWR<WishlistItem[]>(user ? "/api/wishlist" : null, fetcher);
-
-  // console.log("wishlist", wishlist);
-
   const { getWishlist } = useWishlist();
 
   useEffect(() => {
