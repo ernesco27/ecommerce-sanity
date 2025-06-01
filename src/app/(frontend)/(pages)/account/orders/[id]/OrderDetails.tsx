@@ -25,7 +25,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 //import type { Order, OrderItem } from "@/components/modules/account/MyOrders";
-import { useOrders } from "@/lib/hooks/orders";
+import { useOrders } from "@/hooks/orders";
 import Container from "@/components/custom/Container";
 import CurrencyFormat from "@/components/custom/CurrencyFormat";
 

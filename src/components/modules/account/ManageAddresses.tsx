@@ -12,12 +12,12 @@ const ManageAddresses = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-[90%] mx-auto">
       <div>
         <h2 className="text-2xl font-semibold tracking-tight">
           Manage Addresses
         </h2>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm lg:text-lg text-muted-foreground">
           Add and manage your delivery addresses
         </p>
       </div>

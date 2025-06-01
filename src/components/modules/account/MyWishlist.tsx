@@ -1,16 +1,19 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Trash2 } from "lucide-react";
+import { Loader2, ShoppingCart, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import useSWR from "swr";
 import { useCartStore } from "@/store/cartStore";
 import { toast } from "sonner";
 import type { ProductsQueryResult } from "../../../../sanity.types";
+import { useOrders } from "@/hooks/orders";
+import { useWishlist } from "@/hooks/wishlist";
+import Container from "@/components/custom/Container";
 
 interface WishlistItem {
   _id: string;
@@ -20,21 +23,58 @@ interface WishlistItem {
 const MyWishlist = () => {
   const { user } = useUser();
   const router = useRouter();
+  const [wishlist, setWishList] = useState<WishlistItem[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const addToCart = useCartStore((state) => state.addItem);
 
-  const fetcher = (url: string) => fetch(url).then((res) => res.json());
-  const {
-    data: wishlist,
-    error,
-    mutate,
-  } = useSWR<WishlistItem[]>(user ? "/api/wishlist" : null, fetcher);
+  // const fetcher = (url: string) => fetch(url).then((res) => res.json());
+  // const {
+  //   data: wishlist,
+  //   error,
+  //   mutate,
+  // } = useSWR<WishlistItem[]>(user ? "/api/wishlist" : null, fetcher);
+
+  // console.log("wishlist", wishlist);
+
+  const { getWishlist } = useWishlist();
+
+  useEffect(() => {
+    const fetchWishlist = async () => {
+      try {
+        setLoading(true);
+        const wishlist = await getWishlist();
+
+        setWishList(wishlist);
+      } catch (error) {
+        console.error("Error fetching wishlist:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchWishlist();
+  }, [getWishlist]);
+
+  console.log("wishlist", wishlist);
+
+  // if (userError || ordersError) {
+  //   return <div>Failed to load orders</div>;
+  // }
+
+  if (loading) {
+    return (
+      <Container className="flex items-center justify-center">
+        <Loader2 className=" w-10 h-10  animate-spin text-yellow-500" />
+      </Container>
+    );
+  }
 
   const handleRemoveFromWishlist = async (productId: string) => {
     try {
       await fetch(`/api/wishlist/${productId}`, {
         method: "DELETE",
       });
-      mutate();
+      // mutate();
     } catch (error) {
       console.error("Error removing from wishlist:", error);
     }
@@ -122,9 +162,9 @@ const MyWishlist = () => {
     toast.success("Product added to cart");
   };
 
-  if (error) {
-    return <div>Failed to load wishlist</div>;
-  }
+  // if (error) {
+  //   return <div>Failed to load wishlist</div>;
+  // }
 
   if (!wishlist) {
     return <div>Loading...</div>;

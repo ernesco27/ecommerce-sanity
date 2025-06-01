@@ -31,6 +31,7 @@ import ProductInfo from "./ProductInfo";
 import { PortableText } from "@portabletext/react";
 import { useCartStore } from "@/store/cartStore";
 import { useRouter } from "next/navigation";
+import { useUser } from "@clerk/nextjs";
 type ColorName =
   | "red"
   | "green"
@@ -75,8 +76,10 @@ const ProductData = ({ product }: { product: Product }) => {
     Record<string, string>
   >({});
   const [liked, setLiked] = useState<boolean>(false);
+  const [addingToWishlist, setAddingToWishlist] = useState<boolean>(false);
   const [quantity, setQuantity] = useState<number>(1);
   const router = useRouter();
+  const { user } = useUser();
 
   const addItem = useCartStore((state) => state.addItem);
   //const items = useCartStore((state) => state.items);
@@ -198,13 +201,33 @@ const ProductData = ({ product }: { product: Product }) => {
     router.push("/checkout");
   };
 
-  const handleAddToWishList = () => {
-    setLiked(!liked);
+  const handleAddToWishList = async () => {
+    setAddingToWishlist(true);
 
-    if (!liked) {
-      toast.success("Product added to wishlist");
-    } else {
-      toast.error("Product removed from Wishlist");
+    try {
+      const response = await fetch("/api/wishlist", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ product, user }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to add product to wishlist");
+      }
+
+      const { wishlistItem } = await response.json();
+      console.log("wishlistItem", wishlistItem);
+
+      setAddingToWishlist(false);
+      toast.success("Product added to wishlist successfully!");
+    } catch (error) {
+      console.error("Error adding product to wishlist:", error);
+
+      toast.error("Error adding product to wishlist");
+    } finally {
+      setAddingToWishlist(false);
     }
   };
 

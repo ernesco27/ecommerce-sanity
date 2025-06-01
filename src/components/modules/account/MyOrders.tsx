@@ -16,8 +16,9 @@ import { useRouter } from "next/navigation";
 
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
-import { useOrders } from "@/lib/hooks/orders";
+import { useOrders } from "@/hooks/orders";
 import Container from "@/components/custom/Container";
+import CurrencyFormat from "@/components/custom/CurrencyFormat";
 export interface OrderItem {
   _id: string;
   product: {
@@ -103,12 +104,12 @@ const MyOrders = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-[90%] mx-auto">
       <div>
         <h2 className="text-lg lg:text-2xl font-semibold tracking-tight">
           My Orders
         </h2>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm lg:text-lg text-muted-foreground">
           View and track your order history
         </p>
       </div>
@@ -123,37 +124,40 @@ const MyOrders = () => {
           </Button>
         </div>
       ) : (
-        <div className="border rounded-lg p-4">
+        <div className="border rounded-lg p-4 ">
           <Table>
             <TableHeader>
-              <TableRow>
+              <TableRow className=" lg:text-lg">
                 <TableHead>Order #</TableHead>
                 <TableHead>Date</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead className="text-right">Total</TableHead>
+                <TableHead>Total</TableHead>
                 <TableHead className="text-right">Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {orders.map((order) => (
                 <TableRow key={order._id}>
-                  <TableCell className="font-medium">
+                  <TableCell className="font-medium lg:text-lg">
                     {order.orderNumber}
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="lg:text-lg">
                     {format(new Date(order.createdAt), "MMM d, yyyy")}
                   </TableCell>
                   <TableCell>
                     <Badge
                       variant="secondary"
-                      className={`${getStatusColor(order.status)} text-white`}
+                      className={`${getStatusColor(order.status)} text-white lg:text-lg`}
                     >
                       {order.status.charAt(0).toUpperCase() +
                         order.status.slice(1)}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-right">
-                    ${order.total.toFixed(2)}
+                  <TableCell>
+                    <CurrencyFormat
+                      value={order.total}
+                      className="text-md lg:text-lg"
+                    />
                   </TableCell>
                   <TableCell className="text-right">
                     <Button
@@ -162,6 +166,7 @@ const MyOrders = () => {
                       onClick={() =>
                         router.push(`/account/orders/${order._id}`)
                       }
+                      className="cursor-pointer hover:bg-yellow-500 hover:text-white transition-all duration-300"
                     >
                       <Eye className="h-4 w-4" />
                     </Button>

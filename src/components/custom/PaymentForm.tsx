@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Loader2, CreditCard } from "lucide-react";
-import { usePaystackPayment } from "@/lib/hooks/usePaystackPayment";
+import { usePaystackPayment } from "@/hooks/usePaystackPayment";
 import { toast } from "sonner";
 
 import { useUser } from "@clerk/nextjs";
