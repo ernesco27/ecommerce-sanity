@@ -37,7 +37,10 @@ export async function GET(request: Request) {
     const wishlistItems = await client.fetch(
       `*[_type == "productWishlist" && user._ref == $userId] | order(createdAt desc) {
         _id,
+        _key,
         createdAt,
+        quantity,
+    
         "user": user->{
           _id,
           firstName,
@@ -51,15 +54,13 @@ export async function GET(request: Request) {
               "url": images.primary.asset->url,
               "alt": images.primary.alt
             }
-          },
-          variants[] {
-            size,
-            price,
-            colorVariants[] {
-              color,
-              stock
-            }
           }
+        },
+        variant {
+          variantId,
+          size,
+          price,
+          color
         }
       }`,
       { userId: sanityUserId },
@@ -83,7 +84,8 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { product } = body;
+    const { product, selectedVariant, selectedColor, quantity, imageUrl } =
+      body;
 
     // Validate required fields
     if (!product?._id) {
@@ -126,6 +128,7 @@ export async function POST(req: Request) {
     // Create the wishlist item
     const wishlistItem = await writeClient.create({
       _type: "productWishlist",
+      _key: uuidv4(),
       product: {
         _type: "reference",
         _ref: product._id,
@@ -134,6 +137,16 @@ export async function POST(req: Request) {
         _type: "reference",
         _ref: sanityUserId,
       },
+      variant: {
+        _key: uuidv4(),
+
+        variantId: selectedVariant._id,
+        color: selectedColor,
+        size: selectedVariant.size,
+        price: selectedVariant.price,
+      },
+      quantity,
+
       createdAt: new Date().toISOString(),
     });
 

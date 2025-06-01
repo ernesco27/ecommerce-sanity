@@ -2,7 +2,13 @@
 
 import React, { useEffect, useState } from "react";
 import { useUser } from "@clerk/nextjs";
-import { Card } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Loader2, ShoppingCart, Trash2 } from "lucide-react";
 import Image from "next/image";
@@ -14,10 +20,39 @@ import type { ProductsQueryResult } from "../../../../sanity.types";
 import { useOrders } from "@/hooks/orders";
 import { useWishlist } from "@/hooks/wishlist";
 import Container from "@/components/custom/Container";
+import {
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+  TableBody,
+  Table,
+} from "@/components/ui/table";
+
+import CurrencyFormat from "@/components/custom/CurrencyFormat";
 
 interface WishlistItem {
   _id: string;
-  product: ProductsQueryResult[number];
+  _key: string;
+  createdAt: string;
+  quantity: number;
+
+  product: {
+    _id: string;
+    name: string;
+    images: {
+      primary: {
+        url: string;
+        alt: string;
+      };
+    };
+  };
+  variant: {
+    variantId: string;
+    size: string;
+    price: number;
+    color: string;
+  };
 }
 
 const MyWishlist = () => {
@@ -178,47 +213,92 @@ const MyWishlist = () => {
           </Button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {wishlist.map((item) => (
-            <Card key={item._id} className="relative group">
-              <div className="aspect-square relative">
-                <Image
-                  src={item.product.images?.primary?.url || "/placeholder.jpg"}
-                  alt={
-                    item.product.images?.primary?.alt ||
-                    item.product.name ||
-                    "Product image"
-                  }
-                  fill
-                  className="object-cover rounded-t-lg"
-                />
-              </div>
-              <div className="p-4">
-                <h3 className="font-semibold truncate">{item.product.name}</h3>
-                <p className="text-lg font-bold mt-2">
-                  ${item.product.pricing?.min.toFixed(2)}
-                </p>
-                <div className="flex gap-2 mt-4">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="flex-1"
-                    onClick={() => handleAddToCart(item)}
-                  >
-                    <ShoppingCart className="h-4 w-4 mr-2" />
-                    Add to Cart
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => handleRemoveFromWishlist(item.product._id)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            </Card>
-          ))}
+        <div className="grid gap-6">
+          <Card className="py-4 lg:p-6">
+            <CardHeader>
+              <CardTitle className="text-xl lg:text-2xl font-semibold">
+                Wishlist Items
+              </CardTitle>
+              <CardDescription className="text-sm lg:text-md">
+                Items included in your wishlist
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow className="text-md lg:text-lg">
+                    <TableHead></TableHead>
+                    <TableHead>Product</TableHead>
+                    <TableHead>Size</TableHead>
+                    <TableHead>Color</TableHead>
+                    <TableHead>Price</TableHead>
+                    <TableHead>Quantity</TableHead>
+                    <TableHead>Subtotal</TableHead>
+                    <TableHead>Action</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {wishlist.map((item) => (
+                    <TableRow key={item.product._id}>
+                      <TableCell>
+                        <Button size="icon" onClick={handleRemoveFromWishlist}>
+                          <Trash2 />
+                        </Button>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-4">
+                          <div className="relative w-16 h-16">
+                            <Image
+                              src={
+                                item.product?.images?.primary.url ||
+                                "/placeholder.png"
+                              }
+                              alt={item.product?.name}
+                              fill
+                              className="object-cover rounded"
+                            />
+                          </div>
+                          <div>
+                            <p className="font-medium text-md lg:text-lg ">
+                              {item.product.name}
+                            </p>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-md lg:text-lg">
+                        {item.variant?.size}
+                      </TableCell>
+                      <TableCell>
+                        <span className="capitalize text-md lg:text-lg">
+                          {item.variant?.color}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <CurrencyFormat
+                          value={item.variant?.price}
+                          className="text-md lg:text-lg"
+                        />
+                      </TableCell>
+                      <TableCell className="text-md lg:text-lg">
+                        {item.quantity}
+                      </TableCell>
+                      <TableCell>
+                        <CurrencyFormat
+                          value={item.variant?.price * item.quantity}
+                          className="text-md lg:text-lg"
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Button variant="outline" size="default">
+                          Add To Cart
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
         </div>
       )}
     </div>

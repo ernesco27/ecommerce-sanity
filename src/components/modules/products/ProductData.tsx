@@ -209,6 +209,30 @@ const ProductData = ({ product }: { product: Product }) => {
 
     setAddingToWishlist(true);
 
+    if (!selectedSize || !selectedColor) {
+      toast.error("Please select size and color");
+      return;
+    }
+
+    if (!selectedVariant) {
+      toast.error("Selected variant not found");
+      return;
+    }
+
+    const colorVariant = selectedVariant.colorVariants?.find(
+      (cv) => cv.color === selectedColor,
+    );
+
+    if (!colorVariant) {
+      toast.error("Selected color variant not found");
+      return;
+    }
+
+    // Construct image URL for the selected variant
+    const imageUrl =
+      (colorVariant.images?.[0] as any)?.url ||
+      (product.images?.primary as any)?.url;
+
     try {
       const response = await fetch("/api/wishlist", {
         method: "POST",
@@ -217,6 +241,10 @@ const ProductData = ({ product }: { product: Product }) => {
         },
         body: JSON.stringify({
           product,
+          selectedVariant,
+          selectedColor,
+          quantity,
+          imageUrl,
         }),
       });
 
