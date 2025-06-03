@@ -7,7 +7,7 @@ import CustomButton from "@/components/custom/CustomButton";
 //import ProductVariants from "@/components/custom/ProductVariants";
 import FeaturedProducts from "@/components/modules/home/FeaturedProducts";
 //import { Product, ProductItem, ProductItemVariantValue } from "@/types";
-import { Heart, Star } from "lucide-react";
+import { Heart, Loader2, Star } from "lucide-react";
 import Link from "next/link";
 import React, { useState, useMemo, useEffect } from "react";
 import useSWR from "swr";
@@ -77,6 +77,7 @@ const ProductData = ({ product }: { product: Product }) => {
   >({});
   const [liked, setLiked] = useState<boolean>(false);
   const [addingToWishlist, setAddingToWishlist] = useState<boolean>(false);
+
   const [quantity, setQuantity] = useState<number>(1);
   const router = useRouter();
   const { user } = useUser();
@@ -252,8 +253,6 @@ const ProductData = ({ product }: { product: Product }) => {
         throw new Error("Failed to add product to wishlist");
       }
 
-      const { wishlistItem } = await response.json();
-      console.log("wishlistItem", wishlistItem);
       setLiked(true);
       toast.success("Product added to wishlist successfully!");
     } catch (error) {
@@ -482,13 +481,17 @@ const ProductData = ({ product }: { product: Product }) => {
                   handleClick={handleBuyNow}
                 />
                 {/* Wishlist Heart */}
-                <Heart
-                  className={cn(
-                    "text-yellow-400  cursor-pointer h-8 w-8",
-                    liked && "fill-yellow-400",
-                  )}
-                  onClick={handleAddToWishList}
-                />
+                {addingToWishlist ? (
+                  <Loader2 className=" w-5 h-5  animate-spin text-yellow-500" />
+                ) : (
+                  <Heart
+                    className={cn(
+                      "text-yellow-400  cursor-pointer h-8 w-8",
+                      liked && "fill-yellow-400",
+                    )}
+                    onClick={handleAddToWishList}
+                  />
+                )}
               </div>
             </div>
             <Separator className="mt-6" />

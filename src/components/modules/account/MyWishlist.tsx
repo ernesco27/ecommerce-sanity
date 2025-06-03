@@ -53,6 +53,7 @@ interface WishlistItem {
     size: string;
     price: number;
     color: string;
+    stock: number;
   };
 }
 
@@ -130,52 +131,52 @@ const MyWishlist = () => {
       price: item.variant.price,
       sku: "", // Not available in wishlist item
       color: item.variant.color,
-      // colorVariants: [
-      //   {
-      //     color: item.variant.color as
-      //       | "red"
-      //       | "green"
-      //       | "blue"
-      //       | "black"
-      //       | "white"
-      //       | "gray"
-      //       | "navy"
-      //       | "brown",
-      //     stock: 0, // Not available in wishlist item
-      //     _type: "colorVariant" as const,
-      //     _key: "default",
-      //   },
-      // ],
+      colorVariants: [
+        {
+          color: item.variant.color as
+            | "red"
+            | "green"
+            | "blue"
+            | "black"
+            | "white"
+            | "gray"
+            | "navy"
+            | "brown",
+          stock: item.variant.stock, // Not available in wishlist item
+          _type: "colorVariant" as const,
+          _key: "default",
+        },
+      ],
     };
     const selectedColor = item.variant.color;
     const quantity = item.quantity;
 
-    // const result = addItem(
-    //   {
-    //     _id: item.product._id,
-    //     _type: "product" as const,
-    //     _createdAt: new Date().toISOString(),
-    //     _updatedAt: new Date().toISOString(),
-    //     _rev: "",
-    //     name: item.product.name,
-    //     variants: [
-    //       {
-    //         _ref: item.variant.variantId,
-    //         _type: "reference" as const,
-    //         _key: "default",
-    //       },
-    //     ],
-    //   },
-    //   selectedVariant,
-    //   selectedColor,
-    //   quantity,
-    //   imageUrl,
-    // );
+    const result = addItem(
+      {
+        _id: item.product._id,
+        _type: "product" as const,
+        _createdAt: new Date().toISOString(),
+        _updatedAt: new Date().toISOString(),
+        _rev: "",
+        name: item.product.name,
+        variants: [
+          {
+            _ref: item.variant.variantId,
+            _type: "reference" as const,
+            _key: "default",
+          },
+        ],
+      },
+      selectedVariant,
+      selectedColor,
+      quantity,
+      imageUrl,
+    );
 
-    // if (!result.success) {
-    //   toast.error(result.error || "Failed to add item to cart");
-    //   return;
-    // }
+    if (!result.success) {
+      toast.error(result.error || "Failed to add item to cart");
+      return;
+    }
 
     toast.success("Product added to cart");
   };
@@ -289,14 +290,32 @@ const MyWishlist = () => {
                         />
                       </TableCell>
                       <TableCell>
-                        <Button
-                          variant="outline"
-                          size="default"
-                          className="cursor-pointer"
-                          onClick={() => handleAddToCart(item)}
-                        >
-                          Add To Cart
-                        </Button>
+                        <div className="flex flex-col gap-2">
+                          <Button
+                            variant="outline"
+                            size="default"
+                            className="cursor-pointer"
+                            onClick={() => handleAddToCart(item)}
+                            disabled={
+                              !item.variant?.stock || item.variant.stock <= 0
+                            }
+                          >
+                            Add To Cart
+                          </Button>
+                          {(!item.variant?.stock ||
+                            item.variant.stock <= 0) && (
+                            <span className="text-red-500 text-sm">
+                              Out of Stock
+                            </span>
+                          )}
+                          {item.variant?.stock &&
+                            item.variant.stock > 0 &&
+                            item.variant.stock < 5 && (
+                              <span className="text-yellow-500 text-sm">
+                                Low Stock - Only {item.variant.stock} left!
+                              </span>
+                            )}
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}

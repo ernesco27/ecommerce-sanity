@@ -59,7 +59,8 @@ export async function GET(request: Request) {
           variantId,
           size,
           price,
-          color
+          color,
+          stock
         }
       }`,
       { userId: sanityUserId },
@@ -147,6 +148,7 @@ export async function POST(req: Request) {
         color: selectedColor,
         size: selectedVariant.size,
         price: selectedVariant.price,
+        stock: selectedVariant.colorVariants[0].stock,
       },
       quantity,
 
