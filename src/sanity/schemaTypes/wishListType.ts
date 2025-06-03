@@ -29,18 +29,41 @@ export const productWishlistType = defineType({
       validation: (Rule) => Rule.required(),
       initialValue: () => new Date().toISOString(),
     }),
-    defineField({
-      name: "notes",
-      type: "text",
-      title: "Notes",
-      description: "Personal notes about the wishlisted product",
-    }),
+    // defineField({
+    //   name: "notes",
+    //   type: "text",
+    //   title: "Notes",
+    //   description: "Personal notes about the wishlisted product",
+    // }),
+    // defineField({
+    //   name: "variant",
+    //   type: "reference",
+    //   to: [{ type: "productVariant" }],
+    //   title: "Preferred Variant",
+    //   description: "Specific variant of the product if any",
+    // }),
     defineField({
       name: "variant",
-      type: "reference",
-      to: [{ type: "productVariant" }],
+      type: "object",
       title: "Preferred Variant",
-      description: "Specific variant of the product if any",
+      fields: [
+        { name: "variantId", type: "string", title: "Variant ID" },
+        { name: "color", type: "string", title: "Color" },
+        { name: "size", type: "string", title: "Size" },
+        { name: "price", type: "number", title: "Price" },
+      ],
+    }),
+    defineField({
+      name: "quantity",
+      type: "number",
+      title: "Quantity",
+      description: "Quantity of item added to the wishlist",
+      validation: (Rule) =>
+        Rule.required()
+          .min(1)
+          .integer()
+          .error("Quantity must be a positive integer."),
+      initialValue: 1, // Default to 1 if not specified
     }),
     defineField({
       name: "notifyWhenAvailable",
@@ -61,14 +84,12 @@ export const productWishlistType = defineType({
     select: {
       title: "product.name",
       subtitle: "user.email",
-      media: "product.images[0]",
     },
     prepare(selection) {
-      const { title, subtitle, media } = selection;
+      const { title, subtitle } = selection;
       return {
         title: title || "Untitled Product",
         subtitle: subtitle || "No user specified",
-        media: media,
       };
     },
   },

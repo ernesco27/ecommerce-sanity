@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { client, writeClient } from "@/sanity/lib/client";
-import { nanoid } from "nanoid";
-import { sendOrderConfirmationEmail } from "@/lib/email";
+
 import { v4 as uuidv4 } from "uuid";
 
 export async function GET(request: Request) {
@@ -38,7 +37,7 @@ export async function GET(request: Request) {
       `*[_type == "productWishlist" && user._ref == $userId] | order(createdAt desc) {
         _id,
         _key,
-        createdAt,
+        addedAt,
         quantity,
     
         "user": user->{
@@ -84,8 +83,12 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { product, selectedVariant, selectedColor, quantity, imageUrl } =
-      body;
+    const { product, selectedVariant, selectedColor, quantity } = body;
+
+    console.log("product:", product);
+    console.log("selectedVariant:", selectedVariant);
+    console.log("selectedColor:", selectedColor);
+    console.log("quantity:", quantity);
 
     // Validate required fields
     if (!product?._id) {
@@ -147,7 +150,7 @@ export async function POST(req: Request) {
       },
       quantity,
 
-      createdAt: new Date().toISOString(),
+      addedAt: new Date().toISOString(),
     });
 
     return NextResponse.json({ wishlistItem }, { status: 201 });
@@ -155,6 +158,67 @@ export async function POST(req: Request) {
     console.error("Error creating wishlist item:", error);
     return NextResponse.json(
       { error: "Failed to create wishlist item" },
+      { status: 500 },
+    );
+  }
+}
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: { productId: string } },
+) {
+  try {
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Get the Sanity user ID
+    const userQuery = `*[_type == "user" && clerkUserId == $userId][0]._id`;
+    const sanityUserId = await writeClient.fetch(userQuery, { userId });
+
+    if (!sanityUserId) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    // Get the wishlist item ID
+    const { searchParams } = new URL(request.url);
+    const productId = searchParams.get("productId");
+
+    if (!productId) {
+      return NextResponse.json(
+        { error: "Product ID is required" },
+        { status: 400 },
+      );
+    }
+
+    // Find and delete the wishlist item
+    const wishlistItem = await client.fetch(
+      `*[_type == "productWishlist" && user._ref == $sanityUserId && product._ref == $productId][0]._id`,
+      {
+        sanityUserId,
+        productId,
+      },
+    );
+
+    if (!wishlistItem) {
+      return NextResponse.json(
+        { error: "Wishlist item not found" },
+        { status: 404 },
+      );
+    }
+
+    // Delete the wishlist item
+    await writeClient.delete(wishlistItem);
+
+    return NextResponse.json(
+      { message: "Wishlist item removed successfully" },
+      { status: 200 },
+    );
+  } catch (error) {
+    console.error("Error removing wishlist item:", error);
+    return NextResponse.json(
+      { error: "Failed to remove wishlist item" },
       { status: 500 },
     );
   }

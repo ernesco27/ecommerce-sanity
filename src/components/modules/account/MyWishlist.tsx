@@ -28,13 +28,14 @@ import {
   TableBody,
   Table,
 } from "@/components/ui/table";
+import { IoIosShareAlt } from "react-icons/io";
 
 import CurrencyFormat from "@/components/custom/CurrencyFormat";
 
 interface WishlistItem {
   _id: string;
   _key: string;
-  createdAt: string;
+  addedAt: string;
   quantity: number;
 
   product: {
@@ -60,7 +61,8 @@ const MyWishlist = () => {
   const router = useRouter();
   const [wishlist, setWishList] = useState<WishlistItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const addToCart = useCartStore((state) => state.addItem);
+
+  const addItem = useCartStore((state) => state.addItem);
 
   const { getWishlist } = useWishlist();
 
@@ -97,100 +99,86 @@ const MyWishlist = () => {
 
   const handleRemoveFromWishlist = async (productId: string) => {
     try {
-      await fetch(`/api/wishlist/${productId}`, {
+      const response = await fetch(`/api/wishlist?productId=${productId}`, {
         method: "DELETE",
       });
-      // mutate();
+
+      if (!response.ok) {
+        throw new Error("Failed to remove from wishlist");
+      }
+
+      // Update the local state by filtering out the removed item
+      setWishList((prev) =>
+        prev.filter((item) => item.product._id !== productId),
+      );
+      toast.success("Item removed from wishlist");
     } catch (error) {
       console.error("Error removing from wishlist:", error);
+      toast.error("Failed to remove item from wishlist");
     }
   };
 
   const handleAddToCart = (item: WishlistItem) => {
-    // Check if product has variants
-    if (!item.product.variants || item.product.variants.length === 0) {
-      toast.error("Product variants not available");
-      return;
-    }
+    const imageUrl = item.product?.images.primary.url;
+    const selectedVariant = {
+      _id: item.variant.variantId,
+      _type: "productVariant" as const,
+      _createdAt: new Date().toISOString(),
+      _updatedAt: new Date().toISOString(),
+      _rev: "",
+      size: item.variant.size as "S" | "M" | "L" | "XL" | "2XL",
+      price: item.variant.price,
+      sku: "", // Not available in wishlist item
+      color: item.variant.color,
+      // colorVariants: [
+      //   {
+      //     color: item.variant.color as
+      //       | "red"
+      //       | "green"
+      //       | "blue"
+      //       | "black"
+      //       | "white"
+      //       | "gray"
+      //       | "navy"
+      //       | "brown",
+      //     stock: 0, // Not available in wishlist item
+      //     _type: "colorVariant" as const,
+      //     _key: "default",
+      //   },
+      // ],
+    };
+    const selectedColor = item.variant.color;
+    const quantity = item.quantity;
 
-    // Get the first available variant and color
-    const firstVariant = item.product.variants[0];
-    const firstColorVariant = firstVariant.colorVariants?.[0];
+    // const result = addItem(
+    //   {
+    //     _id: item.product._id,
+    //     _type: "product" as const,
+    //     _createdAt: new Date().toISOString(),
+    //     _updatedAt: new Date().toISOString(),
+    //     _rev: "",
+    //     name: item.product.name,
+    //     variants: [
+    //       {
+    //         _ref: item.variant.variantId,
+    //         _type: "reference" as const,
+    //         _key: "default",
+    //       },
+    //     ],
+    //   },
+    //   selectedVariant,
+    //   selectedColor,
+    //   quantity,
+    //   imageUrl,
+    // );
 
-    if (!firstColorVariant) {
-      toast.error("Product color variants not available");
-      return;
-    }
-
-    // Ensure we have a valid color
-    const color = firstColorVariant.color || "black";
-
-    const result = addToCart(
-      {
-        _id: item.product._id,
-        _type: "product",
-        _createdAt: item.product._createdAt,
-        _updatedAt: item.product._createdAt,
-        _rev: "",
-        name: item.product.name || "",
-        images: {
-          primary: {
-            _type: "image",
-            asset: {
-              _ref: "",
-              _type: "reference",
-            },
-            alt: item.product.images?.primary?.alt || "",
-          },
-        },
-      },
-      {
-        _id: firstVariant._id,
-        _type: "productVariant",
-        _createdAt: item.product._createdAt,
-        _updatedAt: item.product._createdAt,
-        _rev: "",
-        size: firstVariant.size || undefined,
-        price: firstVariant.price || 0,
-        sku: firstVariant.sku || "",
-        colorVariants: [
-          {
-            _type: "colorVariant",
-            _key: Math.random().toString(36).substr(2, 9),
-            color,
-            colorCode: firstColorVariant.colorCode || undefined,
-            stock: firstColorVariant.stock || 0,
-            images:
-              firstColorVariant.images?.map((img) => ({
-                _type: "image",
-                _key: Math.random().toString(36).substr(2, 9),
-                asset: {
-                  _ref: "",
-                  _type: "reference",
-                },
-                alt: img.alt || "",
-              })) || [],
-          },
-        ],
-      },
-      color,
-      1,
-      firstColorVariant.images?.[0]?.url ||
-        item.product.images?.primary?.url ||
-        "",
-    );
-
-    if (!result.success) {
-      toast.error(result.error || "Failed to add item to cart");
-      return;
-    }
+    // if (!result.success) {
+    //   toast.error(result.error || "Failed to add item to cart");
+    //   return;
+    // }
 
     toast.success("Product added to cart");
   };
-
-  // if (error) {
-  //   return <div>Failed to load wishlist</div>;
-  // }
 
   if (!wishlist) {
     return <div>Loading...</div>;
@@ -198,11 +186,17 @@ const MyWishlist = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-semibold tracking-tight">My Wishlist</h2>
-        <p className="text-sm text-muted-foreground">
-          Save items for later and keep track of products you love
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-semibold tracking-tight">My Wishlist</h2>
+          <p className="text-sm text-muted-foreground">
+            Save items for later and keep track of products you love
+          </p>
+        </div>
+
+        <Button variant="outline" className="cursor-pointer">
+          <IoIosShareAlt /> Share
+        </Button>
       </div>
 
       {wishlist.length === 0 ? (
@@ -241,8 +235,14 @@ const MyWishlist = () => {
                   {wishlist.map((item) => (
                     <TableRow key={item.product._id}>
                       <TableCell>
-                        <Button size="icon" onClick={handleRemoveFromWishlist}>
-                          <Trash2 />
+                        <Button
+                          size="icon"
+                          onClick={() =>
+                            handleRemoveFromWishlist(item.product._id)
+                          }
+                          variant="ghost"
+                        >
+                          <Trash2 className="h-4 w-4" />
                         </Button>
                       </TableCell>
                       <TableCell>
@@ -289,7 +289,12 @@ const MyWishlist = () => {
                         />
                       </TableCell>
                       <TableCell>
-                        <Button variant="outline" size="default">
+                        <Button
+                          variant="outline"
+                          size="default"
+                          className="cursor-pointer"
+                          onClick={() => handleAddToCart(item)}
+                        >
                           Add To Cart
                         </Button>
                       </TableCell>
