@@ -10,14 +10,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2, ShoppingCart, Trash2 } from "lucide-react";
+import { Loader2, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import useSWR from "swr";
+
 import { useCartStore } from "@/store/cartStore";
 import { toast } from "sonner";
-import type { ProductsQueryResult } from "../../../../sanity.types";
-import { useOrders } from "@/hooks/orders";
+
 import { useWishlist } from "@/hooks/wishlist";
 import Container from "@/components/custom/Container";
 import {
@@ -185,6 +184,26 @@ const MyWishlist = () => {
     return <div>Loading...</div>;
   }
 
+  const handleShareWishlist = async () => {
+    try {
+      const wishlistUrl = `${window.location.origin}/wishlist/${user?.id}`;
+
+      if (navigator.share) {
+        await navigator.share({
+          title: "My Wishlist",
+          text: "Check out my wishlist!",
+          url: wishlistUrl,
+        });
+      } else {
+        await navigator.clipboard.writeText(wishlistUrl);
+        toast.success("Wishlist link copied to clipboard!");
+      }
+    } catch (error) {
+      console.error("Error sharing wishlist:", error);
+      toast.error("Failed to share wishlist");
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -195,7 +214,11 @@ const MyWishlist = () => {
           </p>
         </div>
 
-        <Button variant="outline" className="cursor-pointer">
+        <Button
+          variant="outline"
+          className="cursor-pointer"
+          onClick={handleShareWishlist}
+        >
           <IoIosShareAlt /> Share
         </Button>
       </div>

@@ -37,8 +37,6 @@ const page = () => {
     clearCart,
   } = useCartStore();
 
-  console.log("items", items);
-
   const router = useRouter();
 
   useEffect(() => {
@@ -59,10 +57,6 @@ const page = () => {
       // You might want to add a toast notification here
       console.error(result.error);
     }
-  };
-
-  const handleCheckout = () => {
-    console.log("checkout");
   };
 
   // Don't render anything until after hydration

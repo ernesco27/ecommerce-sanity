@@ -98,7 +98,8 @@ const ProductData = ({ product }: { product: Product }) => {
   }, [product.variants, selectedSize]);
 
   // Update quantity if item exists in cart
-  useEffect(() => {
+
+  useMemo(() => {
     if (selectedSize && selectedColor && selectedVariant) {
       const currentQuantity = getItemQuantity(
         product._id || "",

@@ -346,9 +346,7 @@ export async function GET(request: Request) {
       }
     }`;
 
-    console.log("GROQ Query:", query); // For debugging
     const products = await client.fetch(query);
-    console.log("Products count:", products.length); // For debugging
 
     return NextResponse.json(products, {
       status: 200,
