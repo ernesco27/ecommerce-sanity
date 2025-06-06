@@ -124,13 +124,12 @@ interface SessionClaims {
 export default clerkMiddleware(async (auth, req) => {
   const url = new URL(req.url);
   const pathname = url.pathname;
-  console.log("Middleware executing for path:", pathname);
 
   try {
     const session = await auth();
+
     const userRole =
       (session?.sessionClaims as SessionClaims)?.metadata?.role || "guest";
-    console.log("User role from session:", userRole);
 
     // Find matching route pattern
     const matchingRoute = Object.keys(routeAccessMap).find((route) => {

@@ -95,24 +95,16 @@ const IconsGroup = ({
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
                 {user ? (
-                  <DropdownMenuItem>
-                    <div className="flex items-center gap-2 hover:text-yellow-500 cursor-pointer transition-all duration-200 ease-in-out">
-                      <User className="hover:text-yellow-500" />
-                      <span>Profile</span>
-                    </div>
-                  </DropdownMenuItem>
-                ) : (
-                  <SignInButton mode="redirect">
+                  <>
                     <DropdownMenuItem>
-                      <div className="flex items-center justify-center gap-2 hover:text-white cursor-pointer transition-all duration-200 ease-in-out bg-green-300 p-2 rounded-md w-full shadow-md">
-                        <Lock className="hover:text-white" />
-                        <span>Login</span>
+                      <div
+                        className="flex items-center gap-2 hover:text-yellow-500 cursor-pointer transition-all duration-200 ease-in-out"
+                        onClick={() => router.push("/account")}
+                      >
+                        <User className="hover:text-yellow-500" />
+                        <span>Profile</span>
                       </div>
                     </DropdownMenuItem>
-                  </SignInButton>
-                )}
-                {user && (
-                  <>
                     <DropdownMenuItem>
                       <div className="flex items-center gap-2 hover:text-yellow-500 cursor-pointer transition-all duration-200 ease-in-out">
                         <BiBox className="hover:text-yellow-500" />
@@ -132,6 +124,15 @@ const IconsGroup = ({
                       </div>
                     </DropdownMenuItem>
                   </>
+                ) : (
+                  <SignInButton mode="redirect">
+                    <DropdownMenuItem>
+                      <div className="flex items-center justify-center gap-2 hover:text-white cursor-pointer transition-all duration-200 ease-in-out bg-green-300 p-2 rounded-md w-full shadow-md">
+                        <Lock className="hover:text-white" />
+                        <span>Login</span>
+                      </div>
+                    </DropdownMenuItem>
+                  </SignInButton>
                 )}
               </DropdownMenuGroup>
               <DropdownMenuItem>

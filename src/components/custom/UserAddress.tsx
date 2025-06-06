@@ -81,7 +81,7 @@ interface GuestAddresses {
 
 const addressFormSchema = z.object({
   addressType: z.enum(["shipping", "billing", "both"]),
-  fullName: z.string().min(2, "Full name must be at least 2 characters"),
+  fullName: z.string().min(5, "Full name must be at least 2 characters"),
   email: z.string().email("Please enter a valid email address"),
   addressLine1: z.string().min(5, "Address must be at least 5 characters"),
   addressLine2: z.string().optional(),
@@ -107,6 +107,7 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [loading, setLoading] = useState(false);
   const [isAddingAddress, setIsAddingAddress] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [guestAddresses, setGuestAddresses] = useState<GuestAddresses>({});
   const [useSameAddress, setUseSameAddress] = useState(true);
   const [sanityUserId, setSanityUserId] = useState<string | null>(null);
@@ -208,6 +209,7 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
         setAddresses((prev) => [...prev, result.address]);
         toast.success("Address added successfully");
         form.reset();
+        setIsDialogOpen(false);
 
         // If in checkout flow, call onSubmit with the new address
         if (onSubmit) {
@@ -341,7 +343,7 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
       <div className="flex items-center justify-between">
         {/* <h2 className="text-2xl font-bold">Delivery Information</h2> */}
         {user ? (
-          <Dialog>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button variant="outline">Add New Address</Button>
             </DialogTrigger>
