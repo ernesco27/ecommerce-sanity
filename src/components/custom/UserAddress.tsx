@@ -42,6 +42,7 @@ import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import useSWR from "swr";
 
 interface Address {
   _id: string;
@@ -102,15 +103,14 @@ interface UserAddressProps {
   }) => void;
 }
 
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
 const UserAddress = ({ onSubmit }: UserAddressProps) => {
   const { user, isLoaded: isUserLoaded } = useUser();
-  const [addresses, setAddresses] = useState<Address[]>([]);
-  const [loading, setLoading] = useState(false);
   const [isAddingAddress, setIsAddingAddress] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [guestAddresses, setGuestAddresses] = useState<GuestAddresses>({});
   const [useSameAddress, setUseSameAddress] = useState(true);
-  const [sanityUserId, setSanityUserId] = useState<string | null>(null);
   const [selectedShippingId, setSelectedShippingId] = useState<
     string | undefined
   >();
@@ -118,66 +118,47 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
     string | undefined
   >();
 
-  const getDefaultAddress = (type: "shipping" | "billing") => {
-    return addresses.find(
-      (address) =>
-        address.isDefault &&
-        (address.addressType === type || address.addressType === "both"),
-    );
-  };
+  const {
+    data: addressesData,
+    error,
+    mutate,
+  } = useSWR(user ? "/api/addresses" : null, fetcher);
+
+  const addresses = addressesData?.addresses || [];
 
   useEffect(() => {
-    const fetchAddresses = async () => {
-      if (!user) return;
+    if (addressesData?.addresses) {
+      // Set initial selected addresses
+      const defaultShipping = addressesData.addresses.find(
+        (addr: Address) =>
+          addr.isDefault &&
+          (addr.addressType === "shipping" || addr.addressType === "both"),
+      );
+      const defaultBilling = addressesData.addresses.find(
+        (addr: Address) =>
+          addr.isDefault &&
+          (addr.addressType === "billing" || addr.addressType === "both"),
+      );
 
-      setLoading(true);
-      try {
-        const response = await fetch("/api/addresses");
-        if (!response.ok) {
-          throw new Error("Failed to fetch addresses");
+      setSelectedShippingId(defaultShipping?._id);
+      setSelectedBillingId(defaultBilling?._id);
+
+      // If we have a default shipping address, trigger the initial selection
+      if (defaultShipping) {
+        if (useSameAddress) {
+          onSubmit?.({
+            shipping: defaultShipping,
+            billing: defaultShipping,
+          });
+        } else if (defaultBilling) {
+          onSubmit?.({
+            shipping: defaultShipping,
+            billing: defaultBilling,
+          });
         }
-        const data = await response.json();
-        setAddresses(data.addresses);
-
-        // Set initial selected addresses
-        const defaultShipping = data.addresses.find(
-          (addr: Address) =>
-            addr.isDefault &&
-            (addr.addressType === "shipping" || addr.addressType === "both"),
-        );
-        const defaultBilling = data.addresses.find(
-          (addr: Address) =>
-            addr.isDefault &&
-            (addr.addressType === "billing" || addr.addressType === "both"),
-        );
-
-        setSelectedShippingId(defaultShipping?._id);
-        setSelectedBillingId(defaultBilling?._id);
-
-        // If we have a default shipping address, trigger the initial selection
-        if (defaultShipping) {
-          if (useSameAddress) {
-            onSubmit?.({
-              shipping: defaultShipping,
-              billing: defaultShipping,
-            });
-          } else if (defaultBilling) {
-            onSubmit?.({
-              shipping: defaultShipping,
-              billing: defaultBilling,
-            });
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching addresses:", error);
-        toast.error("Failed to load addresses");
-      } finally {
-        setLoading(false);
       }
-    };
-
-    fetchAddresses();
-  }, [user, useSameAddress]);
+    }
+  }, [addressesData, useSameAddress, onSubmit]);
 
   const form = useForm<AddressFormValues>({
     resolver: zodResolver(addressFormSchema),
@@ -190,7 +171,6 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
 
   const handleSubmit = async (data: AddressFormValues) => {
     if (user) {
-      // Handle logged-in user address submission
       setIsAddingAddress(true);
       try {
         const response = await fetch("/api/addresses", {
@@ -206,7 +186,7 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
         }
 
         const result = await response.json();
-        setAddresses((prev) => [...prev, result.address]);
+        await mutate(); // Revalidate the addresses data
         toast.success("Address added successfully");
         form.reset();
         setIsDialogOpen(false);
@@ -267,10 +247,18 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
     }
   };
 
+  const getDefaultAddress = (type: "shipping" | "billing") => {
+    return addresses.find(
+      (address: Address) =>
+        address.isDefault &&
+        (address.addressType === type || address.addressType === "both"),
+    );
+  };
+
   const getSelectedAddress = (type: "shipping" | "billing") => {
     if (type === "shipping" || (type === "billing" && useSameAddress)) {
       return addresses.find(
-        (address) =>
+        (address: Address) =>
           address.isDefault &&
           (address.addressType === type || address.addressType === "both"),
       );
@@ -280,7 +268,9 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
 
   const handleShippingSelect = (value: string) => {
     setSelectedShippingId(value);
-    const selectedAddress = addresses.find((addr) => addr._id === value);
+    const selectedAddress = addresses.find(
+      (addr: Address) => addr._id === value,
+    );
 
     if (selectedAddress && onSubmit) {
       if (useSameAddress) {
@@ -290,7 +280,7 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
         });
       } else {
         const billingAddress = selectedBillingId
-          ? addresses.find((addr) => addr._id === selectedBillingId)
+          ? addresses.find((addr: Address) => addr._id === selectedBillingId)
           : selectedAddress;
         onSubmit({
           shipping: selectedAddress,
@@ -302,11 +292,13 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
 
   const handleBillingSelect = (value: string) => {
     setSelectedBillingId(value);
-    const selectedAddress = addresses.find((addr) => addr._id === value);
+    const selectedAddress = addresses.find(
+      (addr: Address) => addr._id === value,
+    );
 
     if (selectedAddress && onSubmit) {
       const shippingAddress = selectedShippingId
-        ? addresses.find((addr) => addr._id === selectedShippingId)
+        ? addresses.find((addr: Address) => addr._id === selectedShippingId)
         : selectedAddress;
       onSubmit({
         shipping: shippingAddress || selectedAddress,
@@ -319,7 +311,7 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
     setUseSameAddress(checked);
     if (checked && selectedShippingId) {
       const shippingAddress = addresses.find(
-        (addr) => addr._id === selectedShippingId,
+        (addr: Address) => addr._id === selectedShippingId,
       );
       if (shippingAddress && onSubmit) {
         onSubmit({
@@ -334,6 +326,14 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
     return (
       <div className="flex items-center justify-center p-8">
         <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center p-8 text-red-500">
+        Failed to load addresses
       </div>
     );
   }
@@ -588,11 +588,11 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
               >
                 {addresses
                   .filter(
-                    (address) =>
+                    (address: Address) =>
                       address.addressType === "shipping" ||
                       address.addressType === "both",
                   )
-                  .map((address) => (
+                  .map((address: Address) => (
                     <div
                       key={address._id}
                       className="flex items-center space-x-2 border p-4 rounded-lg mb-2"
@@ -822,11 +822,11 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
                 >
                   {addresses
                     .filter(
-                      (address) =>
+                      (address: Address) =>
                         address.addressType === "billing" ||
                         address.addressType === "both",
                     )
-                    .map((address) => (
+                    .map((address: Address) => (
                       <div
                         key={address._id}
                         className="flex items-center space-x-2 border p-4 rounded-lg mb-2"

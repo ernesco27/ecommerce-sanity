@@ -19,6 +19,9 @@ import { Badge } from "@/components/ui/badge";
 import { useOrders } from "@/hooks/orders";
 import Container from "@/components/custom/Container";
 import CurrencyFormat from "@/components/custom/CurrencyFormat";
+import { useUser } from "@clerk/nextjs";
+import useSWR from "swr";
+import { User } from "../../../../sanity.types";
 export interface OrderItem {
   _id: string;
   product: {
@@ -67,35 +70,18 @@ const getStatusColor = (status: Order["status"]) => {
   }
 };
 
-const MyOrders = () => {
+const MyOrders = ({ user }: { user: User }) => {
   const router = useRouter();
-  const { getOrders } = useOrders();
 
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-  useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        setLoading(true);
-        const orders = await getOrders();
+  const {
+    data: orders,
+    error,
+    isLoading,
+  } = useSWR(user ? `/api/orders?userId=${user._id}` : null, fetcher);
 
-        setOrders(orders);
-      } catch (error) {
-        console.error("Error fetching orders:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchOrders();
-  }, [getOrders]);
-
-  // if (userError || ordersError) {
-  //   return <div>Failed to load orders</div>;
-  // }
-
-  if (loading) {
+  if (isLoading) {
     return (
       <Container className="flex items-center justify-center">
         <Loader2 className=" w-10 h-10  animate-spin text-yellow-500" />
@@ -136,7 +122,7 @@ const MyOrders = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {orders.map((order) => (
+              {orders.map((order: Order) => (
                 <TableRow key={order._id}>
                   <TableCell className="font-medium lg:text-lg">
                     {order.orderNumber}

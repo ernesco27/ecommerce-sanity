@@ -11,12 +11,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
+import { User } from "../../../../sanity.types";
 
 interface PersonalInformationProps {
   user: UserResource;
 }
 
-const PersonalInformation: React.FC<PersonalInformationProps> = ({ user }) => {
+const PersonalInformation = ({ user }: { user: User }) => {
   const router = useRouter();
 
   return (
@@ -73,18 +74,14 @@ const PersonalInformation: React.FC<PersonalInformationProps> = ({ user }) => {
               <label className="text-sm lg:text-lg font-medium text-muted-foreground">
                 Email Address
               </label>
-              <p className="mt-1 lg:text-lg">
-                {user.primaryEmailAddress?.emailAddress}
-              </p>
+              <p className="mt-1 lg:text-lg">{user?.email}</p>
             </div>
-            {user.phoneNumbers && user.phoneNumbers.length > 0 && (
+            {user.phone && (
               <div>
                 <label className="text-sm lg:text-lg font-medium text-muted-foreground">
                   Phone Number
                 </label>
-                <p className="mt-1 lg:text-lg">
-                  {user.phoneNumbers[0].phoneNumber}
-                </p>
+                <p className="mt-1 lg:text-lg">{user.phone}</p>
               </div>
             )}
           </CardContent>

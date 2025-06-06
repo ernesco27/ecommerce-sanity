@@ -12,11 +12,20 @@ import MyWishlist from "@/components/modules/account/MyWishlist";
 import ManageAddresses from "@/components/modules/account/ManageAddresses";
 import Container from "@/components/custom/Container";
 import { Skeleton } from "@/components/ui/skeleton";
+import { User } from "../../../../../sanity.types";
+import useSWR from "swr";
 
 const AccountPage = () => {
+  const fetcher = (url: string) => fetch(url).then((res) => res.json());
   const { user } = useUser();
 
-  if (!user) {
+  const {
+    data: userData,
+    error,
+    isLoading,
+  } = useSWR<User>(user ? `/api/user/${user.id}` : null, fetcher);
+
+  if (!userData) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Skeleton className="w-full h-[80vh]" />
@@ -54,15 +63,15 @@ const AccountPage = () => {
 
             <Card className="p-6">
               <TabsContent value="personal">
-                <PersonalInformation user={user} />
+                <PersonalInformation user={userData} />
               </TabsContent>
 
               <TabsContent value="orders">
-                <MyOrders />
+                <MyOrders user={userData} />
               </TabsContent>
 
               <TabsContent value="wishlist">
-                <MyWishlist />
+                <MyWishlist user={userData} />
               </TabsContent>
 
               <TabsContent value="addresses">

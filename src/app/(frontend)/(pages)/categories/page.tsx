@@ -27,8 +27,6 @@ const page = () => {
 
   const { categories } = useCategories();
 
-  console.log("categories", categories);
-
   const banner4 = banners?.[8];
 
   return (

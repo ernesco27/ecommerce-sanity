@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useUser } from "@clerk/nextjs";
+
 import {
   Card,
   CardContent,
@@ -17,7 +17,6 @@ import { useRouter } from "next/navigation";
 import { useCartStore } from "@/store/cartStore";
 import { toast } from "sonner";
 
-import { useWishlist } from "@/hooks/wishlist";
 import Container from "@/components/custom/Container";
 import {
   TableCell,
@@ -30,6 +29,8 @@ import {
 import { IoIosShareAlt } from "react-icons/io";
 
 import CurrencyFormat from "@/components/custom/CurrencyFormat";
+import { User } from "../../../../sanity.types";
+import useSWR, { mutate } from "swr";
 
 interface WishlistItem {
   _id: string;
@@ -56,40 +57,22 @@ interface WishlistItem {
   };
 }
 
-const MyWishlist = () => {
-  const { user } = useUser();
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
+const MyWishlist = ({ user }: { user: User }) => {
   const router = useRouter();
-  const [wishlist, setWishList] = useState<WishlistItem[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  const {
+    data: wishlist,
+    error,
+    isLoading,
+  } = useSWR(user ? `/api/wishlist?userId=${user._id}` : null, fetcher);
 
   const addItem = useCartStore((state) => state.addItem);
 
-  const { getWishlist } = useWishlist();
-
-  useEffect(() => {
-    const fetchWishlist = async () => {
-      try {
-        setLoading(true);
-        const wishlist = await getWishlist();
-
-        setWishList(wishlist);
-      } catch (error) {
-        console.error("Error fetching wishlist:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchWishlist();
-  }, [getWishlist]);
-
-  console.log("wishlist", wishlist);
-
-  // if (userError || ordersError) {
-  //   return <div>Failed to load orders</div>;
-  // }
-
-  if (loading) {
+  if (isLoading) {
     return (
       <Container className="flex items-center justify-center">
         <Loader2 className=" w-10 h-10  animate-spin text-yellow-500" />
@@ -99,6 +82,7 @@ const MyWishlist = () => {
 
   const handleRemoveFromWishlist = async (productId: string) => {
     try {
+      setDeletingId(productId);
       const response = await fetch(`/api/wishlist?productId=${productId}`, {
         method: "DELETE",
       });
@@ -107,14 +91,22 @@ const MyWishlist = () => {
         throw new Error("Failed to remove from wishlist");
       }
 
-      // Update the local state by filtering out the removed item
-      setWishList((prev) =>
-        prev.filter((item) => item.product._id !== productId),
+      // Update the SWR cache by removing the deleted item
+      mutate(
+        `/api/wishlist?userId=${user._id}`,
+        (currentData: WishlistItem[] | undefined) =>
+          currentData
+            ? currentData.filter((item) => item.product._id !== productId)
+            : [],
+        false,
       );
+
       toast.success("Item removed from wishlist");
     } catch (error) {
       console.error("Error removing from wishlist:", error);
       toast.error("Failed to remove item from wishlist");
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -186,7 +178,7 @@ const MyWishlist = () => {
 
   const handleShareWishlist = async () => {
     try {
-      const wishlistUrl = `${window.location.origin}/wishlist/${user?.id}`;
+      const wishlistUrl = `${window.location.origin}/wishlist/${user?._id}`;
 
       if (navigator.share) {
         await navigator.share({
@@ -256,7 +248,7 @@ const MyWishlist = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {wishlist.map((item) => (
+                  {wishlist.map((item: WishlistItem) => (
                     <TableRow key={item.product._id}>
                       <TableCell>
                         <Button
@@ -265,8 +257,13 @@ const MyWishlist = () => {
                             handleRemoveFromWishlist(item.product._id)
                           }
                           variant="ghost"
+                          className=" hover:text-red-500 cursor-pointer"
                         >
-                          <Trash2 className="h-4 w-4" />
+                          {deletingId === item.product._id ? (
+                            <Loader2 className=" w-4 h-4  animate-spin text-red-500" />
+                          ) : (
+                            <Trash2 className="h-4 w-4 " />
+                          )}
                         </Button>
                       </TableCell>
                       <TableCell>
