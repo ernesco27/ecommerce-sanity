@@ -118,47 +118,107 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
     string | undefined
   >();
 
-  const {
-    data: addressesData,
-    error,
-    mutate,
-  } = useSWR(user ? "/api/addresses" : null, fetcher);
+  const [addresses, setAddresses] = useState<Address[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  const addresses = addressesData?.addresses || [];
+  console.log("addr:", addresses);
+
+  const getDefaultAddress = (type: "shipping" | "billing") => {
+    return addresses.find(
+      (address) =>
+        address.isDefault &&
+        (address.addressType === type || address.addressType === "both"),
+    );
+  };
 
   useEffect(() => {
-    if (addressesData?.addresses) {
-      // Set initial selected addresses
-      const defaultShipping = addressesData.addresses.find(
-        (addr: Address) =>
-          addr.isDefault &&
-          (addr.addressType === "shipping" || addr.addressType === "both"),
-      );
-      const defaultBilling = addressesData.addresses.find(
-        (addr: Address) =>
-          addr.isDefault &&
-          (addr.addressType === "billing" || addr.addressType === "both"),
-      );
+    const fetchAddresses = async () => {
+      if (!user) return;
+      setLoading(true);
 
-      setSelectedShippingId(defaultShipping?._id);
-      setSelectedBillingId(defaultBilling?._id);
-
-      // If we have a default shipping address, trigger the initial selection
-      if (defaultShipping) {
-        if (useSameAddress) {
-          onSubmit?.({
-            shipping: defaultShipping,
-            billing: defaultShipping,
-          });
-        } else if (defaultBilling) {
-          onSubmit?.({
-            shipping: defaultShipping,
-            billing: defaultBilling,
-          });
+      try {
+        const response = await fetch("/api/addresses");
+        if (!response.ok) {
+          throw new Error("Failed to fetch addresses");
         }
+        const data = await response.json();
+        setAddresses(data.addresses);
+
+        setAddresses(data.addresses);
+
+        // Set initial selected addressesAdd commentMore actions
+        const defaultShipping = data.addresses.find(
+          (addr: Address) =>
+            addr.isDefault &&
+            (addr.addressType === "shipping" || addr.addressType === "both"),
+        );
+        const defaultBilling = data.addresses.find(
+          (addr: Address) =>
+            addr.isDefault &&
+            (addr.addressType === "billing" || addr.addressType === "both"),
+        );
+
+        setSelectedShippingId(defaultShipping?._id);
+        setSelectedBillingId(defaultBilling?._id);
+
+        // If we have a default shipping address, trigger the initial selection
+        if (defaultShipping) {
+          if (useSameAddress) {
+            onSubmit?.({
+              shipping: defaultShipping,
+              billing: defaultShipping,
+            });
+          } else if (defaultBilling) {
+            onSubmit?.({
+              shipping: defaultShipping,
+              billing: defaultBilling,
+            });
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching addresses:", error);
+        toast.error("Failed to load addresses");
+      } finally {
+        setLoading(false);
       }
-    }
-  }, [addressesData, useSameAddress, onSubmit]);
+    };
+
+    fetchAddresses();
+  }, [user, useSameAddress]);
+
+  // useEffect(() => {
+  //   if (addresses) {
+  //     // Set initial selected addresses
+  //     const defaultShipping = addresses.find(
+  //       (addr: Address) =>
+  //         addr.isDefault &&
+  //         (addr.addressType === "shipping" || addr.addressType === "both"),
+  //     );
+  //     const defaultBilling = addresses.find(
+  //       (addr: Address) =>
+  //         addr.isDefault &&
+  //         (addr.addressType === "billing" || addr.addressType === "both"),
+  //     );
+
+  //     setSelectedShippingId(defaultShipping?._id);
+  //     setSelectedBillingId(defaultBilling?._id);
+
+  //     // If we have a default shipping address, trigger the initial selection
+  //     if (defaultShipping) {
+  //       if (useSameAddress) {
+  //         onSubmit?.({
+  //           shipping: defaultShipping,
+  //           billing: defaultShipping,
+  //         });
+  //       } else if (defaultBilling) {
+  //         onSubmit?.({
+  //           shipping: defaultShipping,
+  //           billing: defaultBilling,
+  //         });
+  //       }
+  //     }
+  //   }
+  // }, [addresses, useSameAddress, onSubmit]);
 
   const form = useForm<AddressFormValues>({
     resolver: zodResolver(addressFormSchema),
@@ -186,7 +246,8 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
         }
 
         const result = await response.json();
-        await mutate(); // Revalidate the addresses data
+        setAddresses((prev) => [...prev, result.address]);
+        //await mutate(); // Revalidate the addresses data
         toast.success("Address added successfully");
         form.reset();
         setIsDialogOpen(false);
@@ -247,12 +308,49 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
     }
   };
 
-  const getDefaultAddress = (type: "shipping" | "billing") => {
-    return addresses.find(
-      (address: Address) =>
-        address.isDefault &&
-        (address.addressType === type || address.addressType === "both"),
-    );
+  const handleGuestSubmit = (data: AddressFormValues) => {
+    console.log("formData:", data);
+    try {
+      const { addressType, ...addressData } = data;
+      const guestAddress: GuestAddress = addressData;
+
+      let updatedAddresses = guestAddresses;
+
+      if (addressType === "shipping") {
+        updatedAddresses = {
+          shipping: guestAddress,
+          billing: useSameAddress
+            ? guestAddress
+            : guestAddresses.billing || guestAddress,
+        };
+      } else if (addressType === "billing") {
+        updatedAddresses = {
+          shipping: guestAddresses.shipping || guestAddress,
+          billing: guestAddress,
+        };
+      } else {
+        // Both shipping and billing
+        updatedAddresses = {
+          shipping: guestAddress,
+          billing: guestAddress,
+        };
+      }
+
+      // Update local state
+      setGuestAddresses(updatedAddresses);
+
+      console.log("guest:", updatedAddresses);
+
+      // Invoke onSubmit if defined
+      if (onSubmit) {
+        onSubmit(updatedAddresses);
+      }
+
+      toast.success("Address saved successfully!");
+    } catch (error) {
+      console.error("Error in handleGuestSubmit:", error);
+      toast.error("Failed to save address.");
+    }
   };
 
   const getSelectedAddress = (type: "shipping" | "billing") => {
@@ -330,13 +428,13 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
     );
   }
 
-  if (error) {
-    return (
-      <div className="flex items-center justify-center p-8 text-red-500">
-        Failed to load addresses
-      </div>
-    );
-  }
+  // if (error) {
+  //   return (
+  //     <div className="flex items-center justify-center p-8 text-red-500">
+  //       Failed to load addresses
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="space-y-6">
@@ -623,7 +721,7 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
             ) : (
               <Form {...form}>
                 <form
-                  onSubmit={form.handleSubmit(handleSubmit)}
+                  onSubmit={form.handleSubmit(handleGuestSubmit)}
                   className="space-y-4"
                 >
                   <input
@@ -756,7 +854,7 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
                       </FormItem>
                     )}
                   />
-                  <FormField
+                  {/* <FormField
                     control={form.control}
                     name="isDefault"
                     render={({ field }) => (
@@ -775,7 +873,7 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
                         <FormMessage />
                       </FormItem>
                     )}
-                  />
+                  /> */}
                   <Button
                     type="submit"
                     className="w-full cursor-pointer bg-yellow-500 hover:bg-yellow-600"
@@ -858,7 +956,7 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
               ) : (
                 <Form {...form}>
                   <form
-                    onSubmit={form.handleSubmit(handleSubmit)}
+                    onSubmit={form.handleSubmit(handleGuestSubmit)}
                     className="space-y-4"
                   >
                     <input
@@ -991,7 +1089,7 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
                         </FormItem>
                       )}
                     />
-                    <FormField
+                    {/* <FormField
                       control={form.control}
                       name="isDefault"
                       render={({ field }) => (
@@ -1010,7 +1108,7 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
                           <FormMessage />
                         </FormItem>
                       )}
-                    />
+                    /> */}
                     <Button
                       type="submit"
                       className="w-full cursor-pointer bg-yellow-500 hover:bg-yellow-600"

@@ -39,6 +39,7 @@ export async function GET(request: Request) {
         postalCode,
         country,
         phone,
+        email,
         isDefault
       }
     }`;
@@ -90,6 +91,7 @@ export async function POST(request: Request) {
       country,
       phone,
       isDefault,
+      email,
     } = newAddressData;
 
     // First get the Sanity user document ID
@@ -130,6 +132,7 @@ export async function POST(request: Request) {
       postalCode,
       country,
       phone,
+      email,
       isDefault,
       user: {
         _type: "reference",

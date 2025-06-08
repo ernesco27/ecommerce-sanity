@@ -120,8 +120,12 @@ const OrderDetails = ({ id }: { id: string }) => {
         setLoading(true);
         const orders = await getOrders();
 
+        console.log("orders:", orders);
+
         const sanitizedData: Order[] = orders.map((order: any): Order => {
           const shipAddr = order.shippingAddress;
+
+          console.log("shipping:", shipAddr);
           // Concatenate user's first and last name
           const userName =
             [order.user?.firstName, order.user?.lastName]
@@ -162,6 +166,7 @@ const OrderDetails = ({ id }: { id: string }) => {
               postalCode: shipAddr?.postalCode,
               country: shipAddr?.country,
               formatted: formatAddress(shipAddr),
+              phone: shipAddr?.phone,
             },
             total: order.total || 0,
             status: order.status || "pending",

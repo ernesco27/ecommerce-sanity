@@ -12,6 +12,8 @@ export interface ShippingAddress {
   country?: string;
   // A helper to get a formatted string (optional, can be done in component)
   formatted?: string;
+  phone?: string;
+  email?: string;
 }
 
 export function cn(...inputs: ClassValue[]) {

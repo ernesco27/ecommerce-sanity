@@ -76,7 +76,9 @@ export async function GET(request: Request) {
           city,
           state,
           postalCode,
-          country
+          country,
+          phone,
+          email
         },
       }`,
       { userId: sanityUserId },
@@ -95,9 +97,9 @@ export async function GET(request: Request) {
 export async function POST(req: Request) {
   try {
     const { userId } = await auth();
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    // if (!userId) {
+    //   return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    // }
 
     const body = await req.json();
     const {

@@ -155,7 +155,14 @@ const OrderInvoiceDocument: React.FC<OrderInvoiceDocumentProps> = ({
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Customer Information</Text>
-        <Text style={styles.text}>Name: {order.user?.name || "N/A"}</Text>
+        <Text style={styles.text}>Full Name: {order.user?.name || "N/A"}</Text>
+        <Text style={styles.text}>
+          Phone Number: {order.shippingAddress?.phone || "N/A"}
+        </Text>
+        <Text style={styles.text}>
+          Email: {order.shippingAddress?.email || "N/A"}
+        </Text>
+
         {/* Add more customer details if available and needed, e.g., email, phone */}
       </View>
 
