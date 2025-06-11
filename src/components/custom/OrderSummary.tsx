@@ -22,6 +22,8 @@ interface OrderSummaryProps {
   billingAddress: any;
   shippingMethod: ShippingMethod;
   subtotal: number;
+  discountTotal: number;
+  total: number;
 }
 
 export function OrderSummary({
@@ -30,9 +32,9 @@ export function OrderSummary({
   billingAddress,
   shippingMethod,
   subtotal,
+  discountTotal,
+  total,
 }: OrderSummaryProps) {
-  const total = subtotal + shippingMethod.price;
-
   return (
     <div className="space-y-6 ">
       <Card className="py-4">
@@ -139,6 +141,23 @@ export function OrderSummary({
               <span className="text-gray-500">Subtotal</span>
               <CurrencyFormat value={subtotal} className="font-medium" />
             </div>
+            {discountTotal > 0 && (
+              <div className="flex justify-between">
+                <p className="text-lg text-gray-500">Discount</p>
+                <p className="text-lg font-semibold text-red-500">
+                  - <CurrencyFormat value={discountTotal} />
+                </p>
+              </div>
+            )}
+            <div className="flex justify-between">
+              <span className="text-gray-500">Tax</span>
+              {/* <CurrencyFormat
+                value={shippingMethod.price}
+                className="font-medium"
+              /> */}
+              <p className="text-lg font-semibold">GHs 0.00</p>
+            </div>
+
             <div className="flex justify-between">
               <span className="text-gray-500">Shipping</span>
               <CurrencyFormat
@@ -146,6 +165,7 @@ export function OrderSummary({
                 className="font-medium"
               />
             </div>
+
             <Separator />
             <div className="flex justify-between">
               <span className="font-semibold">Total</span>

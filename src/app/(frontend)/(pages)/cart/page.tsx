@@ -24,9 +24,13 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Services from "@/components/modules/home/Services";
+import { toast } from "sonner";
+import { X } from "lucide-react";
 
 const page = () => {
   const [mounted, setMounted] = useState(false);
+  const [couponCode, setCouponCode] = useState("");
+  const [isApplying, setIsApplying] = useState(false);
   const {
     items,
     removeItem,
@@ -35,6 +39,11 @@ const page = () => {
     hydrated,
     updateQuantity,
     clearCart,
+    applyDiscount,
+    removeDiscount,
+    appliedDiscounts,
+    getDiscountTotal,
+    getFinalPrice,
   } = useCartStore();
 
   const router = useRouter();
@@ -57,6 +66,33 @@ const page = () => {
       // You might want to add a toast notification here
       console.error(result.error);
     }
+  };
+
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) {
+      toast.error("Please enter a coupon code");
+      return;
+    }
+
+    setIsApplying(true);
+    try {
+      const result = await applyDiscount(couponCode.trim());
+      if (result.success) {
+        toast.success("Coupon applied successfully!");
+        setCouponCode("");
+      } else {
+        toast.error(result.error || "Failed to apply coupon");
+      }
+    } catch (error) {
+      toast.error("Failed to apply coupon. Please try again.");
+    } finally {
+      setIsApplying(false);
+    }
+  };
+
+  const handleRemoveDiscount = (discountId: string) => {
+    removeDiscount(discountId);
+    toast.info("Discount removed");
   };
 
   // Don't render anything until after hydration
@@ -189,13 +225,18 @@ const page = () => {
                 <div className="flex flex-col lg:flex-row gap-2 w-1/2">
                   <Input
                     placeholder="Enter coupon code"
-                    className="py-5 px-4 md:text-lg focus-visible:ring-yellow-200 "
+                    className="py-5 px-4 md:text-lg focus-visible:ring-yellow-200"
+                    value={couponCode}
+                    onChange={(e) => setCouponCode(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleApplyCoupon()}
                   />
                   <Button
                     variant="outline"
                     className="bg-yellow-800 text-white capitalize cursor-pointer text-lg py-5 px-4 hover:bg-yellow-600 hover:text-white transition-all duration-300 ease-in-out"
+                    onClick={handleApplyCoupon}
+                    disabled={isApplying}
                   >
-                    Apply Coupon
+                    {isApplying ? "Applying..." : "Apply Coupon"}
                   </Button>
                 </div>
                 <p
@@ -205,6 +246,43 @@ const page = () => {
                   x Clear Shopping Cart
                 </p>
               </div>
+              {/* Applied Discounts */}
+              {appliedDiscounts.length > 0 && (
+                <div className="mb-8">
+                  <h3 className="text-lg font-semibold mb-2">
+                    Applied Discounts
+                  </h3>
+                  <div className="space-y-2">
+                    {appliedDiscounts.map((discount) => (
+                      <div
+                        key={discount._id}
+                        className="flex items-center justify-between bg-green-50 p-3 rounded-md"
+                      >
+                        <div>
+                          <p className="font-medium">{discount.name}</p>
+                          <p className="text-sm text-gray-600">
+                            Code: {discount.code}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <CurrencyFormat
+                            value={discount.amount}
+                            className="text-green-600 font-semibold"
+                          />
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="hover:text-red-500"
+                            onClick={() => handleRemoveDiscount(discount._id)}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
               {/* Shipping & Billing Address */}
 
               {/* <UserAddress /> */}
@@ -225,25 +303,24 @@ const page = () => {
                   className="text-right font-semibold"
                 />
               </div>
+              {getDiscountTotal() > 0 && (
+                <div className="flex justify-between">
+                  <p className="text-lg text-gray-500">Discount</p>
+                  <p className="text-lg font-semibold text-red-500">
+                    - <CurrencyFormat value={getDiscountTotal()} />
+                  </p>
+                </div>
+              )}
               <div className="flex justify-between">
-                <p className="text-lg text-gray-500">Shipping</p>
+                <p className="text-lg text-gray-500">Tax</p>
                 <p className="text-lg font-semibold">GHs 0.00</p>
               </div>
-              <div className="flex justify-between">
-                <p className="text-lg text-gray-500">Taxes</p>
-                <p className="text-lg font-semibold">GHs 0.00</p>
-              </div>
-              <div className="flex justify-between">
-                <p className="text-lg text-gray-500">Coupon Discount</p>
-                <p className="text-lg font-semibold text-red-500">
-                  ( GHs 0.00)
-                </p>
-              </div>
+
               <Separator className="my-4" />
               <div className="flex justify-between">
                 <p className="text-lg text-gray-500">Total</p>
                 <CurrencyFormat
-                  value={getTotalPrice()}
+                  value={getFinalPrice()}
                   className="text-right font-semibold"
                 />
               </div>

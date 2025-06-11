@@ -61,7 +61,8 @@ export default function CheckoutPage() {
   const router = useRouter();
   const { user } = useUser();
   const [currentStep, setCurrentStep] = useState<CheckoutStep>("information");
-  const { items, getTotalPrice, clearCart } = useCartStore();
+  const { items, getTotalPrice, clearCart, getDiscountTotal, getFinalPrice } =
+    useCartStore();
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<string>("not paid");
 
@@ -71,6 +72,8 @@ export default function CheckoutPage() {
     shippingMethod: null,
     paymentMethod: null,
   });
+
+  const total = getFinalPrice() + (checkoutData.shippingMethod?.price || 0);
 
   // Validation functions for each step
   const validateInformation = () => {
@@ -193,7 +196,7 @@ export default function CheckoutPage() {
           paymentMethod: checkoutData.paymentMethod,
           paymentStatus: paymentStatus,
           subtotal: getTotalPrice(),
-          total: getTotalPrice() + (checkoutData.shippingMethod?.price || 0),
+          total: total,
           customerEmail:
             user?.emailAddresses[0]?.emailAddress ||
             checkoutData.shippingAddress?.email,
@@ -310,6 +313,8 @@ export default function CheckoutPage() {
                 billingAddress={checkoutData.billingAddress}
                 shippingMethod={checkoutData.shippingMethod!}
                 subtotal={getTotalPrice()}
+                discountTotal={getDiscountTotal()}
+                total={total}
               />
             </div>
           )}
@@ -321,9 +326,7 @@ export default function CheckoutPage() {
                 onSuccess={handlePaymentSubmit}
                 onClose={() => setIsProcessing(false)}
                 setPaymentStatus={setPaymentStatus}
-                total={
-                  getTotalPrice() + (checkoutData.shippingMethod?.price || 0)
-                }
+                total={total}
                 isCreatingOrder={isProcessing}
               />
             </div>

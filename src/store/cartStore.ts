@@ -2,6 +2,15 @@ import { Product, ProductVariant, Color } from "../../sanity.types";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
+interface AppliedDiscount {
+  _id: string;
+  name: string;
+  type: "percentage" | "amount" | "bxgy" | "free_shipping";
+  value: number;
+  amount: number;
+  code: string;
+}
+
 interface CartItem {
   _id: string;
   name: string;
@@ -21,6 +30,7 @@ interface CartItem {
 interface CartStore {
   items: CartItem[];
   hydrated: boolean;
+  appliedDiscounts: AppliedDiscount[];
   setHydrated: (state: boolean) => void;
   addItem: (
     product: Product,
@@ -43,6 +53,12 @@ interface CartStore {
     variantId: string,
     color: string,
   ) => number;
+  applyDiscount: (
+    code: string,
+  ) => Promise<{ success: boolean; error?: string }>;
+  removeDiscount: (discountId: string) => void;
+  getDiscountTotal: () => number;
+  getFinalPrice: () => number;
 }
 
 export const useCartStore = create<CartStore>()(
@@ -50,6 +66,7 @@ export const useCartStore = create<CartStore>()(
     (set, get) => ({
       items: [],
       hydrated: false,
+      appliedDiscounts: [],
       setHydrated: (state) => set({ hydrated: state }),
 
       // Helper function to get current quantity of an item in cart
@@ -199,6 +216,75 @@ export const useCartStore = create<CartStore>()(
           (total, item) => total + item.selectedVariant.price * item.quantity,
           0,
         );
+      },
+
+      applyDiscount: async (code: string) => {
+        try {
+          const state = get();
+          const response = await fetch("/api/discounts/validate", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              code,
+              cartItems: state.items,
+              // You might want to get userId from your auth context
+              userId: null,
+            }),
+          });
+
+          const data = await response.json();
+          console.log("data", data);
+
+          if (!data.success) {
+            return { success: false, error: data.error };
+          }
+
+          // Check if discount is already applied
+          const isAlreadyApplied = state.appliedDiscounts.some(
+            (d) => d.code === data.discount.code,
+          );
+
+          if (isAlreadyApplied) {
+            return { success: false, error: "Discount already applied" };
+          }
+
+          set((state) => ({
+            appliedDiscounts: [...state.appliedDiscounts, data.discount],
+          }));
+
+          return { success: true };
+        } catch (error) {
+          console.error("Error applying discount:", error);
+          return {
+            success: false,
+            error: "Failed to apply discount. Please try again.",
+          };
+        }
+      },
+
+      removeDiscount: (discountId: string) => {
+        set((state) => ({
+          appliedDiscounts: state.appliedDiscounts.filter(
+            (d) => d._id !== discountId,
+          ),
+        }));
+      },
+
+      getDiscountTotal: () => {
+        const state = get();
+        return state.appliedDiscounts.reduce(
+          (total, discount) => total + discount.amount,
+          0,
+        );
+      },
+
+      getFinalPrice: () => {
+        const state = get();
+        const subtotal = state.getTotalPrice();
+        const discountTotal = state.getDiscountTotal();
+        return Math.max(0, subtotal - discountTotal);
       },
     }),
     {
