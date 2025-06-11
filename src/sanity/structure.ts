@@ -217,13 +217,13 @@ export const structure = (S: StructureBuilder) =>
                 .title("Shipping Methods")
                 .icon(Truck)
                 .child(S.documentTypeList("shippingMethod")),
-              S.listItem()
-                .title("Payment Settings")
-                .schemaType("payment")
-                .child(S.documentTypeList("payment")),
-              S.listItem()
-                .title("Addresses")
-                .child(S.documentTypeList("address")),
+              // S.listItem()
+              //   .title("Payment Settings")
+              //   .schemaType("payment")
+              //   .child(S.documentTypeList("payment")),
+              // S.listItem()
+              //   .title("Addresses")
+              //   .child(S.documentTypeList("address")),
             ]),
         ),
 
