@@ -2,6 +2,24 @@ import { Product, ProductVariant, Color } from "../../sanity.types";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
+interface TaxRule {
+  _key: string;
+  name: string;
+  rate: number;
+  regions: string[];
+  isDefault: boolean;
+}
+
+interface TaxSettings {
+  isEnabled: boolean;
+  defaultRate: number;
+  taxRules: TaxRule[];
+  exemptCategories: string[] | null;
+  exemptProducts: string[] | null;
+  taxIncluded: boolean;
+  displayTax: boolean;
+}
+
 interface AppliedDiscount {
   _id: string;
   name: string;
@@ -31,6 +49,7 @@ interface CartStore {
   items: CartItem[];
   hydrated: boolean;
   appliedDiscounts: AppliedDiscount[];
+  taxSettings: TaxSettings | null;
   setHydrated: (state: boolean) => void;
   addItem: (
     product: Product,
@@ -58,6 +77,9 @@ interface CartStore {
   ) => Promise<{ success: boolean; error?: string }>;
   removeDiscount: (discountId: string) => void;
   getDiscountTotal: () => number;
+  fetchTaxSettings: () => Promise<void>;
+  getTaxableAmount: () => number;
+  getTaxAmount: () => number;
   getFinalPrice: () => number;
 }
 
@@ -67,6 +89,7 @@ export const useCartStore = create<CartStore>()(
       items: [],
       hydrated: false,
       appliedDiscounts: [],
+      taxSettings: null,
       setHydrated: (state) => set({ hydrated: state }),
 
       // Helper function to get current quantity of an item in cart
@@ -280,11 +303,94 @@ export const useCartStore = create<CartStore>()(
         );
       },
 
-      getFinalPrice: () => {
+      fetchTaxSettings: async () => {
+        try {
+          const response = await fetch("/api/tax");
+          const data = await response.json();
+
+          if (data.success) {
+            set({ taxSettings: data.taxSettings });
+          } else {
+            console.error("Failed to fetch tax settings:", data.error);
+          }
+        } catch (error) {
+          console.error("Error fetching tax settings:", error);
+        }
+      },
+
+      getTaxableAmount: () => {
         const state = get();
         const subtotal = state.getTotalPrice();
         const discountTotal = state.getDiscountTotal();
         return Math.max(0, subtotal - discountTotal);
+      },
+
+      getTaxAmount: () => {
+        const state = get();
+        const { taxSettings } = state;
+
+        if (!taxSettings?.isEnabled) {
+          return 0;
+        }
+
+        const taxableAmount = state.getTaxableAmount();
+
+        // If tax is included in prices, we need to calculate the tax amount differently
+        if (taxSettings.taxIncluded) {
+          // Find applicable tax rule
+          const applicableRule =
+            taxSettings.taxRules.find((rule) => rule.isDefault) ||
+            taxSettings.taxRules[0];
+          const rate = (applicableRule?.rate || taxSettings.defaultRate) / 100;
+          // For tax-inclusive prices, this is the tax amount that's already included
+          return (taxableAmount * rate) / (1 + rate);
+        }
+
+        // Rest of the tax calculation for non-inclusive prices
+        const applicableRule =
+          taxSettings.taxRules.find((rule) => rule.isDefault) ||
+          taxSettings.taxRules[0];
+        const taxRate = applicableRule?.rate || taxSettings.defaultRate;
+
+        // Check for tax exempt items
+        const exemptItems = state.items.filter((item) => {
+          if (taxSettings.exemptProducts?.includes(item._id)) {
+            return true;
+          }
+          return false;
+        });
+
+        const taxableItems = state.items.filter(
+          (item) => !exemptItems.includes(item),
+        );
+        const taxableItemsTotal = taxableItems.reduce(
+          (total, item) => total + item.selectedVariant.price * item.quantity,
+          0,
+        );
+
+        const discountTotal = state.getDiscountTotal();
+        const discountRatio = taxableItemsTotal / state.getTotalPrice();
+        const taxableDiscount = discountTotal * discountRatio;
+
+        const finalTaxableAmount = taxableItemsTotal - taxableDiscount;
+
+        return (finalTaxableAmount * taxRate) / 100;
+      },
+
+      getFinalPrice: () => {
+        const state = get();
+        const { taxSettings } = state;
+        const taxableAmount = state.getTaxableAmount();
+        const taxAmount = state.getTaxAmount();
+
+        // For tax-inclusive prices, the final price is just the taxable amount
+        // as tax is already included in the prices
+        if (taxSettings?.taxIncluded) {
+          return taxableAmount;
+        }
+
+        // For tax-exclusive prices, add the tax amount
+        return taxableAmount + taxAmount;
       },
     }),
     {
@@ -292,6 +398,7 @@ export const useCartStore = create<CartStore>()(
       storage: createJSONStorage(() => localStorage),
       onRehydrateStorage: () => (state) => {
         state?.setHydrated(true);
+        state?.fetchTaxSettings();
       },
     },
   ),

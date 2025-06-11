@@ -27,6 +27,7 @@ import { warehouseType } from "./warehouseType";
 import { auditLogType } from "./auditLogType";
 import { analyticsType } from "./analyticsType";
 import { companySettingsType } from "./companySettingsType";
+import { taxSettingsType } from "./taxSettingsType";
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
@@ -57,5 +58,6 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     auditLogType,
     analyticsType,
     companySettingsType,
+    taxSettingsType,
   ],
 };

@@ -44,6 +44,8 @@ const page = () => {
     appliedDiscounts,
     getDiscountTotal,
     getFinalPrice,
+    taxSettings,
+    getTaxAmount,
   } = useCartStore();
 
   const router = useRouter();
@@ -99,6 +101,9 @@ const page = () => {
   if (!mounted || !hydrated) {
     return null;
   }
+
+  console.log("taxSettings", taxSettings);
+  console.log("getTaxAmount", getTaxAmount());
 
   return (
     <div>
@@ -311,11 +316,16 @@ const page = () => {
                   </p>
                 </div>
               )}
-              <div className="flex justify-between">
-                <p className="text-lg text-gray-500">Tax</p>
-                <p className="text-lg font-semibold">GHs 0.00</p>
-              </div>
-
+              {taxSettings?.isEnabled && taxSettings.displayTax && (
+                <div className="flex justify-between">
+                  <p className="text-lg text-gray-500">
+                    Tax {taxSettings.taxIncluded ? "(Included)" : ""}
+                  </p>
+                  <p className="text-lg font-semibold">
+                    <CurrencyFormat value={getTaxAmount()} />
+                  </p>
+                </div>
+              )}
               <Separator className="my-4" />
               <div className="flex justify-between">
                 <p className="text-lg text-gray-500">Total</p>

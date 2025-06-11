@@ -214,6 +214,15 @@ export const structure = (S: StructureBuilder) =>
                     .documentId("companySettings"),
                 ),
               S.listItem()
+                .title("Tax Settings")
+                .icon(Landmark)
+                .child(
+                  S.editor()
+                    .id("taxSettings")
+                    .schemaType("taxSettings")
+                    .documentId("taxSettings"),
+                ),
+              S.listItem()
                 .title("Shipping Methods")
                 .icon(Truck)
                 .child(S.documentTypeList("shippingMethod")),
@@ -339,6 +348,7 @@ export const structure = (S: StructureBuilder) =>
             "analytics",
             "role",
             "companySettings",
+            "taxSettings",
           ].includes(listItem.getId() ?? ""),
       ),
     ]);
