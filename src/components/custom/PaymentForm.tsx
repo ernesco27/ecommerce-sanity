@@ -23,59 +23,59 @@ import { toast } from "sonner";
 import { useUser } from "@clerk/nextjs";
 
 const paymentFormSchema = z.object({
-  paymentMethod: z.enum(["card", "delivery"]),
-  cardNumber: z.string().optional(),
-  expiryDate: z.string().optional(),
-  cvv: z.string().optional(),
-  cardholderName: z.string().optional(),
+  paymentMethod: z.enum(["paystack", "onDelivery"]),
+  fullName: z.string(),
   email: z.string().email().optional(),
 });
 
 type PaymentFormValues = z.infer<typeof paymentFormSchema>;
 
 interface PaymentDetails {
-  paymentMethod: "card" | "delivery";
+  paymentMethod: "paystack" | "onDelivery";
   status: "success" | "failed";
-  cardNumber?: string;
-  cardholderName?: string;
   email?: string;
 }
 
 interface PaymentFormProps {
   onSuccess: (paymentDetails: PaymentDetails) => void;
   onClose: () => void;
+  setPaymentStatus: (status: string) => void;
   total: number;
   isCreatingOrder?: boolean;
 }
 
-export const PaymentForm: React.FC<PaymentFormProps> = ({
+export const PaymentForm = ({
   onSuccess,
   onClose,
   total,
+  setPaymentStatus,
+
   isCreatingOrder = false,
-}) => {
+}: PaymentFormProps) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const { initializePayment, isScriptLoaded } = usePaystackPayment();
 
   const form = useForm<PaymentFormValues>({
     resolver: zodResolver(paymentFormSchema),
     defaultValues: {
-      paymentMethod: "card",
+      paymentMethod: "paystack",
     },
   });
 
   const handleSubmit = async (data: PaymentFormValues) => {
-    if (data.paymentMethod === "delivery") {
+    if (data.paymentMethod === "onDelivery") {
       onSuccess({
-        paymentMethod: "delivery",
+        paymentMethod: "onDelivery",
         status: "success",
         email: data.email || "",
       });
+
+      setPaymentStatus("not paid");
       return;
     }
 
     if (!data.email) {
-      toast.error("Email is required for card payment");
+      toast.error("Email is required for payment");
       return;
     }
 
@@ -100,6 +100,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({
     }
 
     setIsProcessing(true);
+
     try {
       await new Promise((resolve) => setTimeout(resolve, 100));
 
@@ -107,19 +108,19 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({
         email: data.email,
         amount: Math.round(total * 100),
         publicKey: publicKey,
-        firstname: data.cardholderName?.split(" ")[0] || "",
-        lastname: data.cardholderName?.split(" ").slice(1).join(" ") || "",
+        firstname: data.fullName?.split(" ")[0],
+        lastname: data.fullName?.split(" ").slice(1).join(" "),
+
         onSuccess: () => {
           setTimeout(() => {
             setIsProcessing(false);
             toast.success("Payment successful!");
             onSuccess({
-              paymentMethod: "card",
+              paymentMethod: data.paymentMethod,
               status: "success",
-              cardNumber: data.cardNumber,
-              cardholderName: data.cardholderName,
               email: data.email,
             });
+            setPaymentStatus("paid");
           }, 100);
         },
         onClose: () => {
@@ -161,9 +162,9 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({
                   className="flex gap-4"
                 >
                   <div className="flex items-center space-x-2 rounded-lg border p-4 cursor-pointer hover:bg-gray-50">
-                    <RadioGroupItem value="card" id="card" />
+                    <RadioGroupItem value="paystack" id="paystack" />
                     <Label
-                      htmlFor="card"
+                      htmlFor="paystack"
                       className="flex items-center gap-2 cursor-pointer w-full"
                     >
                       <CreditCard className="h-4 w-4" />
@@ -171,9 +172,9 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({
                     </Label>
                   </div>
                   <div className="flex items-center space-x-2 rounded-lg border p-4 cursor-pointer hover:bg-gray-50">
-                    <RadioGroupItem value="delivery" id="delivery" />
+                    <RadioGroupItem value="onDelivery" id="onDelivery" />
                     <Label
-                      htmlFor="delivery"
+                      htmlFor="onDelivery"
                       className="flex items-center gap-2 cursor-pointer w-full"
                     >
                       <CreditCard className="h-4 w-4" />
@@ -187,7 +188,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({
           )}
         />
 
-        {selectedPaymentMethod === "card" && (
+        {selectedPaymentMethod === "paystack" && (
           <>
             <FormField
               control={form.control}
@@ -209,7 +210,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({
 
             <FormField
               control={form.control}
-              name="cardholderName"
+              name="fullName"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Full Name</FormLabel>
@@ -229,7 +230,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({
           disabled={
             isProcessing ||
             isCreatingOrder ||
-            (selectedPaymentMethod === "card" && !isScriptLoaded)
+            (selectedPaymentMethod === "onDelivery" && !isScriptLoaded)
           }
         >
           {isCreatingOrder ? (
@@ -237,7 +238,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               Placing your order...
             </>
-          ) : selectedPaymentMethod === "card" ? (
+          ) : selectedPaymentMethod === "paystack" ? (
             isProcessing ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />

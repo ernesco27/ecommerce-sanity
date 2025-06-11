@@ -40,6 +40,7 @@ export async function GET(request: Request) {
         orderNumber,
         createdAt,
         status,
+        paymentStatus,
         total,
         "user": user->{
           _id,
@@ -78,7 +79,8 @@ export async function GET(request: Request) {
           postalCode,
           country,
           phone,
-          email
+          email,
+       
         },
       }`,
       { userId: sanityUserId },
@@ -107,10 +109,14 @@ export async function POST(req: Request) {
       shippingAddress,
       billingAddress,
       shippingMethod,
-      paymentMethod = { paymentMethod: "delivery", status: "pending" },
+      paymentMethod = [
+        { paymentMethod: "onDelivery", status: "not paid" },
+        { paymentMethod: "paystack", status: "paid" },
+      ],
       subtotal,
       total,
       customerEmail,
+      paymentStatus,
     } = body;
 
     // Validate required fields
@@ -210,7 +216,7 @@ export async function POST(req: Request) {
         estimatedDays: shippingMethod.estimatedDays,
       },
       paymentMethod: {
-        type: paymentMethod?.paymentMethod || "delivery",
+        type: paymentMethod?.paymentMethod || "onDelivery",
         status: paymentMethod?.status || "pending",
       },
       subtotal,
@@ -218,7 +224,7 @@ export async function POST(req: Request) {
       tax: 0,
       total,
       status: "pending",
-      paymentStatus: "pending",
+      paymentStatus: paymentStatus,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     });

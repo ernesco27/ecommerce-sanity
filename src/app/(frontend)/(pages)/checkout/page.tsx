@@ -63,6 +63,7 @@ export default function CheckoutPage() {
   const [currentStep, setCurrentStep] = useState<CheckoutStep>("information");
   const { items, getTotalPrice, clearCart } = useCartStore();
   const [isProcessing, setIsProcessing] = useState(false);
+  const [paymentStatus, setPaymentStatus] = useState<string>("not paid");
 
   const [checkoutData, setCheckoutData] = useState<CheckoutData>({
     shippingAddress: null,
@@ -166,6 +167,7 @@ export default function CheckoutPage() {
         ...prev,
         paymentMethod: paymentDetails,
       }));
+
       await handleConfirmOrder();
       setCurrentStep("thankyou");
     } catch (error) {
@@ -189,6 +191,7 @@ export default function CheckoutPage() {
           billingAddress: checkoutData.billingAddress,
           shippingMethod: checkoutData.shippingMethod,
           paymentMethod: checkoutData.paymentMethod,
+          paymentStatus: paymentStatus,
           subtotal: getTotalPrice(),
           total: getTotalPrice() + (checkoutData.shippingMethod?.price || 0),
           customerEmail:
@@ -202,6 +205,9 @@ export default function CheckoutPage() {
       }
 
       const { order } = await response.json();
+
+      console.log("order:", order);
+
       setCheckoutData((prev) => ({
         ...prev,
         orderNumber: order.orderNumber,
@@ -314,6 +320,7 @@ export default function CheckoutPage() {
               <PaymentForm
                 onSuccess={handlePaymentSubmit}
                 onClose={() => setIsProcessing(false)}
+                setPaymentStatus={setPaymentStatus}
                 total={
                   getTotalPrice() + (checkoutData.shippingMethod?.price || 0)
                 }

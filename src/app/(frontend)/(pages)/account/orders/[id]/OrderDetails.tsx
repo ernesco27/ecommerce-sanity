@@ -95,6 +95,7 @@ export interface Order {
     _id: string;
     name: string;
   };
+  paymentStatus: "not paid" | "paid";
 }
 
 const OrderDetails = ({ id }: { id: string }) => {
@@ -125,7 +126,6 @@ const OrderDetails = ({ id }: { id: string }) => {
         const sanitizedData: Order[] = orders.map((order: any): Order => {
           const shipAddr = order.shippingAddress;
 
-          console.log("shipping:", shipAddr);
           // Concatenate user's first and last name
           const userName =
             [order.user?.firstName, order.user?.lastName]
@@ -170,6 +170,7 @@ const OrderDetails = ({ id }: { id: string }) => {
             },
             total: order.total || 0,
             status: order.status || "pending",
+            paymentStatus: order.paymentStatus || "not paid",
           };
         });
 
@@ -215,6 +216,15 @@ const OrderDetails = ({ id }: { id: string }) => {
         return "bg-red-500";
       default:
         return "bg-gray-500";
+    }
+  };
+
+  const getPaymentStatusColor = (paymentStatus: Order["paymentStatus"]) => {
+    switch (paymentStatus) {
+      case "not paid":
+        return "bg-red-500";
+      case "paid":
+        return "bg-green-500";
     }
   };
 
@@ -290,7 +300,7 @@ const OrderDetails = ({ id }: { id: string }) => {
                 </div>
                 <div>
                   <p className="text-md lg:text-lg font-medium text-muted-foreground">
-                    Status
+                    Order Status
                   </p>
                   {order?.status && (
                     <Badge
@@ -314,6 +324,22 @@ const OrderDetails = ({ id }: { id: string }) => {
                       value={order?.total}
                       className="mt-1 text-md lg:text-lg"
                     />
+                  )}
+                </div>
+                <div>
+                  <p className="text-md lg:text-lg font-medium text-muted-foreground">
+                    Payment Status
+                  </p>
+                  {order?.paymentStatus && (
+                    <Badge
+                      variant="secondary"
+                      className={cn(
+                        `text-sm text-white  ${getPaymentStatusColor(order?.paymentStatus || "Not Paid")}`,
+                      )}
+                    >
+                      {order?.status?.charAt(0).toUpperCase() +
+                        order?.status?.slice(1)}
+                    </Badge>
                   )}
                 </div>
               </div>

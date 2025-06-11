@@ -36,6 +36,17 @@ const styles = StyleSheet.create({
     paddingBottom: 30,
     lineHeight: 1.5,
   },
+
+  card: {
+    borderWidth: 1, // Set border thickness
+    borderColor: "#cccccc", // Set border color
+    marginBottom: 15, // Space below the card
+    padding: 10, // Padding inside the card
+    flexDirection: "row", // Align children in a row
+    justifyContent: "space-between", // Space out children
+    alignItems: "flex-start", // Align children to the top
+  },
+
   headerContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -55,7 +66,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   sectionTitle: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: "bold",
     marginBottom: 8,
     borderBottomWidth: 1,
@@ -119,6 +130,10 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "bold",
   },
+  totalBreakdown: {
+    textAlign: "right",
+    fontSize: 12,
+  },
 });
 
 interface OrderInvoiceDocumentProps {
@@ -141,29 +156,37 @@ const OrderInvoiceDocument: React.FC<OrderInvoiceDocumentProps> = ({
         <Text style={styles.invoiceTitle}>Order Invoice</Text>
       </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Order Details</Text>
-        <Text style={styles.text}>Order Number: {order.orderNumber}</Text>
-        <Text style={styles.text}>
-          Order Date:{" "}
-          {order.createdAt
-            ? new Date(order.createdAt).toLocaleDateString()
-            : "N/A"}
-        </Text>
-        <Text style={styles.text}>Status: {order.status}</Text>
-      </View>
-
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Customer Information</Text>
-        <Text style={styles.text}>Full Name: {order.user?.name || "N/A"}</Text>
-        <Text style={styles.text}>
-          Phone Number: {order.shippingAddress?.phone || "N/A"}
-        </Text>
-        <Text style={styles.text}>
-          Email: {order.shippingAddress?.email || "N/A"}
-        </Text>
-
-        {/* Add more customer details if available and needed, e.g., email, phone */}
+      <View style={styles.card}>
+        <View>
+          <Text style={styles.sectionTitle}>Customer Information</Text>
+          <Text style={styles.text}>
+            Full Name: {order.user?.name || "N/A"}
+          </Text>
+          <Text style={styles.text}>
+            Phone Number: {order.shippingAddress?.phone || "N/A"}
+          </Text>
+          <Text style={styles.text}>
+            Email: {order.shippingAddress?.email || "N/A"}
+          </Text>
+        </View>
+        <View>
+          <Text style={styles.sectionTitle}>Order Details</Text>
+          <Text style={styles.text}>Order Number: {order.orderNumber}</Text>
+          <Text style={styles.text}>
+            Order Date:{" "}
+            {order.createdAt
+              ? new Date(order.createdAt).toLocaleDateString()
+              : "N/A"}
+          </Text>
+          <Text style={styles.text}>
+            Payment Status:{" "}
+            {order.paymentStatus
+              ? order.paymentStatus.charAt(0).toUpperCase() +
+                order.paymentStatus.slice(1)
+              : "Not paid"}
+          </Text>
+          <Text style={styles.text}>Order Status: {order.status}</Text>
+        </View>
       </View>
 
       <View style={styles.section}>
@@ -240,6 +263,13 @@ const OrderInvoiceDocument: React.FC<OrderInvoiceDocumentProps> = ({
       </View>
 
       <View style={[styles.section, styles.totalSection]}>
+        <Text style={[styles.text, styles.totalBreakdown]}>Tax: 0.00</Text>
+        <Text style={[styles.text, styles.totalBreakdown]}>
+          Shipping Cost: 0.00
+        </Text>
+        <Text style={[styles.text, styles.totalBreakdown]}>
+          Discount: (0.00)
+        </Text>
         <Text style={[styles.text, styles.totalText]}>
           Total Amount: GHs{(order.total || 0).toFixed(2)}
         </Text>

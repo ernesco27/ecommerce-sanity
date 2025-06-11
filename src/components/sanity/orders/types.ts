@@ -52,4 +52,5 @@ export interface Order {
     | "delivered"
     | "cancelled"
     | "refunded";
+  paymentStatus: "not paid" | "paid";
 }
