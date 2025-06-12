@@ -61,8 +61,15 @@ export default function CheckoutPage() {
   const router = useRouter();
   const { user } = useUser();
   const [currentStep, setCurrentStep] = useState<CheckoutStep>("information");
-  const { items, getTotalPrice, clearCart, getDiscountTotal, getFinalPrice } =
-    useCartStore();
+  const {
+    items,
+    getTotalPrice,
+    clearCart,
+    getDiscountTotal,
+    getFinalPrice,
+    taxSettings,
+    getTaxAmount,
+  } = useCartStore();
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<string>("not paid");
 
@@ -77,11 +84,6 @@ export default function CheckoutPage() {
 
   // Validation functions for each step
   const validateInformation = () => {
-    console.log("Validating addresses:", {
-      shipping: checkoutData.shippingAddress,
-      billing: checkoutData.billingAddress,
-    });
-
     if (!checkoutData.shippingAddress || !checkoutData.billingAddress) {
       toast.error("Please provide both shipping and billing addresses");
       return false;
@@ -197,6 +199,9 @@ export default function CheckoutPage() {
           paymentStatus: paymentStatus,
           subtotal: getTotalPrice(),
           total: total,
+          taxAmount: getTaxAmount(),
+          //taxSettings: taxSettings,
+          discountTotal: getDiscountTotal(),
           customerEmail:
             user?.emailAddresses[0]?.emailAddress ||
             checkoutData.shippingAddress?.email,
@@ -315,6 +320,8 @@ export default function CheckoutPage() {
                 subtotal={getTotalPrice()}
                 discountTotal={getDiscountTotal()}
                 total={total}
+                taxAmount={getTaxAmount()}
+                taxSettings={taxSettings}
               />
             </div>
           )}

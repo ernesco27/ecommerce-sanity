@@ -98,7 +98,10 @@ export default function OrdersTable() {
           country
         },
         total,
-        status
+        status,
+        paymentStatus,
+        tax,
+        discount,
       }`;
 
       const rawData = await client.fetch(query);
@@ -151,6 +154,11 @@ export default function OrdersTable() {
           },
           total: order.total || 0,
           status: order.status || "pending",
+          paymentStatus: order.paymentStatus || "not paid",
+          tax: order.tax || 0,
+          discount: order.discount || 0,
+          subtotal: order.subtotal || 0,
+          shippingCost: order.shippingCost || 0,
         };
       });
 

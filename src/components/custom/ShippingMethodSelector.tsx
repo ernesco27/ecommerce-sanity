@@ -28,7 +28,12 @@ export function ShippingMethodSelector({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // const response = await fetch("/api/shipping-methods");
+  // if (!response.ok) throw new Error("Failed to fetch shipping methods");
+  // const shippingMethods = await response.json() as ShippingMethod[];
+
   // Effect to fetch shipping methods
+
   useEffect(() => {
     const fetchShippingMethods = async () => {
       try {

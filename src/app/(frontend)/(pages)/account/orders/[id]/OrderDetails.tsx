@@ -96,6 +96,10 @@ export interface Order {
     name: string;
   };
   paymentStatus: "not paid" | "paid";
+  tax: number;
+  discount: number;
+  subtotal: number;
+  shippingCost: number;
 }
 
 const OrderDetails = ({ id }: { id: string }) => {
@@ -171,6 +175,10 @@ const OrderDetails = ({ id }: { id: string }) => {
             total: order.total || 0,
             status: order.status || "pending",
             paymentStatus: order.paymentStatus || "not paid",
+            tax: order.tax || 0,
+            discount: order.discount || 0,
+            subtotal: order.subtotal || 0,
+            shippingCost: order.shippingCost || 0,
           };
         });
 

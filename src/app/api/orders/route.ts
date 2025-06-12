@@ -42,6 +42,10 @@ export async function GET(request: Request) {
         status,
         paymentStatus,
         total,
+        tax,
+        discount,
+        subtotal,
+        shippingCost,
         "user": user->{
           _id,
           firstName,
@@ -117,6 +121,8 @@ export async function POST(req: Request) {
       total,
       customerEmail,
       paymentStatus,
+      taxAmount,
+      discountTotal,
     } = body;
 
     // Validate required fields
@@ -221,7 +227,8 @@ export async function POST(req: Request) {
       },
       subtotal,
       shippingCost: shippingMethod.price,
-      tax: 0,
+      tax: taxAmount,
+      discount: discountTotal,
       total,
       status: "pending",
       paymentStatus: paymentStatus,

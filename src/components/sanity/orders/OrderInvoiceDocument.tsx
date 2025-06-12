@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   sectionTitle: {
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: "bold",
     marginBottom: 8,
     borderBottomWidth: 1,
@@ -98,6 +98,7 @@ const styles = StyleSheet.create({
     padding: 5,
     fontWeight: "bold",
     textAlign: "center",
+    fontSize: 10,
   },
   tableCol: {
     width: "25%", // Adjust based on content
@@ -121,18 +122,32 @@ const styles = StyleSheet.create({
   },
   totalSection: {
     marginTop: 20,
-    paddingTop: 10,
-    borderTopWidth: 1,
-    borderTopColor: "#cccccc",
+    padding: 10,
+    borderWidth: 1,
+    borderColor: "#cccccc",
+    flexDirection: "column",
+    //justifyContent: "space-between",
+    alignItems: "flex-start",
+    gap: 5,
+    width: "50%",
+    alignSelf: "flex-end",
   },
   totalText: {
     textAlign: "right",
-    fontSize: 12,
+    // fontSize: 12,
     fontWeight: "bold",
   },
   totalBreakdown: {
     textAlign: "right",
-    fontSize: 12,
+    //fontSize: 12,
+  },
+
+  totalContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    gap: 10,
+    width: "100%",
   },
 });
 
@@ -185,7 +200,10 @@ const OrderInvoiceDocument: React.FC<OrderInvoiceDocumentProps> = ({
                 order.paymentStatus.slice(1)
               : "Not paid"}
           </Text>
-          <Text style={styles.text}>Order Status: {order.status}</Text>
+          <Text style={styles.text}>
+            Order Status:{" "}
+            {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+          </Text>
         </View>
       </View>
 
@@ -204,13 +222,13 @@ const OrderInvoiceDocument: React.FC<OrderInvoiceDocumentProps> = ({
             <Text style={[styles.tableColHeader, { width: "40%" }]}>
               Product
             </Text>
-            <Text style={[styles.tableColHeader, { width: "20%" }]}>
+            <Text style={[styles.tableColHeader, { width: "30%" }]}>
               Variant
             </Text>
             <Text style={[styles.tableColHeader, { width: "15%" }]}>
               Quantity
             </Text>
-            <Text style={[styles.tableColHeader, { width: "25%" }]}>
+            <Text style={[styles.tableColHeader, { width: "15%" }]}>
               Subtotal
             </Text>
           </View>
@@ -234,7 +252,7 @@ const OrderInvoiceDocument: React.FC<OrderInvoiceDocumentProps> = ({
                   {item.product?.name || "Unknown Product"}
                 </Text>
                 <Text
-                  style={[styles.tableCol, { width: "20%" }, styles.tableCell]}
+                  style={[styles.tableCol, { width: "30%" }, styles.tableCell]}
                 >
                   {variantDetails}
                 </Text>
@@ -250,7 +268,7 @@ const OrderInvoiceDocument: React.FC<OrderInvoiceDocumentProps> = ({
                 <Text
                   style={[
                     styles.tableCol,
-                    { width: "25%", textAlign: "right" },
+                    { width: "15%", textAlign: "right" },
                     styles.tableCell,
                   ]}
                 >
@@ -263,16 +281,39 @@ const OrderInvoiceDocument: React.FC<OrderInvoiceDocumentProps> = ({
       </View>
 
       <View style={[styles.section, styles.totalSection]}>
-        <Text style={[styles.text, styles.totalBreakdown]}>Tax: 0.00</Text>
-        <Text style={[styles.text, styles.totalBreakdown]}>
-          Shipping Cost: 0.00
-        </Text>
-        <Text style={[styles.text, styles.totalBreakdown]}>
-          Discount: (0.00)
-        </Text>
-        <Text style={[styles.text, styles.totalText]}>
-          Total Amount: GHs{(order.total || 0).toFixed(2)}
-        </Text>
+        <View style={styles.totalContainer}>
+          <Text style={[styles.text, styles.totalBreakdown]}>Subtotal:</Text>
+          <Text style={[styles.text, styles.totalBreakdown]}>
+            GHs{order.subtotal.toFixed(2) || 0}
+          </Text>
+        </View>
+        <View style={styles.totalContainer}>
+          <Text style={[styles.text, styles.totalBreakdown]}>Discount:</Text>
+          <Text style={[styles.text, styles.totalBreakdown]}>
+            GHs{order.discount.toFixed(2) || 0}
+          </Text>
+        </View>
+        <View style={styles.totalContainer}>
+          <Text style={[styles.text, styles.totalBreakdown]}>Tax:</Text>
+          <Text style={[styles.text, styles.totalBreakdown]}>
+            GHs{order.tax.toFixed(2) || 0}
+          </Text>
+        </View>
+
+        <View style={styles.totalContainer}>
+          <Text style={[styles.text, styles.totalBreakdown]}>
+            Shipping Cost:
+          </Text>
+          <Text style={[styles.text, styles.totalBreakdown]}>
+            GHs{order.shippingCost.toFixed(2) || 0}
+          </Text>
+        </View>
+        <View style={styles.totalContainer}>
+          <Text style={[styles.text, styles.totalText]}>Total Amount:</Text>
+          <Text style={[styles.text, styles.totalText]}>
+            GHs{(order.total || 0).toFixed(2)}
+          </Text>
+        </View>
       </View>
 
       <Text style={styles.footer}>Thank you for your order!</Text>

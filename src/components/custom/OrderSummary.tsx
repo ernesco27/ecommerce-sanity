@@ -24,6 +24,8 @@ interface OrderSummaryProps {
   subtotal: number;
   discountTotal: number;
   total: number;
+  taxAmount: number;
+  taxSettings: any;
 }
 
 export function OrderSummary({
@@ -34,6 +36,8 @@ export function OrderSummary({
   subtotal,
   discountTotal,
   total,
+  taxAmount,
+  taxSettings,
 }: OrderSummaryProps) {
   return (
     <div className="space-y-6 ">
@@ -139,7 +143,7 @@ export function OrderSummary({
           <div className="space-y-2">
             <div className="flex justify-between">
               <span className="text-gray-500">Subtotal</span>
-              <CurrencyFormat value={subtotal} className="font-medium" />
+              <CurrencyFormat value={subtotal} />
             </div>
             {discountTotal > 0 && (
               <div className="flex justify-between">
@@ -149,21 +153,21 @@ export function OrderSummary({
                 </p>
               </div>
             )}
-            <div className="flex justify-between">
-              <span className="text-gray-500">Tax</span>
-              {/* <CurrencyFormat
-                value={shippingMethod.price}
-                className="font-medium"
-              /> */}
-              <p className="text-lg font-semibold">GHs 0.00</p>
-            </div>
+
+            {taxSettings?.isEnabled && taxSettings.displayTax && (
+              <div className="flex justify-between">
+                <p className="text-lg text-gray-500">
+                  Tax {taxSettings.taxIncluded ? "(Included)" : ""}
+                </p>
+                <p className="text-lg font-semibold">
+                  <CurrencyFormat value={taxAmount} />
+                </p>
+              </div>
+            )}
 
             <div className="flex justify-between">
               <span className="text-gray-500">Shipping</span>
-              <CurrencyFormat
-                value={shippingMethod.price}
-                className="font-medium"
-              />
+              <CurrencyFormat value={shippingMethod.price} />
             </div>
 
             <Separator />

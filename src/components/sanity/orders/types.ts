@@ -53,4 +53,8 @@ export interface Order {
     | "cancelled"
     | "refunded";
   paymentStatus: "not paid" | "paid";
+  tax: number;
+  discount: number;
+  subtotal: number;
+  shippingCost: number;
 }
