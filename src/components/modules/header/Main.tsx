@@ -17,7 +17,7 @@ const Main = () => {
   return (
     <section className="h-full">
       <Container>
-        <Row className="flex justify-between">
+        <Row className="flex-between">
           <MobileButton />
           <Logo />
           <MainMenu />

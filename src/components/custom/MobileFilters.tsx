@@ -92,7 +92,7 @@ const MobileFilters = ({
           />
           <Button
             variant="outline"
-            className="w-full mt-4 bg-yellow-300 hover:bg-yellow-400"
+            className="w-full mt-4 bg-primary-500 hover:bg-primary-100 transition-all duration-300 ease-in-out"
             onClick={() => {
               setOpen(false);
             }}

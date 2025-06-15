@@ -92,7 +92,7 @@ const ProductReview = ({
       {(product?.reviews?.length ?? 0) > 0 ? (
         <section className="my-6">
           <div className="grid grid-cols-1 lg:grid-cols-[30%_70%] gap-8">
-            <div className="flex flex-col items-center justify-center gap-4   border-r-2 border-gray-100 ">
+            <div className="flex-center flex-col r gap-4   border-r-2 border-gray-100 ">
               <span className="flex items-baseline gap-2">
                 {" "}
                 <p className="text-3xl font-medium">
@@ -123,7 +123,7 @@ const ProductReview = ({
                       className={cn(
                         "w-6 h-6",
                         star <= averageRating
-                          ? "text-yellow-300 fill-yellow-300"
+                          ? "text-primary-500 fill-primary-500"
                           : "text-gray-300",
                       )}
                     />
@@ -160,7 +160,7 @@ const ProductReview = ({
           <Separator className="mt-6" />
           <div className="flex flex-col gap-2 mt-6">
             <p className="text-lg font-medium">Customer Reviews</p>
-            <div className="flex items-center justify-between ">
+            <div className="flex-between ">
               <div className="hidden lg:block">
                 Showing{" "}
                 {maxPage === page ? product?.reviews?.length : perPage * page}{" "}
@@ -171,8 +171,7 @@ const ProductReview = ({
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline">{filter}</Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-56">
-                    <DropdownMenuSeparator />
+                  <DropdownMenuContent className="w-28 mr-14">
                     <DropdownMenuRadioGroup value="bottom">
                       <DropdownMenuRadioItem
                         value={filter}
@@ -194,7 +193,7 @@ const ProductReview = ({
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline">{perPage} </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-56">
+                  <DropdownMenuContent className="w-16 mr-14">
                     <DropdownMenuRadioGroup value="bottom">
                       <DropdownMenuRadioItem
                         value="30"
@@ -267,7 +266,7 @@ const ProductReview = ({
                         className={cn(
                           "w-6 h-6",
                           star <= (review.rating || 0)
-                            ? "text-yellow-300 fill-yellow-300"
+                            ? "text-primary-500 fill-primary-500"
                             : "text-gray-300",
                         )}
                       />

@@ -56,7 +56,7 @@ const highlightMatch = (text: string, search: string) => {
     <>
       {parts.map((part, i) =>
         regex.test(part) ? (
-          <mark key={i} className="bg-yellow-100 px-0.5 rounded">
+          <mark key={i} className="bg-primary-100 px-0.5 rounded">
             {part}
           </mark>
         ) : (
@@ -185,17 +185,17 @@ const SearchBar = ({
           <div className="relative flex-1">
             <Input
               placeholder="Search for any product..."
-              className="text-slate-500 text-sm lg:text-lg font-medium lg:text-xl pr-10  focus-visible:ring-yellow-100"
+              className="text-slate-500 text-sm lg:text-lg font-medium  pr-10  focus-visible:ring-primary-100"
               onChange={handleSearch}
               value={inputValue}
               autoFocus
             />
             {isLoading && (
-              <Loader2 className="w-5 h-5 absolute right-3 top-1/2 -translate-y-1/2 animate-spin text-yellow-500" />
+              <Loader2 className="w-5 h-5 absolute right-3 top-1/2 -translate-y-1/2 animate-spin text-primary-500" />
             )}
           </div>
           <Button
-            className="px-4 hover:bg-yellow-500 group cursor-pointer"
+            className="px-4 hover:bg-primary-500 group cursor-pointer"
             variant="outline"
             size="icon"
             onClick={() => setOpenSearchBar(false)}
@@ -293,7 +293,7 @@ const SearchBar = ({
                   )}
                 </div>
 
-                <div className="w-40 text-center lg:text-right font-bold text-xl text-yellow-700">
+                <div className="w-40 text-center lg:text-right font-bold text-xl text-primary-500">
                   GH¢ {product.variants?.[0]?.price?.toFixed(2) || "N/A"}
                 </div>
               </div>

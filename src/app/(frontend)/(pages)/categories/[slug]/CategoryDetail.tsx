@@ -8,6 +8,7 @@ import { Loader2 } from "lucide-react";
 import ProductCard from "@/components/custom/ProductCard";
 import PageHeader from "@/components/modules/products/PageHeader";
 import { useSearchParams } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 interface CategoryDetailProps {
   category: Category;
@@ -52,11 +53,12 @@ const CategoryDetail = ({ category }: CategoryDetailProps) => {
             <div className="flex flex-wrap gap-4 justify-center">
               <button
                 onClick={() => setSelectedSubcategory(undefined)}
-                className={`px-4 py-2 rounded-full ${
+                className={cn(
+                  `px-4 py-2 rounded-full cursor-pointer`,
                   !selectedSubcategory
-                    ? "bg-yellow-600 text-white"
-                    : "bg-gray-100 hover:bg-gray-200"
-                }`}
+                    ? "bg-primary-900 text-white"
+                    : "bg-gray-100 hover:bg-gray-200",
+                )}
               >
                 All
               </button>
@@ -64,11 +66,12 @@ const CategoryDetail = ({ category }: CategoryDetailProps) => {
                 <button
                   key={subcategory._id}
                   onClick={() => setSelectedSubcategory(subcategory._id)}
-                  className={`px-4 py-2 rounded-full ${
+                  className={cn(
+                    `px-4 py-2 rounded-full cursor-pointer`,
                     selectedSubcategory === subcategory._id
-                      ? "bg-yellow-600 text-white"
-                      : "bg-gray-100 hover:bg-gray-200"
-                  }`}
+                      ? "bg-primary-900 text-white"
+                      : "bg-gray-100 hover:bg-gray-200",
+                  )}
                 >
                   {subcategory.name}
                 </button>

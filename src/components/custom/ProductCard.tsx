@@ -22,8 +22,6 @@ type ProductCardProps = {
 const ProductCard = ({ item }: ProductCardProps) => {
   const router = useRouter();
 
-  console.log("item:", item);
-
   // Calculate min and max prices from variants
   const prices =
     item.variants?.map((variant) => Number(variant.price) || 0) || [];
@@ -39,7 +37,7 @@ const ProductCard = ({ item }: ProductCardProps) => {
   const rating = reviewCount > 0 ? averageRating / reviewCount : 0;
 
   return (
-    <Card className="w-[340px] lg:w-[380px] mb-8 relative">
+    <Card className="w-[340px] lg:w-[380px] mb-8 relative ">
       {maxPrice > minPrice && (
         <Badge
           variant="default"
@@ -98,7 +96,7 @@ const ProductCard = ({ item }: ProductCardProps) => {
                 variant="outline"
                 size="icon"
                 onClick={() => router.push(`/products/${item.slug}`)}
-                className="hover:bg-yellow-200"
+                className="hover:bg-primary-100 cursor-pointer"
               >
                 <Eye />
               </Button>
@@ -108,7 +106,7 @@ const ProductCard = ({ item }: ProductCardProps) => {
                 variant="outline"
                 size="icon"
                 onClick={() => router.push(`/products/${item.slug ?? ""}`)}
-                className="hover:bg-yellow-200"
+                className="hover:bg-primary-100 cursor-pointer"
               >
                 <HeartIcon />
               </Button>
@@ -118,7 +116,7 @@ const ProductCard = ({ item }: ProductCardProps) => {
                 variant="outline"
                 size="icon"
                 onClick={() => router.push(`/products/${item.slug ?? ""}`)}
-                className="hover:bg-yellow-200"
+                className="hover:bg-primary-100 cursor-pointer"
               >
                 <Share2 />
               </Button>
@@ -132,16 +130,14 @@ const ProductCard = ({ item }: ProductCardProps) => {
             {item.category?.title ?? "Uncategorized"}
           </p>
           {rating > 0 && (
-            <span className="text-yellow-400 flex items-center gap-1">
-              <Star className="w-5 h-5 fill-yellow-400" />
-              <p className="text-lg font-semibold text-black">
-                {rating.toFixed(1)}
-              </p>
+            <span className="text-primary-500 flex items-center gap-1">
+              <Star className="w-5 h-5 fill-primary-500" />
+              <p className="paragraph-medium">{rating.toFixed(1)}</p>
             </span>
           )}
         </div>
         <h5
-          className="capitalize cursor-pointer text-xl lg:text-xl mt-2"
+          className="capitalize cursor-pointer text-xl lg:text-xl mt-2 "
           onClick={() => router.push(`/products/${item.slug}`)}
         >
           {item.name && item.name.length > 28
@@ -154,7 +150,7 @@ const ProductCard = ({ item }: ProductCardProps) => {
             <div className="flex flex-wrap justify-between">
               <CurrencyFormat
                 value={minPrice}
-                className="font-bold text-yellow-600 text-left w-20 text-lg lg:text-xl"
+                className="font-bold text-primary-500  text-left w-20 text-lg lg:text-xl"
               />
               <CurrencyFormat
                 value={maxPrice}

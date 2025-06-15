@@ -33,10 +33,10 @@ const SizeFilter: React.FC<SizeFilterProps> = ({
             border border-gray-200
             flex items-center justify-center
             transition-all duration-200
-            hover:border-yellow-700 cursor-pointer
+            hover:border-primary-900 cursor-pointer
             ${
               selectedSizes.includes(size)
-                ? "bg-yellow-400 text-white border-yellow-400"
+                ? "bg-primary-500 text-white border-primary-500"
                 : "bg-white text-gray-700"
             }
           `}

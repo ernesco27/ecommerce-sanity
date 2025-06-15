@@ -47,7 +47,7 @@ const ColorFilter: React.FC<ColorFilterProps> = ({
             w-8 h-8 rounded-full flex items-center justify-center cursor-pointer
             ${color.name === "White" ? "border border-gray-200" : ""}
             transition-transform hover:scale-110
-            ${selectedColors.includes(color.name) ? "ring-2 ring-yellow-500 ring-offset-2" : ""}
+            ${selectedColors.includes(color.name) ? "ring-2 ring-primary-500 ring-offset-2" : ""}
           `}
           style={{ backgroundColor: color.code }}
           title={color.name}

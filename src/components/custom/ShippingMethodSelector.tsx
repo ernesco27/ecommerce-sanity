@@ -85,8 +85,8 @@ export function ShippingMethodSelector({
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-8">
-        <Loader2 className="h-6 w-6 animate-spin text-yellow-600" />
+      <div className="flex-center py-8">
+        <Loader2 className="h-6 w-6 animate-spin text-primary-500" />
       </div>
     );
   }
@@ -101,7 +101,7 @@ export function ShippingMethodSelector({
 
   if (shippingMethods.length === 0) {
     return (
-      <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4 text-center text-yellow-800">
+      <div className="rounded-lg border border-primary-500 bg-primary-100 p-4 text-center text-primary-900">
         No shipping methods are currently available.
       </div>
     );
@@ -119,7 +119,7 @@ export function ShippingMethodSelector({
             key={method._id}
             className={`flex items-center space-x-4 rounded-lg border p-4 ${
               selectedMethod === method._id
-                ? "border-yellow-600 bg-yellow-50"
+                ? "border-primary-500 bg-primary-50"
                 : "border-gray-200"
             }`}
           >

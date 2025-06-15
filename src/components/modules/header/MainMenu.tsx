@@ -32,14 +32,14 @@ const MainMenu = () => {
 
   return (
     <section className="hidden lg:flex z-10 relative">
-      <ul className="flex justify-between items-center gap-10  ">
+      <ul className="flex-between gap-10  ">
         <li className="relative">
           <Link
             href="/"
             className={cn(
-              "text-xl h-full duration-300 after:absolute after:top-[26px] after:left-0 after:w-0 after:h-1 after:bg-yellow-700 after:duration-100 after:ease-linear hover:after:w-full ",
+              "text-xl h-full duration-300 after:absolute after:top-[26px] after:left-0 after:w-0 after:h-1 after:bg-primary-900 after:duration-100 after:ease-linear hover:after:w-full ",
               pathname === `${"/"}` &&
-                "border-b-4 border-yellow-400 capitalize",
+                "border-b-4 border-primary-500 capitalize",
             )}
           >
             Home
@@ -49,9 +49,9 @@ const MainMenu = () => {
           <Link
             href="/products"
             className={cn(
-              "text-xl h-full duration-300 after:absolute after:top-[26px] after:left-0 after:w-0 after:h-1 after:bg-yellow-700 after:duration-100 after:ease-linear hover:after:w-full ",
+              "text-xl h-full duration-300 after:absolute after:top-[26px] after:left-0 after:w-0 after:h-1 after:bg-primary-900 after:duration-100 after:ease-linear hover:after:w-full ",
               pathname === `${"/products"}` &&
-                "border-b-4 border-yellow-400 capitalize",
+                "border-b-4 border-primary-500 capitalize",
             )}
           >
             Shop
@@ -59,7 +59,7 @@ const MainMenu = () => {
         </li>
 
         {/* Categories */}
-        <li className="relative text-xl h-full duration-300 after:absolute after:top-[26px] after:left-0 after:w-0 after:h-1 after:bg-yellow-700 after:duration-100 after:ease-linear hover:after:w-full">
+        <li className="relative text-xl h-full duration-300 after:absolute after:top-[26px] after:left-0 after:w-0 after:h-1 after:bg-primary-900 after:duration-100 after:ease-linear hover:after:w-full">
           <button
             className="capitalize inline-flex items-center text-lg cursor-pointer"
             onClick={() => setShow(!show)}
@@ -84,7 +84,7 @@ const MainMenu = () => {
                   filter: "blur(5px)",
                   transition: { ease: "easeIn", duration: 0.22 },
                 }}
-                className="z-50 h-[440px] bg-yellow-500  w-[950px] absolute -right-100 top-[54px] shadow-xl"
+                className="z-50 h-[440px] bg-primary-500  w-[950px] absolute -right-100 top-[54px] shadow-xl"
               >
                 <div className="grid grid-cols-4 justify-items-center grid-rows-auto max-h-[450px]  bg-white p-4  gap-8  overflow-hidden ">
                   {categories?.map((cat: Category) => {
@@ -98,7 +98,7 @@ const MainMenu = () => {
                             href={`/categories/${cat.slug}`}
                             className="font-bold group/item w-full transition-all flex items-center gap-2 duration-100 ease-linear hover:translate-x-1 capitalize"
                           >
-                            <h5 className="transition ease-in-out hover:text-yellow-800">
+                            <h5 className="transition ease-in-out hover:text-primary-500">
                               {cat.title}
                             </h5>
                           </Link>
@@ -112,7 +112,7 @@ const MainMenu = () => {
                                 className="font-normal duration-300 hover:translate-x-1 capitalize"
                               >
                                 <Link
-                                  className="hover:text-yellow-600"
+                                  className="hover:text-primary-500"
                                   href={`/categories/${cat.slug}?subcategory=${sub.slug}`}
                                 >
                                   {sub.name}
@@ -134,7 +134,7 @@ const MainMenu = () => {
                     <Button
                       variant="default"
                       size="sm"
-                      className="text-lg hover:bg-yellow-600 cursor-pointer capitalize"
+                      className="text-lg hover:bg-primary-500 cursor-pointer hover:shadow-md capitalize"
                       onClick={() =>
                         router.push(banners?.[4]?.link || "/products")
                       }
@@ -153,9 +153,9 @@ const MainMenu = () => {
             <li key={page._id} className="relative">
               <Link
                 className={cn(
-                  "text-xl h-full duration-300 after:absolute after:top-[26px] after:left-0 after:w-0 after:h-1 after:bg-yellow-700 after:duration-100 after:ease-linear hover:after:w-full ",
+                  "text-xl h-full duration-300 after:absolute after:top-[26px] after:left-0 after:w-0 after:h-1 after:bg-primary-900 after:duration-100 after:ease-linear hover:after:w-full ",
                   pathname === `${page.slug?.current}` &&
-                    "border-b-4 border-yellow-400 capitalize",
+                    "border-b-4 border-primary-500 capitalize",
                 )}
                 href={`${page.slug?.current}`}
               >

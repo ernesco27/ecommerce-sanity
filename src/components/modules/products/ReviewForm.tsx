@@ -17,10 +17,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { UploadIcon, X } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
-import { toast } from "react-toastify";
+//import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import ProductRating from "@/components/ui/rating";
 import Image from "next/image";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   reviewTitle: z.string().min(10, {
@@ -272,7 +273,7 @@ const ReviewForm = ({ productId }: { productId: string }) => {
           type="submit"
           size="lg"
           disabled={!isLoaded || !isSignedIn || uploading || submitting}
-          className="bg-yellow-900 text-lg hover:bg-yellow-600 cursor-pointer"
+          className="bg-primary-900 text-lg hover:bg-primary-500 cursor-pointer transition-all duration-300 ease-in-out"
         >
           {submitting ? "Submitting..." : "Submit Review"}
         </Button>

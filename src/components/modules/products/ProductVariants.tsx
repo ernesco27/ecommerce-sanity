@@ -109,7 +109,7 @@ const ProductVariants = ({
         <fieldset className="space-y-1.5">
           <legend className="mb-4">
             <Label asChild>
-              <span className="">
+              <span>
                 Size:
                 {selectedVariants["Size"] && (
                   <span className="ml-2 font-normal text-lg">
@@ -152,7 +152,7 @@ const ProductVariants = ({
                         ? "bg-slate-300 text-slate-500 border-slate-400 line-through"
                         : "",
                       isSelected && isAvailable
-                        ? "bg-yellow-500 text-white border-yellow-500"
+                        ? "primary-gradient text-white border-primary-500"
                         : "",
                     )}
                   >

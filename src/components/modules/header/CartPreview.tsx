@@ -131,14 +131,14 @@ const CartPreview = ({
               <Link
                 onClick={() => setCartOpen(false)}
                 href="/cart"
-                className="rounded-sm py-2 justify-center hover:bg-yellow-500 text-center hover:text-white capitalize border border-border text-base transition-all duration-300 ease-in-out"
+                className="rounded-sm py-2 justify-center hover:bg-primary-500 text-center hover:text-white capitalize border border-border text-base transition-all duration-300 ease-in-out"
               >
                 View Cart
               </Link>
               <Button
                 variant="default"
                 size="lg"
-                className="rounded-sm py-4 capitalize text-base hover:bg-yellow-500 hover:text-white transition-all duration-300 ease-in-out cursor-pointer"
+                className="rounded-sm py-4 capitalize text-base bg-primary-900 hover:bg-primary-500 hover:text-white transition-all duration-300 ease-in-out cursor-pointer"
                 onClick={handleCheckout}
                 disabled={items.length === 0}
               >

@@ -56,14 +56,14 @@ const IconsGroup = ({
           className="cursor-pointer"
           onClick={() => setOpenSearchBar(!openSearchBar)}
         >
-          <CiSearch size={35} className="hover:text-yellow-600" />
+          <CiSearch size={35} className="hover:text-primary-500" />
         </div>
         <div
           className="cursor-pointer hidden lg:block relative "
           onClick={() => setCartOpen(!cartOpen)}
         >
-          <CiShoppingCart size={35} className="hover:text-yellow-600" />
-          <span className="absolute -top-1 -right-1 bg-yellow-500 text-white text-sm w-5 h-5 rounded-full flex items-center justify-center">
+          <CiShoppingCart size={35} className="hover:text-primary-500" />
+          <span className="absolute -top-1 -right-1 bg-primary-500 text-white text-sm w-5 h-5 rounded-full flex-center">
             {getTotalItems()}
           </span>
         </div>
@@ -84,7 +84,7 @@ const IconsGroup = ({
               ) : (
                 <CiUser
                   size={35}
-                  className="hover:text-yellow-600 cursor-pointer"
+                  className="hover:text-primary-500 cursor-pointer"
                 />
               )}
             </DropdownMenuTrigger>
@@ -98,36 +98,36 @@ const IconsGroup = ({
                   <>
                     <DropdownMenuItem>
                       <div
-                        className="flex items-center gap-2 hover:text-yellow-500 cursor-pointer transition-all duration-200 ease-in-out"
+                        className="flex-center gap-2 hover:text-primary-500 cursor-pointer transition-all duration-200 ease-in-out"
                         onClick={() => router.push("/account")}
                       >
-                        <User className="hover:text-yellow-500" />
+                        <User className="hover:text-primary-500" />
                         <span>Profile</span>
                       </div>
                     </DropdownMenuItem>
                     <DropdownMenuItem>
-                      <div className="flex items-center gap-2 hover:text-yellow-500 cursor-pointer transition-all duration-200 ease-in-out">
-                        <BiBox className="hover:text-yellow-500" />
+                      <div className="flex-center gap-2 hover:text-primary-500 cursor-pointer transition-all duration-200 ease-in-out">
+                        <BiBox className="hover:text-primary-500" />
                         <span>My Orders</span>
                       </div>
                     </DropdownMenuItem>
                     <DropdownMenuItem>
-                      <div className="flex items-center gap-2 hover:text-yellow-500 cursor-pointer transition-all duration-200 ease-in-out">
-                        <BiHeart className="hover:text-yellow-500" />
+                      <div className="flex-center gap-2 hover:text-primary-500 cursor-pointer transition-all duration-200 ease-in-out">
+                        <BiHeart className="hover:text-primary-500" />
                         <span>Wishlist</span>
                       </div>
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <div className="flex items-center gap-2 hover:text-yellow-500 cursor-pointer transition-all duration-200 ease-in-out">
-                        <Settings className="hover:text-yellow-500" />
+                    {/* <DropdownMenuItem>
+                      <div className="flex-center gap-2 hover:text-primary-500 cursor-pointer transition-all duration-200 ease-in-out">
+                        <Settings className="hover:text-primary-500" />
                         <span>Settings</span>
                       </div>
-                    </DropdownMenuItem>
+                    </DropdownMenuItem> */}
                   </>
                 ) : (
                   <SignInButton mode="redirect">
                     <DropdownMenuItem>
-                      <div className="flex items-center justify-center gap-2 hover:text-white cursor-pointer transition-all duration-200 ease-in-out bg-green-300 p-2 rounded-md w-full shadow-md">
+                      <div className="flex-center gap-2 hover:text-white cursor-pointer transition-all duration-200 ease-in-out bg-green-300 p-2 rounded-md w-full shadow-md">
                         <Lock className="hover:text-white" />
                         <span>Login</span>
                       </div>
@@ -136,8 +136,8 @@ const IconsGroup = ({
                 )}
               </DropdownMenuGroup>
               <DropdownMenuItem>
-                <div className="flex items-center gap-2 hover:text-yellow-500 cursor-pointer transition-all duration-200 ease-in-out">
-                  <LifeBuoy className="hover:text-yellow-500 " />
+                <div className="flex-center gap-2 hover:text-primary-500 cursor-pointer transition-all duration-200 ease-in-out">
+                  <LifeBuoy className="hover:text-primary-500 " />
                   <span>Support</span>
                 </div>
               </DropdownMenuItem>

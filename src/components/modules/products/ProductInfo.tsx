@@ -60,8 +60,8 @@ const ProductInfo = ({ product }: { product: Product }) => {
     <section>
       <Container>
         <div className="w-full">
-          <Tabs defaultValue="description" className="w-full">
-            <TabsList className="flex justify-center w-full">
+          <Tabs defaultValue="description">
+            <TabsList className="flex-center w-full">
               <TabsTrigger className="text-lg lg:text-2xl" value="description">
                 Description
               </TabsTrigger>
@@ -88,7 +88,7 @@ const ProductInfo = ({ product }: { product: Product }) => {
             </TabsContent>
             <TabsContent value="additional-info" className="lg:px-10">
               <Table className="my-4">
-                <TableHeader className="bg-yellow-300">
+                <TableHeader className="bg-primary-500">
                   <TableRow>
                     <TableHead className="w-[190px] lg:w-[300px] text-black text-lg lg:text-xl">
                       Feature

@@ -122,7 +122,7 @@ const HomeSlide = () => {
                       asChild
                       variant="default"
                       size="lg"
-                      className="mt-4 text-lg px-8 py-6 bg-white text-black hover:bg-black hover:text-white transition-colors"
+                      className="mt-4 text-lg px-8 py-6 bg-white text-black hover:bg-primary-900 hover:text-white transition-colors"
                     >
                       <Link href={banner.link}>
                         {banner.buttonText || "Shop Now"}

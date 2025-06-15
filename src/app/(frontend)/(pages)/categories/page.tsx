@@ -40,16 +40,16 @@ const page = () => {
         }}
       >
         <div className="bg-white/50 h-full w-full flex flex-col justify-center items-center">
-          <h1 className="text-xl font-bold bg-white rounded-sm text-yellow-600 ">
+          <h1 className="text-xl font-bold bg-white rounded-sm text-primary-500 p-2 ">
             {banner4?.title}
           </h1>
-          <p className="text-black text-wrap font-semibold text-center text-lg">
+          <p className="text-primary-900 text-wrap font-semibold text-center text-lg">
             {banner4?.subTitle}
           </p>
           <Button
             onClick={() => router.push(banner4?.link || "")}
             variant="outline"
-            className=" text-black hover:bg-yellow-700 mt-4"
+            className=" text-black hover:bg-primary-500 hover:text-white mt-4 cursor-pointer transition-all duration-300 ease-in-out"
           >
             {banner4?.buttonText}
           </Button>
@@ -74,7 +74,7 @@ const page = () => {
                   : "N/A items"}
               </Badge>
               <h2
-                className="text-2xl font-bold hover:text-yellow-800 cursor-pointer"
+                className="text-2xl font-bold hover:text-primary-500 cursor-pointer"
                 onClick={() => router.push(`/categories/${category.slug}`)}
               >
                 {category.title}
@@ -84,8 +84,10 @@ const page = () => {
               </p>
               {category?.subcategories?.map((subcategory) => (
                 <ul key={subcategory._id}>
-                  <Link href={`/categories/${subcategory.slug?.current}`}>
-                    <li className="hover:text-yellow-600">
+                  <Link
+                    href={`/categories/${category.slug}?subcategory=${subcategory.slug}`}
+                  >
+                    <li className="hover:text-primary-500">
                       {subcategory.name}
                     </li>
                   </Link>

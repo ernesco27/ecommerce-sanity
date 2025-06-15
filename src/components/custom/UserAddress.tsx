@@ -339,7 +339,7 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
       // Update local state
       setGuestAddresses(updatedAddresses);
 
-      console.log("guest:", updatedAddresses);
+      //console.log("guest:", updatedAddresses);
 
       // Invoke onSubmit if defined
       if (onSubmit) {
@@ -627,7 +627,7 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
                             type="checkbox"
                             checked={field.value}
                             onChange={field.onChange}
-                            className="h-4 w-4"
+                            className="h-4 w-4 cursor-pointer "
                           />
                         </FormControl>
                         <FormLabel className="font-normal">
@@ -640,7 +640,7 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
 
                   <Button
                     type="submit"
-                    className="w-full bg-yellow-500 hover:bg-yellow-600"
+                    className="w-full bg-primary-500 hover:bg-primary-900 cursor-pointer"
                     disabled={isAddingAddress}
                   >
                     {isAddingAddress ? (
@@ -876,7 +876,7 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
                   /> */}
                   <Button
                     type="submit"
-                    className="w-full cursor-pointer bg-yellow-500 hover:bg-yellow-600"
+                    className="w-full cursor-pointer bg-primary-500 hover:bg-primary-900"
                   >
                     Save Shipping Address
                   </Button>
@@ -1111,7 +1111,7 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
                     /> */}
                     <Button
                       type="submit"
-                      className="w-full cursor-pointer bg-yellow-500 hover:bg-yellow-600"
+                      className="w-full cursor-pointer bg-primary-500 hover:bg-primary-900"
                     >
                       Save Billing Address
                     </Button>

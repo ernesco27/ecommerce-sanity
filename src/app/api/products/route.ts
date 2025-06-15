@@ -343,7 +343,33 @@ export async function GET(request: Request) {
           colorCode,
           stock
         }
+      },
+      "reviews": reviews[]->{
+    _id,
+    _createdAt,
+    reviewTitle,
+    reviewDetails,
+    rating,
+    verifiedPurchase,
+    "user": user->{
+      _id,
+      firstName,
+      lastName,
+      email,
+      isEmailVerified,
+      "photo": photo.asset->
+    },
+    "images": images[]->{
+      _id,
+      title,
+      altText,
+      "images": images[]{
+        "asset": {
+          "url": asset->url
+        }
       }
+    }
+  },
     }`;
 
     const products = await client.fetch(query);

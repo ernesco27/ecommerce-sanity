@@ -158,7 +158,7 @@ const ProductMedia = ({
                 className={cn(
                   "cursor-pointer p-1 m-2 rounded-lg transition-all duration-200",
                   getImageKey(selectedMedia) === getImageKey(img)
-                    ? "ring-2 ring-yellow-600"
+                    ? "ring-2 ring-primary-500"
                     : "hover:ring-2 hover:ring-gray-300",
                 )}
                 onClick={() => handleThumbnailClick(img, index)}

@@ -380,7 +380,7 @@ const ProductData = ({ product }: { product: Product }) => {
               className="flex gap-2 items-center 
             "
             >
-              <Star fill="#f5c422" className="text-yellow-400" />
+              <Star fill="#f59e0b" className="text-primary-500" />
               <p className="font-normal text-xl">{averageRating.toFixed(1)}</p>
               <p className="font-normal text-xl">
                 ({product.reviews?.length || 0} Reviews)
@@ -390,7 +390,7 @@ const ProductData = ({ product }: { product: Product }) => {
             <div className="inline-flex justify-between items-center w-[20%]">
               <CurrencyFormat
                 value={selectedVariantPrices.price}
-                className="font-bold text-yellow-600 text-left text-2xl"
+                className="font-bold text-primary-500 text-left text-2xl"
               />
               {selectedVariantPrices.compareAtPrice && (
                 <CurrencyFormat
@@ -483,12 +483,12 @@ const ProductData = ({ product }: { product: Product }) => {
                 />
                 {/* Wishlist Heart */}
                 {addingToWishlist ? (
-                  <Loader2 className=" w-5 h-5  animate-spin text-yellow-500" />
+                  <Loader2 className=" w-5 h-5  animate-spin text-primary-500" />
                 ) : (
                   <Heart
                     className={cn(
-                      "text-yellow-400  cursor-pointer h-8 w-8",
-                      liked && "fill-yellow-400",
+                      "text-primary-500  cursor-pointer h-8 w-8",
+                      liked && "fill-primary-500",
                     )}
                     onClick={handleAddToWishList}
                   />

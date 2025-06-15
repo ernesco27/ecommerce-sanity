@@ -55,7 +55,7 @@ const Categories = () => {
           <Heading name="shop by category" />
         </Row>
         {isLoading && (
-          <div className=" ">
+          <div>
             <Skeleton className="w-full h-[450px]" />
           </div>
         )}
@@ -85,7 +85,7 @@ const Categories = () => {
           navigation={false}
           pagination={true}
           modules={[Autoplay, Navigation, Pagination]}
-          className=" w-full flex items-center justify-center  rounded-md px-20 py-10 "
+          className=" w-full flex-center  rounded-md px-20 py-10 "
         >
           {banners?.map((banner: BannerResponse, index: number) => (
             <SwiperSlide
@@ -100,7 +100,7 @@ const Categories = () => {
               }}
             >
               <div
-                className="absolute bg-white rounded-lg p-4 bottom-[20%] left-[30%] lg:left-[40%] shadow-xl cursor-pointer hover:bg-yellow-600 hover:text-white drop-shadow-xl duration-200 ease-linear capitalize "
+                className="absolute bg-white rounded-lg p-4 bottom-[20%] left-[30%] lg:left-[40%] shadow-xl cursor-pointer hover:bg-primary-500 hover:text-white drop-shadow-xl duration-200 ease-linear capitalize "
                 onClick={() => router.push(`categories/${banner.link}`)}
               >
                 <motion.h6
@@ -109,7 +109,7 @@ const Categories = () => {
                   transition={{
                     delay: 0.1 + index / 6,
                   }}
-                  className="text-2xl font-medium"
+                  className="h2-semibold"
                 >
                   {banner.title}
                 </motion.h6>

@@ -15,7 +15,7 @@ const Logo = () => {
   const logoUrl = company?.logo ? urlFor(company.logo).url() : "/";
 
   return (
-    <Link href="/" className="flex items-center gap-2">
+    <Link href="/" className="flex-center gap-2">
       {!isLoading && (
         <Image
           src={logoUrl}
@@ -26,9 +26,7 @@ const Logo = () => {
         />
       )}
 
-      <p className="hidden lg:block text-2xl font-semibold">
-        {company?.businessName}
-      </p>
+      <p className="hidden lg:block h2-semibold">{company?.businessName}</p>
     </Link>
   );
 };

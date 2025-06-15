@@ -29,10 +29,10 @@ interface ProductsCatAccordionProps {
   onCategoryChange: (categories: string[]) => void;
 }
 
-const ProductsCatAccordion: React.FC<ProductsCatAccordionProps> = ({
+const ProductsCatAccordion = ({
   selectedCategories,
   onCategoryChange,
-}) => {
+}: ProductsCatAccordionProps) => {
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
 
@@ -112,18 +112,18 @@ const ProductsCatAccordion: React.FC<ProductsCatAccordionProps> = ({
         <Accordion type="single" collapsible className="w-full pl-10">
           {categories?.map((item) => (
             <AccordionItem key={item._id} value={item._id}>
-              <AccordionTrigger className="!py-2">
+              <AccordionTrigger className="!py-2 cursor-pointer">
                 <div className="flex items-center space-x-2">
                   <Checkbox
                     id={item._id}
                     checked={selectedCategories.includes(item._id)}
                     onCheckedChange={() => toggleCategory(item._id)}
-                    className="data-[state=checked]:bg-yellow-600"
+                    className="data-[state=checked]:bg-primary-500 data-[state=checked]:border-0 cursor-pointer"
                     onClick={(e) => e.stopPropagation()}
                   />
                   <Label
                     htmlFor={item._id}
-                    className="text-xl font-medium cursor-pointer hover:text-yellow-600"
+                    className="text-xl font-medium cursor-pointer hover:text-primary-500"
                   >
                     {item.title}
                   </Label>
@@ -142,11 +142,11 @@ const ProductsCatAccordion: React.FC<ProductsCatAccordionProps> = ({
                         onCheckedChange={() =>
                           toggleCategory(itemSub._id, item._id)
                         }
-                        className="data-[state=checked]:bg-yellow-600"
+                        className="data-[state=checked]:bg-primary-500 data-[state=checked]:border-0 cursor-pointer"
                       />
                       <Label
                         htmlFor={itemSub._id}
-                        className="text-lg font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer hover:text-yellow-600"
+                        className="text-lg font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer hover:text-primary-500"
                       >
                         {itemSub.name}
                       </Label>

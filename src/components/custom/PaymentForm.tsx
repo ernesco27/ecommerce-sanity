@@ -226,7 +226,7 @@ export const PaymentForm = ({
 
         <Button
           type="submit"
-          className="w-full cursor-pointer bg-yellow-500 hover:bg-yellow-600 text-lg"
+          className="w-full cursor-pointer bg-primary-500 hover:bg-primary-900 text-lg transition-all duration-300 ease-in-out"
           disabled={
             isProcessing ||
             isCreatingOrder ||

@@ -214,8 +214,6 @@ export default function CheckoutPage() {
 
       const { order } = await response.json();
 
-      console.log("order:", order);
-
       setCheckoutData((prev) => ({
         ...prev,
         orderNumber: order.orderNumber,
@@ -348,7 +346,10 @@ export default function CheckoutPage() {
               <p className="mb-8">
                 We've sent a confirmation email with your order details.
               </p>
-              <Button onClick={() => router.push("/products")}>
+              <Button
+                onClick={() => router.push("/products")}
+                className="bg-primary-500 hover:bg-primary-900 transition-all duration-300 ease-in-out cursor-pointer"
+              >
                 Continue Shopping
               </Button>
             </div>
@@ -369,6 +370,7 @@ export default function CheckoutPage() {
                     setCurrentStep(steps[currentIndex - 1].id as CheckoutStep);
                   }}
                   disabled={isProcessing}
+                  className="cursor-pointer"
                 >
                   Back
                 </Button>
@@ -379,7 +381,7 @@ export default function CheckoutPage() {
               {currentStep === "information" && (
                 <Button
                   onClick={handleNextStep}
-                  className="bg-yellow-500 hover:bg-yellow-600 text-white"
+                  className="bg-primary-500 hover:bg-primary-900 cursor-pointer text-white transition-all duration-300 ease-in-out"
                   disabled={isProcessing}
                 >
                   Continue to Shipping
@@ -388,7 +390,7 @@ export default function CheckoutPage() {
               {currentStep === "shipping" && (
                 <Button
                   onClick={handleNextStep}
-                  className="bg-yellow-500 hover:bg-yellow-600 text-white"
+                  className="bg-primary-500 hover:bg-primary-900 text-white transition-all duration-300 ease-in-out cursor-pointer"
                   disabled={!checkoutData.shippingMethod || isProcessing}
                 >
                   Continue to Confirmation
@@ -397,7 +399,7 @@ export default function CheckoutPage() {
               {currentStep === "confirmation" && (
                 <Button
                   onClick={handleNextStep}
-                  className="bg-yellow-500 hover:bg-yellow-600 text-white"
+                  className="bg-primary-500 hover:bg-primary-900 text-white transition-all duration-300 ease-in-out cursor-pointer"
                   disabled={isProcessing}
                 >
                   Proceed to Payment

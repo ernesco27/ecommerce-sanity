@@ -88,7 +88,7 @@ const Deals = () => {
           navigation={false}
           pagination={true}
           modules={[Autoplay, Navigation, Pagination]}
-          className=" w-full flex items-center justify-center rounded-md"
+          className=" w-full flex-center rounded-md"
         >
           {products?.map((item) => (
             <SwiperSlide

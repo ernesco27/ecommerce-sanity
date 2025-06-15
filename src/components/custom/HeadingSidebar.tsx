@@ -4,7 +4,7 @@ const HeadingSidebar = ({ name }: { name: string }) => {
   return (
     <div className="flex flex-col gap-4 w-full">
       <div className="flex justify-between items-center w-full">
-        <h6 className="capitalize font-normal text-lg font-semibold">{name}</h6>
+        <h6 className="capitalize h3-semibold text-lg ">{name}</h6>
       </div>
     </div>
   );

@@ -49,11 +49,9 @@ const index = () => {
     }
   };
 
-  console.log("company:", company);
-
   return (
     <motion.footer
-      className="bg-yellow-950 py-6 overflow-hidden"
+      className="bg-primary-950 py-6 overflow-hidden"
       initial={{
         opacity: 0,
         y: 100,
@@ -70,7 +68,7 @@ const index = () => {
         <div className="grid grid-cols-1 lg:grid-cols-4 text-slate-400">
           <ul className="flex flex-col gap-4 ">
             <li className="mt-10 ">
-              <h4 className="text-white">{company?.businessName}</h4>
+              <h4 className="text-white h3-bold">{company?.businessName}</h4>
             </li>
             <li className="flex gap-4">
               <PhoneCall /> {`${company?.phone} / ${company?.alternativePhone}`}
@@ -89,19 +87,19 @@ const index = () => {
             </li>
             <Link
               href={isSignedIn ? "/account/dashboard" : "/sign-in"}
-              className="flex gap-4 hover:text-yellow-500 duration-300 hover:translate-x-1 capitalize"
+              className="flex gap-4 hover:text-primary-500 duration-300 hover:translate-x-1 capitalize"
             >
               {isSignedIn ? "Dashboard" : "Login"}
             </Link>
             <Link
               href="/cart"
-              className="flex gap-4 hover:text-yellow-500 duration-300 hover:translate-x-1 capitalize"
+              className="flex gap-4 hover:text-primary-500 duration-300 hover:translate-x-1 capitalize"
             >
               My Cart
             </Link>
             <Link
               href="/checkout"
-              className="flex gap-4 hover:text-yellow-500 duration-300 hover:translate-x-1 capitalize"
+              className="flex gap-4 hover:text-primary-500 duration-300 hover:translate-x-1 capitalize"
             >
               Checkout
             </Link>
@@ -114,7 +112,7 @@ const index = () => {
               <Link
                 key={page._id}
                 href={`${page.slug?.current}`}
-                className="flex gap-4 hover:text-yellow-500 duration-300 hover:translate-x-1 capitalize"
+                className="flex gap-4 hover:text-primary-500 duration-300 hover:translate-x-1 capitalize"
               >
                 {page.title}
               </Link>

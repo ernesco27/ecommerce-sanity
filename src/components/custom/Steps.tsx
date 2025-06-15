@@ -36,7 +36,7 @@ export function Steps({ steps, currentStep, onStepClick }: StepsProps) {
                   onClick={() => onStepClick(step.id)}
                 >
                   <span className="flex items-center px-6 py-4 text-sm font-medium">
-                    <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-yellow-600">
+                    <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary-500">
                       <CheckIcon className="h-6 w-6 text-white" />
                     </span>
                     <span className="ml-4 text-sm font-medium text-gray-900">
@@ -50,10 +50,10 @@ export function Steps({ steps, currentStep, onStepClick }: StepsProps) {
                   className="flex items-center px-6 py-4 text-sm font-medium"
                   aria-current="step"
                 >
-                  <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border-2 border-yellow-600">
-                    <span className="text-yellow-600">{stepIdx + 1}</span>
+                  <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border-2 border-primary-500">
+                    <span className="text-primary-500">{stepIdx + 1}</span>
                   </span>
-                  <span className="ml-4 text-sm font-medium text-yellow-600">
+                  <span className="ml-4 text-sm font-medium text-primary-500">
                     {step.name}
                   </span>
                 </button>

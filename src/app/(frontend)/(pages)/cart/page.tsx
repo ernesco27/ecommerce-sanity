@@ -102,9 +102,6 @@ const page = () => {
     return null;
   }
 
-  console.log("taxSettings", taxSettings);
-  console.log("getTaxAmount", getTaxAmount());
-
   return (
     <div>
       <PageHeader heading="Shopping Cart" link1="cart" />
@@ -120,7 +117,7 @@ const page = () => {
             <Button
               onClick={() => router.push("/products")}
               variant="outline"
-              className="bg-yellow-500 text-white capitalize cursor-pointer text-lg"
+              className="bg-primary-500 text-white capitalize cursor-pointer text-lg"
             >
               Visit Store
             </Button>
@@ -129,8 +126,8 @@ const page = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 my-10 ">
             {/* Cart Items */}
             <div className="col-span-2">
-              <Table className="">
-                <TableHeader className="bg-yellow-400">
+              <Table>
+                <TableHeader className="bg-primary-500">
                   <TableRow>
                     <TableHead className="w-[20px]  text-black text-lg lg:text-xl"></TableHead>
                     <TableHead className=" text-black text-lg lg:text-xl">
@@ -230,14 +227,14 @@ const page = () => {
                 <div className="flex flex-col lg:flex-row gap-2 w-1/2">
                   <Input
                     placeholder="Enter coupon code"
-                    className="py-5 px-4 md:text-lg focus-visible:ring-yellow-200"
+                    className="py-5 px-4 md:text-lg focus-visible:ring-primary-100"
                     value={couponCode}
                     onChange={(e) => setCouponCode(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && handleApplyCoupon()}
                   />
                   <Button
                     variant="outline"
-                    className="bg-yellow-800 text-white capitalize cursor-pointer text-lg py-5 px-4 hover:bg-yellow-600 hover:text-white transition-all duration-300 ease-in-out"
+                    className="bg-primary-900 text-white capitalize cursor-pointer text-lg py-5 px-4 hover:bg-primary-500 hover:text-white transition-all duration-300 ease-in-out"
                     onClick={handleApplyCoupon}
                     disabled={isApplying}
                   >
@@ -246,7 +243,7 @@ const page = () => {
                 </div>
                 <p
                   onClick={clearCart}
-                  className="text-sm lg:text-lg underline cursor-pointer text-yellow-800 font-semibold hover:text-red-500 transition-all duration-300 ease-in-out"
+                  className="text-sm lg:text-lg underline cursor-pointer text-primary-900 font-semibold hover:text-red-500 transition-all duration-300 ease-in-out"
                 >
                   x Clear Shopping Cart
                 </p>
@@ -337,7 +334,7 @@ const page = () => {
               <Button
                 onClick={() => router.push("/checkout")}
                 variant="outline"
-                className="bg-yellow-800 text-white capitalize cursor-pointer text-lg py-7 px-4 hover:bg-yellow-600 hover:text-white transition-all duration-300 ease-in-out"
+                className="bg-primary-900 text-white capitalize cursor-pointer text-lg py-7 px-4 hover:bg-primary-500 hover:text-white transition-all duration-300 ease-in-out"
               >
                 Proceed to Checkout
               </Button>

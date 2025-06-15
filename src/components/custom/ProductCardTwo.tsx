@@ -85,7 +85,7 @@ const ProductCardTwo = ({ item }: ProductCardProps) => {
                 variant="outline"
                 size="icon"
                 onClick={() => router.push(`/products/${item.slug}`)}
-                className="hover:bg-yellow-200 hover:text-black"
+                className="hover:bg-primary-100 cursor-pointer hover:text-black"
               >
                 <Eye />
               </Button>
@@ -95,7 +95,7 @@ const ProductCardTwo = ({ item }: ProductCardProps) => {
                 variant="outline"
                 size="icon"
                 onClick={() => router.push(`/products/${item.slug}`)}
-                className="hover:bg-yellow-200 hover:text-black"
+                className="hover:bg-primary-100 cursor-pointer hover:text-black"
               >
                 <HeartIcon />
               </Button>
@@ -105,7 +105,7 @@ const ProductCardTwo = ({ item }: ProductCardProps) => {
                 variant="outline"
                 size="icon"
                 onClick={() => router.push(`/products/${item.slug}`)}
-                className="hover:bg-yellow-200 hover:text-black"
+                className="hover:bg-primary-100 cursor-pointer hover:text-black"
               >
                 <Share2 />
               </Button>
@@ -115,17 +115,17 @@ const ProductCardTwo = ({ item }: ProductCardProps) => {
       </CardHeader>
       <div className="flex flex-col gap-8 items-start pt-4  ">
         <CardContent className="flex flex-col gap-4 text-start py-2">
-          <h5 className="capitalize text-lg">
+          <h5 className="capitalize h3-medium">
             {item.name && item.name.length > 30
               ? `${item.name.substring(0, 30)}...`
               : item.name}
           </h5>
           <div className="w-full">
             {maxPrice > minPrice ? (
-              <div className="flex flex-wrap justify-between">
+              <div className="flex-between flex-wrap">
                 <CurrencyFormat
                   value={minPrice}
-                  className="font-bold text-yellow-600 text-left w-20 text-lg lg:text-xl"
+                  className="font-bold text-primary-500 text-left w-20 text-lg lg:text-xl"
                 />
                 <CurrencyFormat
                   value={maxPrice}
@@ -140,11 +140,9 @@ const ProductCardTwo = ({ item }: ProductCardProps) => {
             )}
           </div>
           {rating > 0 && (
-            <span className="text-yellow-400 flex items-center gap-1">
-              <Star className="w-5 h-5 fill-yellow-400" />
-              <p className="text-lg font-semibold text-black">
-                {rating.toFixed(1)}
-              </p>
+            <span className="text-primary-500 flex items-center gap-1">
+              <Star className="w-5 h-5 fill-primary-500" />
+              <p className="paragraph-medium ">{rating.toFixed(1)}</p>
             </span>
           )}
           <p className="text-sm lg:text-lg font-normal">

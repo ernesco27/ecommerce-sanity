@@ -55,10 +55,10 @@ const ProductsMainContent = ({
         />
         <div>
           <Select value={filter} onValueChange={setFilter}>
-            <SelectTrigger className="w-[150px]">
+            <SelectTrigger className="w-[150px] cursor-pointer ">
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="mr-2">
               <SelectItem value="latest">Latest</SelectItem>
               <SelectItem value="price_low_to_high">
                 Price: Low to High
