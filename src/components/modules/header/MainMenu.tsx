@@ -86,7 +86,7 @@ const MainMenu = () => {
                 }}
                 className="z-50 h-[440px] bg-primary-500  w-[950px] absolute -right-100 top-[54px] shadow-xl"
               >
-                <div className="grid grid-cols-4 justify-items-center grid-rows-auto max-h-[450px]  bg-white p-4  gap-8  overflow-hidden ">
+                <div className="grid grid-cols-4 justify-items-center grid-rows-auto max-h-[450px]   p-4  gap-8  overflow-hidden background-light900_dark200 ">
                   {categories?.map((cat: Category) => {
                     return (
                       <ul

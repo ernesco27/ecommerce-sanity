@@ -21,6 +21,7 @@ import { useCartStore } from "@/store/cartStore";
 import { useUser, SignOutButton, SignInButton } from "@clerk/nextjs";
 import { BiBox, BiHeart } from "react-icons/bi";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Theme from "@/components/modules/header/Theme";
 
 const IconsGroup = ({
   openSearchBar,
@@ -89,9 +90,13 @@ const IconsGroup = ({
               )}
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56 mr-8">
-              <DropdownMenuLabel>
-                {user ? "Welcome! " + user.firstName : "Welcome!"}
-              </DropdownMenuLabel>
+              <div className="flex-between">
+                <DropdownMenuLabel>
+                  {user ? "Welcome! " + user.firstName : "Welcome!"}
+                </DropdownMenuLabel>
+                <Theme />
+              </div>
+
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
                 {user ? (
@@ -99,20 +104,26 @@ const IconsGroup = ({
                     <DropdownMenuItem>
                       <div
                         className="flex-center gap-2 hover:text-primary-500 cursor-pointer transition-all duration-200 ease-in-out"
-                        onClick={() => router.push("/account")}
+                        onClick={() => router.push("/account?tab=personal")}
                       >
                         <User className="hover:text-primary-500" />
                         <span>Profile</span>
                       </div>
                     </DropdownMenuItem>
                     <DropdownMenuItem>
-                      <div className="flex-center gap-2 hover:text-primary-500 cursor-pointer transition-all duration-200 ease-in-out">
+                      <div
+                        className="flex-center gap-2 hover:text-primary-500 cursor-pointer transition-all duration-200 ease-in-out"
+                        onClick={() => router.push("/account?tab=orders")}
+                      >
                         <BiBox className="hover:text-primary-500" />
                         <span>My Orders</span>
                       </div>
                     </DropdownMenuItem>
                     <DropdownMenuItem>
-                      <div className="flex-center gap-2 hover:text-primary-500 cursor-pointer transition-all duration-200 ease-in-out">
+                      <div
+                        className="flex-center gap-2 hover:text-primary-500 cursor-pointer transition-all duration-200 ease-in-out"
+                        onClick={() => router.push("/account?tab=wishlist")}
+                      >
                         <BiHeart className="hover:text-primary-500" />
                         <span>Wishlist</span>
                       </div>

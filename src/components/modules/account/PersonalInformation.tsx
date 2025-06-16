@@ -26,11 +26,12 @@ const PersonalInformation = ({ user }: { user: User }) => {
         <h2 className="text-lg lg:text-2xl font-semibold tracking-tight">
           Personal Information
         </h2>
+
         <Button
           size="lg"
           variant="outline"
-          onClick={() => router.push("/user/profile")}
-          className="hover:bg-yellow-500 hover:text-white transition-all ease-in-out duration-300 cursor-pointer"
+          onClick={() => router.push("/account/profile")}
+          className="hover:bg-primary-500 hover:text-white transition-all ease-in-out duration-300 cursor-pointer"
         >
           Edit Profile
         </Button>
@@ -105,8 +106,8 @@ const PersonalInformation = ({ user }: { user: User }) => {
               <Button
                 variant="outline"
                 size="lg"
-                onClick={() => router.push("/user/security")}
-                className="hover:bg-yellow-500 hover:text-white transition-all ease-in-out duration-300 cursor-pointer"
+                onClick={() => router.push("/account/security")}
+                className="hover:bg-primary-500 hover:text-white transition-all ease-in-out duration-300 cursor-pointer"
               >
                 Update Security
               </Button>

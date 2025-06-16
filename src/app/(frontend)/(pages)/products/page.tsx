@@ -7,7 +7,7 @@ import ProductsContainer from "@/components/modules/products/ProductsContainer";
 const page = () => {
   return (
     <>
-      <section className="my-10">
+      <section className="">
         <PageHeader heading="Shop" link1="shop" />
       </section>
 

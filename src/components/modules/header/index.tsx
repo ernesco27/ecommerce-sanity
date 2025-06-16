@@ -5,9 +5,9 @@ import Main from "./Main";
 
 const Header = () => {
   return (
-    <header className="h-[80px]">
+    <nav className="h-[80px] background-light900_dark200 fixed z-50 w-full shadow-light-300 dark:shadow-none">
       <Main />
-    </header>
+    </nav>
   );
 };
 

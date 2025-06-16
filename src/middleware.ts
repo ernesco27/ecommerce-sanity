@@ -111,8 +111,8 @@
 //   ],
 // };
 
-import { clerkMiddleware } from "@clerk/nextjs/server";
-import { NextResponse } from "next/server";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { NextResponse, type NextRequest } from "next/server";
 import { routeAccessMap } from "./lib/settings";
 
 interface SessionClaims {
@@ -121,13 +121,29 @@ interface SessionClaims {
   };
 }
 
+// Create a matcher for protected routes
+const isProtectedRoute = (req: NextRequest) => {
+  const url = new URL(req.url);
+  const pathname = url.pathname;
+  return pathname.startsWith("/account") || pathname.startsWith("/api");
+};
+
 export default clerkMiddleware(async (auth, req) => {
   const url = new URL(req.url);
   const pathname = url.pathname;
 
+  // Skip middleware for Clerk UserProfile routes
+  if (pathname.startsWith("/account/profile")) {
+    return NextResponse.next();
+  }
+
+  // Only run middleware on protected routes
+  if (!isProtectedRoute(req)) {
+    return NextResponse.next();
+  }
+
   try {
     const session = await auth();
-
     const userRole =
       (session?.sessionClaims as SessionClaims)?.metadata?.role || "guest";
 
