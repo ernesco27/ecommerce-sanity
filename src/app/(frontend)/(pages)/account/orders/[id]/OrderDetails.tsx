@@ -246,7 +246,7 @@ const OrderDetails = ({ id }: { id: string }) => {
             variant="ghost"
             size="lg"
             onClick={() => router.back()}
-            className="flex items-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-white cursor-pointer transition-all duration-300"
+            className="flex items-center gap-2 bg-primary-500 hover:bg-primary-900 text-white cursor-pointer transition-all duration-300"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to Orders
@@ -258,7 +258,7 @@ const OrderDetails = ({ id }: { id: string }) => {
                 variant="ghost"
                 size="lg"
                 disabled
-                className="flex items-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-white cursor-pointer transition-all duration-300"
+                className="flex items-center gap-2 bg-primary-500 hover:bg-primary-900 text-white cursor-pointer transition-all duration-300"
               >
                 Loading PDF Option..
               </Button>
@@ -272,7 +272,7 @@ const OrderDetails = ({ id }: { id: string }) => {
                 variant="ghost"
                 size="lg"
                 disabled
-                className="flex items-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-white cursor-pointer transition-all duration-300"
+                className="flex items-center gap-2 bg-primary-500 hover:bg-primary-900 text-white cursor-pointer transition-all duration-300"
               >
                 Loading Invoice..
               </Button>
@@ -345,8 +345,8 @@ const OrderDetails = ({ id }: { id: string }) => {
                         `text-sm text-white  ${getPaymentStatusColor(order?.paymentStatus || "Not Paid")}`,
                       )}
                     >
-                      {order?.status?.charAt(0).toUpperCase() +
-                        order?.status?.slice(1)}
+                      {order?.paymentStatus?.charAt(0).toUpperCase() +
+                        order?.paymentStatus?.slice(1)}
                     </Badge>
                   )}
                 </div>

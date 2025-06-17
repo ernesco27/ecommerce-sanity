@@ -51,7 +51,7 @@ const index = () => {
 
   return (
     <motion.footer
-      className="bg-primary-950 py-6 overflow-hidden"
+      className="bg-primary-950 py-6 overflow-hidden "
       initial={{
         opacity: 0,
         y: 100,

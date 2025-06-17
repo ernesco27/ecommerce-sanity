@@ -660,7 +660,7 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
           <Button
             variant="outline"
             onClick={() => (window.location.href = "/sign-in")}
-            className="cursor-pointer bg-yellow-100 hover:bg-yellow-300"
+            className="cursor-pointer bg-primary-100 hover:bg-primary-500"
           >
             Sign in to save addresses
           </Button>

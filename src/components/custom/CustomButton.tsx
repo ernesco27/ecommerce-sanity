@@ -86,7 +86,7 @@ const CustomButton = ({
         {name}
       </span>
       {!disabled && (
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-5 h-5 bg-yellow-500 rounded-full opacity-0 transition-all duration-1000 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:w-[220px] group-hover:h-[220px] group-hover:opacity-100"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-5 h-5 bg-primary-500 rounded-full opacity-0 transition-all duration-1000 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:w-[220px] group-hover:h-[220px] group-hover:opacity-100"></div>
       )}
       <svg
         viewBox="0 0 24 24"

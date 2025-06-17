@@ -1,12 +1,17 @@
 "use client";
 
 import React, { useState } from "react";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import {
   Sheet,
   SheetContent,
   SheetTrigger,
   SheetClose,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
 } from "@/components/ui/sheet";
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Accordion,
@@ -47,6 +52,15 @@ const SidebarMenu = ({
         <SheetContent
           className={cn("px-4 w-full [&>#closeBtn]:text-3xl ", "md:w-[400px]")}
         >
+          <VisuallyHidden asChild>
+            <SheetHeader>
+              <SheetTitle>Side Menu</SheetTitle>
+              <SheetDescription>
+                Select categories and pages here
+              </SheetDescription>
+            </SheetHeader>
+          </VisuallyHidden>
+
           <div className="mt-10">
             <Tabs defaultValue="category">
               <TabsList className="grid grid-cols-2 w-full">
@@ -69,7 +83,7 @@ const SidebarMenu = ({
                           }}
                           className="hover:no-underline"
                         >
-                          <span className="text-lg hover:text-yellow-500">
+                          <span className="text-lg hover:text-primary-500">
                             {category.title}
                           </span>
                         </AccordionTrigger>
@@ -81,7 +95,7 @@ const SidebarMenu = ({
                                   <Link
                                     key={sub._id}
                                     href={`/categories/${category.slug}?subcategory=${sub.slug}`}
-                                    className="text-lg hover:text-yellow-500 py-2"
+                                    className="text-lg hover:text-primary-500 py-2"
                                     onClick={() => setOpen(false)}
                                   >
                                     {sub.name}
@@ -102,14 +116,14 @@ const SidebarMenu = ({
                       router.push("/products");
                       setOpen(false);
                     }}
-                    className="px-4 py-2 cursor-pointer hover:text-yellow-700 capitalize"
+                    className="px-4 py-2 cursor-pointer hover:text-primary-900 capitalize"
                   >
                     Shop
                   </span>
                   {pages.map((page: Page) => (
                     <div
                       key={page._id}
-                      className="group inline-flex items-center px-4 py-2 gap-4 w-full hover:text-yellow-700 capitalize"
+                      className="group inline-flex items-center px-4 py-2 gap-4 w-full hover:text-primary-900 capitalize"
                     >
                       <div className="flex items-center gap-2 w-full">
                         <span

@@ -52,7 +52,7 @@ const HomeSlide = () => {
   if (!banners || banners.length === 0) return null;
 
   return (
-    <section className="w-full overflow-hidden">
+    <section className="w-full overflow-hidden mt-[80px]">
       <Container className="w-full max-w-full px-0">
         <Swiper
           autoplay={{

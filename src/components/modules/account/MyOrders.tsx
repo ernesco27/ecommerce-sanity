@@ -84,7 +84,7 @@ const MyOrders = ({ user }: { user: User }) => {
   if (isLoading) {
     return (
       <Container className="flex items-center justify-center">
-        <Loader2 className=" w-10 h-10  animate-spin text-yellow-500" />
+        <Loader2 className=" w-10 h-10  animate-spin text-primary-500" />
       </Container>
     );
   }
@@ -152,7 +152,7 @@ const MyOrders = ({ user }: { user: User }) => {
                       onClick={() =>
                         router.push(`/account/orders/${order._id}`)
                       }
-                      className="cursor-pointer hover:bg-yellow-500 hover:text-white transition-all duration-300"
+                      className="cursor-pointer hover:bg-primary-500 hover:text-white transition-all duration-300"
                     >
                       <Eye className="h-4 w-4" />
                     </Button>

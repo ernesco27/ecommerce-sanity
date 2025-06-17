@@ -78,7 +78,7 @@ const ProductsMainContent = ({
         />
         {loading && (
           <div className="absolute bottom-0 left-0 right-0 flex justify-center py-4 bg-white/80">
-            <Loader2 className="h-6 w-6 animate-spin text-yellow-600" />
+            <Loader2 className="h-6 w-6 animate-spin text-primary-500" />
           </div>
         )}
         {!loading && !hasMore && products.length > 0 && (

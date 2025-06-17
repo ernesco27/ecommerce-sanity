@@ -193,7 +193,7 @@ const ReviewForm = ({ productId }: { productId: string }) => {
                 <Input
                   placeholder="Ex. Best product ever"
                   {...field}
-                  className="focus-visible:border-ring focus-visible:ring-yellow-300 text-lg lg:text-xl h-12"
+                  className="focus-visible:border-ring focus-visible:ring-primary-100 text-lg lg:text-xl h-12"
                 />
               </FormControl>
               <FormMessage />
@@ -211,7 +211,7 @@ const ReviewForm = ({ productId }: { productId: string }) => {
                 <Textarea
                   placeholder="Ex. This product is amazing"
                   {...field}
-                  className="outline-none focus-visible:border-ring focus-visible:ring-yellow-300 text-lg lg:text-xl min-h-[100px] max-h-[200px]"
+                  className="outline-none focus-visible:border-ring focus-visible:ring-primary-100 text-lg lg:text-xl min-h-[100px] max-h-[200px]"
                 />
               </FormControl>
               <FormMessage />
@@ -273,7 +273,7 @@ const ReviewForm = ({ productId }: { productId: string }) => {
           type="submit"
           size="lg"
           disabled={!isLoaded || !isSignedIn || uploading || submitting}
-          className="bg-primary-900 text-lg hover:bg-primary-500 cursor-pointer transition-all duration-300 ease-in-out"
+          className="bg-primary-900 dark:text-white text-lg hover:bg-primary-500 cursor-pointer transition-all duration-300 ease-in-out"
         >
           {submitting ? "Submitting..." : "Submit Review"}
         </Button>

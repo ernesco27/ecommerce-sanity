@@ -86,7 +86,7 @@ const CategoryDetail = ({ category }: CategoryDetailProps) => {
         <Container>
           {isLoading ? (
             <div className="flex justify-center items-center min-h-[400px]">
-              <Loader2 className="h-8 w-8 animate-spin text-yellow-600" />
+              <Loader2 className="h-8 w-8 animate-spin text-primary-500" />
             </div>
           ) : products && products.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">

@@ -157,7 +157,7 @@ const IconsGroup = ({
                 <SignOutButton>
                   <DropdownMenuItem>
                     <div className="flex items-center justify-center gap-2 hover:text-white cursor-pointer transition-all duration-200 ease-in-out bg-red-300 p-2 rounded-md w-full shadow-md">
-                      <LogOut className="hover:text-yellow-500" />
+                      <LogOut className="hover:text-primary-500" />
                       <span>Log out</span>
                     </div>
                   </DropdownMenuItem>

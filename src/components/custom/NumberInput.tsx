@@ -37,7 +37,7 @@ export default function InputNumberField({
         >
           <MinusIcon />
         </NumberField.Decrement>
-        <NumberField.Input className="h-12 w-16 lg:w-24 border-t border-b border-gray-200 text-center text-base text-gray-900 tabular-nums focus:z-1 focus:outline focus:outline-2 focus:-outline-offset-1 focus:outline-primary-400" />
+        <NumberField.Input className="h-12 w-16 lg:w-24 border-t border-b border-gray-200 text-center text-base text-gray-900 tabular-nums focus:z-1  focus:outline-2 focus:-outline-offset-1 focus:outline-primary-400 dark:text-white" />
         <NumberField.Increment
           className={cn(
             "flex size-12 items-center justify-center rounded-tr-md rounded-br-md border border-gray-200 bg-gray-50 bg-clip-padding text-gray-900 select-none hover:bg-gray-100 active:bg-gray-100",

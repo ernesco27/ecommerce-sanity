@@ -95,18 +95,18 @@ const CollectionCta = () => {
               transition={{ duration: 1, type: "spring" }}
               className="flex flex-col gap-4 lg:gap-6 py-4 w-3/4"
             >
-              <p className="capitalize text-sm lg:text-lg font-normal">
+              <p className="capitalize text-sm lg:text-lg font-normal dark:text-black">
                 Explore the Latest Trends
               </p>
-              <div className="">
-                <span className="block text-2xl lg:text-4xl ">
+              <div>
+                <span className="block text-2xl lg:text-4xl dark:text-black ">
                   Women's Latest
                 </span>
-                <span className="block mt-2 lg:mt-6 text-2xl lg:text-4xl">
+                <span className="block mt-2 lg:mt-6 text-2xl lg:text-4xl dark:text-black">
                   Collection
                 </span>
               </div>
-              <p className="text-wrap text-sm lg:text-lg font-normal mr-8 leading-tight">
+              <p className="text-wrap text-sm lg:text-lg font-normal mr-8 leading-tight dark:text-black">
                 From casual to formal, find the perfect outfit for any occasion.
               </p>
             </motion.div>

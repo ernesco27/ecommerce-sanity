@@ -222,7 +222,7 @@ const ProductReview = ({
               <div key={review._id} className="mt-6">
                 <div className="flex items-center justify-between ">
                   <div className="flex items-center gap-2  ">
-                    <Avatar className="bg-yellow-200 overflow-hidden">
+                    <Avatar className="bg-primary-100 overflow-hidden">
                       {review.user?.photo?.asset?.url ? (
                         <AvatarImage src={review.user.photo.asset.url} />
                       ) : (
@@ -308,14 +308,17 @@ const ProductReview = ({
           Your email address will not be published. Required fields are marked *
         </p>
         {isSignedIn ? (
-          <div className="p-6 bg-gray-50 rounded-lg">
+          <div className="p-6  rounded-lg">
             <ReviewForm productId={product._id} />
           </div>
         ) : (
-          <div className=" p-6 bg-gray-50 rounded-lg">
+          <div className=" p-6  rounded-lg">
             <p className="text-lg mb-4">
               Please{" "}
-              <Link href="/sign-in" className="text-yellow-700 hover:underline">
+              <Link
+                href="/sign-in"
+                className="text-primary-500 hover:underline"
+              >
                 sign in
               </Link>{" "}
               to leave a review.

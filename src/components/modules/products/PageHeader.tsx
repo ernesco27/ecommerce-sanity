@@ -41,7 +41,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
 
   return (
     <div
-      className="flex flex-col gap-4 lg:gap-10 justify-center items-center w-full h-[100px] lg:h-[250px] lg:bg-auto mb-4"
+      className="flex flex-col gap-4 lg:gap-10 justify-center items-center w-full h-[100px] lg:h-[250px] lg:bg-auto mt-[80px]"
       style={{
         backgroundImage: headerImage ? `url(${headerImage})` : undefined,
         backgroundSize: "cover",
@@ -51,7 +51,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
       role="banner"
       aria-label="Page header"
     >
-      <h2 className="text-3xl lg:text-4xl capitalize font-normal ">
+      <h2 className="text-black text-3xl lg:text-4xl capitalize font-normal">
         {heading}
       </h2>
 

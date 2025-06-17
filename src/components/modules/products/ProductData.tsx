@@ -213,6 +213,7 @@ const ProductData = ({ product }: { product: Product }) => {
 
     if (!selectedSize || !selectedColor) {
       toast.error("Please select size and color");
+      setAddingToWishlist(false);
       return;
     }
 
@@ -441,7 +442,7 @@ const ProductData = ({ product }: { product: Product }) => {
                       </span>
                     </p>
                   ) : (
-                    <p className="text-yellow-600 font-medium mt-1">
+                    <p className="text-primary-500 font-medium mt-1">
                       Low Stock - Only {selectedVariantStock} left!
                     </p>
                   )}

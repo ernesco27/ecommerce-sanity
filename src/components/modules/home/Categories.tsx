@@ -100,7 +100,7 @@ const Categories = () => {
               }}
             >
               <div
-                className="absolute bg-white rounded-lg p-4 bottom-[20%] left-[30%] lg:left-[40%] shadow-xl cursor-pointer hover:bg-primary-500 hover:text-white drop-shadow-xl duration-200 ease-linear capitalize "
+                className="absolute bg-white rounded-lg p-4 bottom-[20%] left-[30%] lg:left-[40%] shadow-xl cursor-pointer hover:bg-primary-500 hover:text-white drop-shadow-xl duration-200 ease-linear capitalize dark:bg-primary-500 dark:hover:bg-primary-900 "
                 onClick={() => router.push(`categories/${banner.link}`)}
               >
                 <motion.h6
@@ -109,7 +109,7 @@ const Categories = () => {
                   transition={{
                     delay: 0.1 + index / 6,
                   }}
-                  className="h2-semibold"
+                  className="h2-semibold "
                 >
                   {banner.title}
                 </motion.h6>

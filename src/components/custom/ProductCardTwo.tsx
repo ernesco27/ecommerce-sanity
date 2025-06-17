@@ -85,7 +85,7 @@ const ProductCardTwo = ({ item }: ProductCardProps) => {
                 variant="outline"
                 size="icon"
                 onClick={() => router.push(`/products/${item.slug}`)}
-                className="hover:bg-primary-100 cursor-pointer hover:text-black"
+                className="hover:bg-primary-100 cursor-pointer hover:text-black dark:bg-primary-100 text-dark400_light500"
               >
                 <Eye />
               </Button>
@@ -95,7 +95,7 @@ const ProductCardTwo = ({ item }: ProductCardProps) => {
                 variant="outline"
                 size="icon"
                 onClick={() => router.push(`/products/${item.slug}`)}
-                className="hover:bg-primary-100 cursor-pointer hover:text-black"
+                className="hover:bg-primary-100 cursor-pointer hover:text-black dark:bg-primary-100 text-dark400_light500"
               >
                 <HeartIcon />
               </Button>
@@ -105,7 +105,7 @@ const ProductCardTwo = ({ item }: ProductCardProps) => {
                 variant="outline"
                 size="icon"
                 onClick={() => router.push(`/products/${item.slug}`)}
-                className="hover:bg-primary-100 cursor-pointer hover:text-black"
+                className="hover:bg-primary-100 cursor-pointer hover:text-black dark:bg-primary-100 text-dark400_light500"
               >
                 <Share2 />
               </Button>
@@ -129,13 +129,13 @@ const ProductCardTwo = ({ item }: ProductCardProps) => {
                 />
                 <CurrencyFormat
                   value={maxPrice}
-                  className="line-through text-lg lg:text-xl text-slate-600"
+                  className="line-through text-lg lg:text-xl text-slate-600 dark:text-primary-100/50"
                 />
               </div>
             ) : (
               <CurrencyFormat
                 value={maxPrice}
-                className="font-bold text-yellow-600 text-left w-20 text-lg lg:text-xl"
+                className="font-bold text-primary-500 text-left w-20 text-lg lg:text-xl"
               />
             )}
           </div>
@@ -155,7 +155,7 @@ const ProductCardTwo = ({ item }: ProductCardProps) => {
           <Button
             variant="outline"
             size="sm"
-            className="text-lg bg-slate-100 text-black hover:bg-slate-200 transition-all duration-300 ease-in-out cursor-pointer"
+            className="text-lg bg-slate-100 text-black hover:bg-slate-200 transition-all duration-300 ease-in-out cursor-pointer dark:bg-primary-100"
             onClick={() => router.push(`/products/${item.slug}`)}
           >
             Shop Now

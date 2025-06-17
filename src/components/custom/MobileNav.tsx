@@ -58,7 +58,7 @@ const MobileNav = () => {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 lg:hidden z-50 w-full overflow-hidden">
+    <nav className="bottom-0 left-0 right-0  border-t border-gray-200 lg:hidden w-full overflow-hidden background-light900_dark200 fixed z-50 shadow-light-300 dark:shadow-none">
       <Container className="w-full max-w-full px-0">
         <div className="flex justify-between items-center h-16 w-full">
           {navItems.map((item) => {
@@ -75,9 +75,8 @@ const MobileNav = () => {
                 <div
                   onClick={item.onClick}
                   className={cn(
-                    "flex flex-col items-center justify-center w-full h-full relative",
-                    "text-gray-600 hover:text-yellow-700 transition-colors",
-                    isActive && "text-yellow-700",
+                    "flex-center flex-col w-full h-full text-gray-600 dark:text-white hover:!text-primary-500 relative transition-colors",
+                    isActive && "!text-primary-500",
                   )}
                 >
                   <motion.div
@@ -89,7 +88,7 @@ const MobileNav = () => {
                   >
                     <Icon size={24} />
                     {item.name === "Cart" && getTotalItems() > 0 && (
-                      <span className="absolute -top-1 -right-1 bg-yellow-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center">
+                      <span className="absolute -top-1 -right-1 bg-primary-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center">
                         {getTotalItems()}
                       </span>
                     )}

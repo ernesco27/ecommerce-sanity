@@ -7,9 +7,7 @@ import ProductsContainer from "@/components/modules/products/ProductsContainer";
 const page = () => {
   return (
     <>
-      <section className="">
-        <PageHeader heading="Shop" link1="shop" />
-      </section>
+      <PageHeader heading="Shop" link1="shop" />
 
       <ProductsContainer />
     </>

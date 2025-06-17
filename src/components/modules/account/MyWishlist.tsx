@@ -75,7 +75,7 @@ const MyWishlist = ({ user }: { user: User }) => {
   if (isLoading) {
     return (
       <Container className="flex items-center justify-center">
-        <Loader2 className=" w-10 h-10  animate-spin text-yellow-500" />
+        <Loader2 className=" w-10 h-10  animate-spin text-primary-500" />
       </Container>
     );
   }
@@ -331,7 +331,7 @@ const MyWishlist = ({ user }: { user: User }) => {
                           {item.variant?.stock &&
                             item.variant.stock > 0 &&
                             item.variant.stock < 5 && (
-                              <span className="text-yellow-500 text-sm">
+                              <span className="text-primary-500 text-sm">
                                 Low Stock - Only {item.variant.stock} left!
                               </span>
                             )}
