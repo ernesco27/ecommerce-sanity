@@ -121,8 +121,6 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [loading, setLoading] = useState(false);
 
-  console.log("addr:", addresses);
-
   const getDefaultAddress = (type: "shipping" | "billing") => {
     return addresses.find(
       (address) =>
@@ -185,40 +183,6 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
 
     fetchAddresses();
   }, [user, useSameAddress]);
-
-  // useEffect(() => {
-  //   if (addresses) {
-  //     // Set initial selected addresses
-  //     const defaultShipping = addresses.find(
-  //       (addr: Address) =>
-  //         addr.isDefault &&
-  //         (addr.addressType === "shipping" || addr.addressType === "both"),
-  //     );
-  //     const defaultBilling = addresses.find(
-  //       (addr: Address) =>
-  //         addr.isDefault &&
-  //         (addr.addressType === "billing" || addr.addressType === "both"),
-  //     );
-
-  //     setSelectedShippingId(defaultShipping?._id);
-  //     setSelectedBillingId(defaultBilling?._id);
-
-  //     // If we have a default shipping address, trigger the initial selection
-  //     if (defaultShipping) {
-  //       if (useSameAddress) {
-  //         onSubmit?.({
-  //           shipping: defaultShipping,
-  //           billing: defaultShipping,
-  //         });
-  //       } else if (defaultBilling) {
-  //         onSubmit?.({
-  //           shipping: defaultShipping,
-  //           billing: defaultBilling,
-  //         });
-  //       }
-  //     }
-  //   }
-  // }, [addresses, useSameAddress, onSubmit]);
 
   const form = useForm<AddressFormValues>({
     resolver: zodResolver(addressFormSchema),
@@ -428,14 +392,6 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
     );
   }
 
-  // if (error) {
-  //   return (
-  //     <div className="flex items-center justify-center p-8 text-red-500">
-  //       Failed to load addresses
-  //     </div>
-  //   );
-  // }
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -443,7 +399,12 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
         {user ? (
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button variant="outline">Add New Address</Button>
+              <Button
+                variant="outline"
+                className="dark:bg-primary-500 dark:hover:ring-2 dark:hover:ring-primary-500 dark:hover:shadow-lg dark:hover:shadow-primary-500/50 cursor-pointer"
+              >
+                Add New Address
+              </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[500px] max-h-[95vh] overflow-y-auto py-8  ">
               <DialogHeader>
@@ -640,7 +601,8 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
 
                   <Button
                     type="submit"
-                    className="w-full bg-primary-500 hover:bg-primary-900 cursor-pointer"
+                    variant="outline"
+                    className="w-full bg-primary-500 dark:bg-primary-500  dark:hover:ring-2 dark:hover:ring-primary-500 dark:hover:shadow-lg dark:hover:shadow-primary-500/50 cursor-pointer"
                     disabled={isAddingAddress}
                   >
                     {isAddingAddress ? (
@@ -660,7 +622,7 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
           <Button
             variant="outline"
             onClick={() => (window.location.href = "/sign-in")}
-            className="cursor-pointer bg-primary-100 hover:bg-primary-500"
+            className="w-full bg-primary-500 dark:bg-primary-500 dark:hover:ring-2 dark:hover:ring-primary-500 dark:hover:shadow-lg dark:hover:shadow-primary-500/50 cursor-pointer"
           >
             Sign in to save addresses
           </Button>
@@ -876,7 +838,8 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
                   /> */}
                   <Button
                     type="submit"
-                    className="w-full cursor-pointer bg-primary-500 hover:bg-primary-900"
+                    variant="outline"
+                    className="w-full bg-primary-500 dark:bg-primary-500 dark:hover:ring-2 dark:hover:ring-primary-500 dark:hover:shadow-lg dark:hover:shadow-primary-500/50 cursor-pointer"
                   >
                     Save Shipping Address
                   </Button>
@@ -1111,7 +1074,8 @@ const UserAddress = ({ onSubmit }: UserAddressProps) => {
                     /> */}
                     <Button
                       type="submit"
-                      className="w-full cursor-pointer bg-primary-500 hover:bg-primary-900"
+                      variant="outline"
+                      className="w-full bg-primary-500 dark:bg-primary-500 dark:hover:ring-2 dark:hover:ring-primary-500 dark:hover:shadow-lg dark:hover:shadow-primary-500/50 cursor-pointer"
                     >
                       Save Billing Address
                     </Button>

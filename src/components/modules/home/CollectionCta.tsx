@@ -29,9 +29,14 @@ const CollectionCta = () => {
       <Container>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full">
           <motion.div
-            initial={{ x: -100, opacity: 0 }}
+            initial={{ x: -75, opacity: 0 }}
             whileInView={{ x: 0, opacity: 1 }}
-            transition={{ duration: 0.5, type: "spring" }}
+            transition={{
+              type: "spring",
+              stiffness: 120,
+              damping: 25,
+              mass: 0.8,
+            }}
             className="h-[250px] lg:h-[350px] xl:h-[350px] rounded-md px-8 bg-red-200"
             style={{
               backgroundImage: `url(${casualBanner})`,
@@ -42,9 +47,14 @@ const CollectionCta = () => {
             }}
           >
             <motion.div
-              initial={{ x: -100, opacity: 0 }}
+              initial={{ x: -70, opacity: 0 }}
               whileInView={{ x: 0, opacity: 1 }}
-              transition={{ duration: 1, type: "spring" }}
+              transition={{
+                type: "spring",
+                stiffness: 120,
+                damping: 25,
+                mass: 0.8,
+              }}
               className="flex flex-col gap-4 lg:gap-6 py-4 w-3/4"
             >
               <p className="capitalize text-sm lg:text-lg font-normal">
@@ -63,9 +73,15 @@ const CollectionCta = () => {
               </p>
             </motion.div>
             <motion.div
-              initial={{ x: -100, opacity: 0 }}
+              initial={{ x: -60, opacity: 0 }}
               whileInView={{ x: 0, opacity: 1 }}
-              transition={{ duration: 1.2, type: "spring" }}
+              transition={{
+                type: "spring",
+                stiffness: 120,
+                damping: 25,
+                mass: 0.8,
+                delay: 0.2,
+              }}
               className="mt-4"
             >
               <CustomButton
@@ -77,9 +93,14 @@ const CollectionCta = () => {
             </motion.div>
           </motion.div>
           <motion.div
-            initial={{ x: 100, opacity: 0 }}
+            initial={{ x: 75, opacity: 0 }}
             whileInView={{ x: 0, opacity: 1 }}
-            transition={{ duration: 0.5, type: "spring" }}
+            transition={{
+              type: "spring",
+              stiffness: 120,
+              damping: 25,
+              mass: 0.8,
+            }}
             className="h-[250px] lg:h-[350px] md:h-[350px] xl:h-[350px]  rounded-md px-8"
             style={{
               backgroundImage: `url(${specialtyBanner})`,
@@ -90,9 +111,14 @@ const CollectionCta = () => {
             }}
           >
             <motion.div
-              initial={{ x: -100, opacity: 0 }}
+              initial={{ x: 70, opacity: 0 }}
               whileInView={{ x: 0, opacity: 1 }}
-              transition={{ duration: 1, type: "spring" }}
+              transition={{
+                type: "spring",
+                stiffness: 120,
+                damping: 25,
+                mass: 0.8,
+              }}
               className="flex flex-col gap-4 lg:gap-6 py-4 w-3/4"
             >
               <p className="capitalize text-sm lg:text-lg font-normal dark:text-black">
@@ -111,9 +137,15 @@ const CollectionCta = () => {
               </p>
             </motion.div>
             <motion.div
-              initial={{ x: -100, opacity: 0 }}
+              initial={{ x: -60, opacity: 0 }}
               whileInView={{ x: 0, opacity: 1 }}
-              transition={{ duration: 1.2, type: "spring" }}
+              transition={{
+                type: "spring",
+                stiffness: 120,
+                damping: 25,
+                mass: 0.8,
+                delay: 0.2,
+              }}
               className="mt-4"
             >
               <CustomButton

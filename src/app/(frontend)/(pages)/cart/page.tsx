@@ -107,8 +107,8 @@ const page = () => {
       <PageHeader heading="Shopping Cart" link1="cart" />
       <Container>
         {!items.length ? (
-          <div className="flex flex-col gap-4 items-center justify-center h-full my-10">
-            <div className="w-40 h-40 rounded-full bg-gray-100 flex items-center justify-center">
+          <div className="flex-center flex-col gap-4  h-full my-10 ">
+            <div className="w-40 h-40 rounded-full background-light800_dark400 flex-center">
               <BsCartX className="text-8xl text-gray-500" />
             </div>
 
@@ -117,7 +117,7 @@ const page = () => {
             <Button
               onClick={() => router.push("/products")}
               variant="outline"
-              className="bg-primary-500 text-white capitalize cursor-pointer text-lg"
+              className="bg-primary-500 dark:bg-primary-500 dark:hover:ring-2 dark:hover:ring-primary-500 dark:hover:shadow-lg dark:hover:shadow-primary-500/50   text-white capitalize cursor-pointer text-lg"
             >
               Visit Store
             </Button>
@@ -234,7 +234,7 @@ const page = () => {
                   />
                   <Button
                     variant="outline"
-                    className="bg-primary-900 text-white capitalize cursor-pointer text-lg py-5 px-4 hover:bg-primary-500 hover:text-white transition-all duration-300 ease-in-out"
+                    className="bg-primary-900 dark:bg-primary-500 dark:hover:ring-2 dark:hover:ring-primary-500 dark:hover:shadow-lg dark:hover:shadow-primary-500/50 text-white capitalize cursor-pointer text-lg py-5 px-4 hover:bg-primary-500 hover:text-white transition-all duration-300 ease-in-out"
                     onClick={handleApplyCoupon}
                     disabled={isApplying}
                   >
@@ -243,7 +243,7 @@ const page = () => {
                 </div>
                 <p
                   onClick={clearCart}
-                  className="text-sm lg:text-lg underline cursor-pointer text-primary-900 font-semibold hover:text-red-500 transition-all duration-300 ease-in-out"
+                  className="text-sm lg:text-lg underline cursor-pointer text-primary-900 dark:text-primary-500  font-semibold hover:!text-red-500 transition-all duration-300 ease-in-out"
                 >
                   x Clear Shopping Cart
                 </p>
@@ -258,7 +258,7 @@ const page = () => {
                     {appliedDiscounts.map((discount) => (
                       <div
                         key={discount._id}
-                        className="flex items-center justify-between bg-green-50 p-3 rounded-md"
+                        className="flex items-center justify-between background-light800_dark400 p-3 rounded-md"
                       >
                         <div>
                           <p className="font-medium">{discount.name}</p>
@@ -334,7 +334,7 @@ const page = () => {
               <Button
                 onClick={() => router.push("/checkout")}
                 variant="outline"
-                className="bg-primary-900 text-white capitalize cursor-pointer text-lg py-7 px-4 hover:bg-primary-500 hover:text-white transition-all duration-300 ease-in-out"
+                className="bg-primary-900 dark:bg-primary-500 dark:hover:ring-2 dark:hover:shadow-lg dark:hover:shadow-primary-500/50  dark:ring-primary-500  text-white capitalize cursor-pointer text-lg py-7 px-4 hover:bg-primary-500 hover:text-white transition-all duration-300 ease-in-out"
               >
                 Proceed to Checkout
               </Button>

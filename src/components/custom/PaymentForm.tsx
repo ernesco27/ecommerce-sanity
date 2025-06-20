@@ -161,7 +161,7 @@ export const PaymentForm = ({
                   defaultValue={field.value}
                   className="flex gap-4"
                 >
-                  <div className="flex items-center space-x-2 rounded-lg border p-4 cursor-pointer hover:bg-gray-50">
+                  <div className="flex items-center space-x-2 rounded-lg border p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-50/10">
                     <RadioGroupItem value="paystack" id="paystack" />
                     <Label
                       htmlFor="paystack"
@@ -171,7 +171,7 @@ export const PaymentForm = ({
                       Pay with Card / Bank Transfer / Mobile Money
                     </Label>
                   </div>
-                  <div className="flex items-center space-x-2 rounded-lg border p-4 cursor-pointer hover:bg-gray-50">
+                  <div className="flex items-center space-x-2 rounded-lg border p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-50/10">
                     <RadioGroupItem value="onDelivery" id="onDelivery" />
                     <Label
                       htmlFor="onDelivery"
@@ -226,7 +226,8 @@ export const PaymentForm = ({
 
         <Button
           type="submit"
-          className="w-full cursor-pointer bg-primary-500 hover:bg-primary-900 text-lg transition-all duration-300 ease-in-out"
+          variant="outline"
+          className="bg-primary-500 hover:bg-primary-900 cursor-pointer !text-white transition-all duration-300 ease-in-out dark:bg-primary-500 dark:hover:ring-2 dark:hover:ring-primary-500 dark:hover:shadow-lg dark:hover:shadow-primary-500/50 w-full"
           disabled={
             isProcessing ||
             isCreatingOrder ||

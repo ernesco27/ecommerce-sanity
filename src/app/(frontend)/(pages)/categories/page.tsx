@@ -11,6 +11,7 @@ import { useCategories } from "@/store/categoriesStore";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import Reveal from "@/components/custom/Reveal";
 type BannerResponse = Banner & {
   imageUrl: string;
   link: string;
@@ -30,9 +31,9 @@ const page = () => {
   const banner4 = banners?.[8];
 
   return (
-    <div>
+    <>
       <div
-        className="bg-gray-300 h-[300px] w-full"
+        className="bg-gray-300 h-[300px] w-full mt-[80px]"
         style={{
           backgroundImage: `url(${banner4?.imageUrl})`,
           backgroundSize: "cover",
@@ -59,46 +60,48 @@ const page = () => {
         <Services />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full mb-8">
           {categories?.map((category) => (
-            <div
-              key={category._id}
-              className="p-4 rounded-lg h-[500px] flex flex-col gap-4"
-              style={{
-                backgroundImage: `url(${category.image})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-              }}
-            >
-              <Badge className="bg-white text-black mt-4">
-                {category.productCount
-                  ? `${category.productCount}+ items`
-                  : "N/A items"}
-              </Badge>
-              <h2
-                className="text-2xl font-bold hover:text-primary-500 cursor-pointer"
-                onClick={() => router.push(`/categories/${category.slug}`)}
+            <Reveal>
+              <div
+                key={category._id}
+                className="p-4 rounded-lg h-[500px] flex flex-col gap-4"
+                style={{
+                  backgroundImage: `url(${category.image})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                }}
               >
-                {category.title}
-              </h2>
-              <p className="text-gray-600  w-[60%] text-wrap">
-                {category.description || ""}
-              </p>
-              {category?.subcategories?.map((subcategory) => (
-                <ul key={subcategory._id}>
-                  <Link
-                    href={`/categories/${category.slug}?subcategory=${subcategory.slug}`}
-                  >
-                    <li className="hover:text-primary-500">
-                      {subcategory.name}
-                    </li>
-                  </Link>
-                </ul>
-              ))}
-            </div>
+                <Badge className="bg-white text-black mt-4">
+                  {category.productCount
+                    ? `${category.productCount}+ items`
+                    : "N/A items"}
+                </Badge>
+                <h2
+                  className="text-2xl font-bold cursor-pointer dark:primary-text-gradient"
+                  onClick={() => router.push(`/categories/${category.slug}`)}
+                >
+                  {category.title}
+                </h2>
+                <p className="text-gray-600  w-[60%] text-wrap">
+                  {category.description || ""}
+                </p>
+                {category?.subcategories?.map((subcategory) => (
+                  <ul key={subcategory._id}>
+                    <Link
+                      href={`/categories/${category.slug}?subcategory=${subcategory.slug}`}
+                    >
+                      <li className="hover:!text-primary-500 dark:text-black">
+                        {subcategory.name}
+                      </li>
+                    </Link>
+                  </ul>
+                ))}
+              </div>
+            </Reveal>
           ))}
         </div>
       </Container>
       <FeaturedProducts />
-    </div>
+    </>
   );
 };
 

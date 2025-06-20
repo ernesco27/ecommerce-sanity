@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { BsCartX } from "react-icons/bs";
 
 type CheckoutStep =
   | "information"
@@ -262,8 +263,15 @@ export default function CheckoutPage() {
     return (
       <Container>
         <div className="flex flex-col items-center justify-center min-h-[400px]">
+          <div className="w-40 h-40 rounded-full background-light800_dark400 flex-center">
+            <BsCartX className="text-8xl text-gray-500" />
+          </div>
           <h1 className="text-2xl font-bold mb-4">Your cart is empty</h1>
-          <Button onClick={() => router.push("/products")}>
+          <Button
+            onClick={() => router.push("/products")}
+            variant="outline"
+            className="bg-primary-500 hover:bg-primary-900 cursor-pointer !text-white transition-all duration-300 ease-in-out dark:bg-primary-500 dark:hover:ring-2 dark:hover:ring-primary-500 dark:hover:shadow-lg dark:hover:shadow-primary-500/50"
+          >
             Continue Shopping
           </Button>
         </div>
@@ -273,7 +281,7 @@ export default function CheckoutPage() {
 
   return (
     <Container>
-      <div className="max-w-7xl mx-auto py-8">
+      <div className="max-w-7xl mx-auto py-8 mt-[80px]">
         <Steps
           steps={steps}
           currentStep={currentStep}
@@ -348,7 +356,8 @@ export default function CheckoutPage() {
               </p>
               <Button
                 onClick={() => router.push("/products")}
-                className="bg-primary-500 hover:bg-primary-900 transition-all duration-300 ease-in-out cursor-pointer"
+                variant="outline"
+                className="bg-primary-500 hover:bg-primary-900  transition-all duration-300 ease-in-out cursor-pointer"
               >
                 Continue Shopping
               </Button>
@@ -381,7 +390,8 @@ export default function CheckoutPage() {
               {currentStep === "information" && (
                 <Button
                   onClick={handleNextStep}
-                  className="bg-primary-500 hover:bg-primary-900 cursor-pointer text-white transition-all duration-300 ease-in-out"
+                  variant="outline"
+                  className="bg-primary-500 hover:bg-primary-900 cursor-pointer !text-white transition-all duration-300 ease-in-out dark:bg-primary-500 dark:hover:ring-2 dark:hover:ring-primary-500 dark:hover:shadow-lg dark:hover:shadow-primary-500/50"
                   disabled={isProcessing}
                 >
                   Continue to Shipping
@@ -390,7 +400,8 @@ export default function CheckoutPage() {
               {currentStep === "shipping" && (
                 <Button
                   onClick={handleNextStep}
-                  className="bg-primary-500 hover:bg-primary-900 text-white transition-all duration-300 ease-in-out cursor-pointer"
+                  variant="outline"
+                  className="bg-primary-500 hover:bg-primary-900 cursor-pointer !text-white transition-all duration-300 ease-in-out dark:bg-primary-500 dark:hover:ring-2 dark:hover:ring-primary-500 dark:hover:shadow-lg dark:hover:shadow-primary-500/50"
                   disabled={!checkoutData.shippingMethod || isProcessing}
                 >
                   Continue to Confirmation
@@ -399,7 +410,8 @@ export default function CheckoutPage() {
               {currentStep === "confirmation" && (
                 <Button
                   onClick={handleNextStep}
-                  className="bg-primary-500 hover:bg-primary-900 text-white transition-all duration-300 ease-in-out cursor-pointer"
+                  variant="outline"
+                  className="bg-primary-500 hover:bg-primary-900 cursor-pointer !text-white transition-all duration-300 ease-in-out dark:bg-primary-500 dark:hover:ring-2 dark:hover:ring-primary-500 dark:hover:shadow-lg dark:hover:shadow-primary-500/50"
                   disabled={isProcessing}
                 >
                   Proceed to Payment

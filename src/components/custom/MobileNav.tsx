@@ -22,8 +22,6 @@ const MobileNav = () => {
   const [userOpen, setUserOpen] = useState(false);
   const { getTotalItems } = useCartStore();
 
-  //const { items } = useCartStore();
-
   const navItems = [
     {
       name: "Home",
@@ -70,6 +68,12 @@ const MobileNav = () => {
                 key={item.name}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                transition={{
+                  type: "spring",
+                  stiffness: 120,
+                  damping: 25,
+                  mass: 0.8,
+                }}
                 className="w-1/4 flex justify-center"
               >
                 <div
@@ -94,7 +98,7 @@ const MobileNav = () => {
                     )}
                   </motion.div>
                   <motion.span
-                    className="text-xs mt-1"
+                    className="text-xs mt-1 font-medium"
                     animate={{
                       opacity: isActive ? 1 : 0.7,
                     }}

@@ -119,13 +119,13 @@ export function ShippingMethodSelector({
             key={method._id}
             className={`flex items-center space-x-4 rounded-lg border p-4 ${
               selectedMethod === method._id
-                ? "border-primary-500 bg-primary-50"
+                ? "border-primary-500 bg-primary-100 dark:bg-primary-500/20 dark:border-primary-100 "
                 : "border-gray-200"
             }`}
           >
             <RadioGroupItem value={method._id} id={method._id} />
             <Label htmlFor={method._id} className="flex-1 cursor-pointer">
-              <div className="flex justify-between">
+              <div className="flex justify-between ">
                 <div>
                   <p className="font-medium">{method.name}</p>
                   <p className="text-sm text-gray-500">{method.description}</p>

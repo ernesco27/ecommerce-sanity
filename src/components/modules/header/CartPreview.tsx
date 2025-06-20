@@ -138,7 +138,7 @@ const CartPreview = ({
               <Button
                 variant="default"
                 size="lg"
-                className="rounded-sm py-4 capitalize text-base bg-primary-900 hover:bg-primary-500 hover:text-white transition-all duration-300 ease-in-out cursor-pointer"
+                className="rounded-sm py-4 capitalize text-base bg-primary-900 hover:bg-primary-500 text-white transition-all duration-300 ease-in-out cursor-pointer"
                 onClick={handleCheckout}
                 disabled={items.length === 0}
               >

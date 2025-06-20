@@ -3,6 +3,7 @@ import React from "react";
 
 import ProductCard from "@/components/custom/ProductCard";
 import type { ProductsQueryResult } from "../../../../sanity.types";
+import Reveal from "@/components/custom/Reveal";
 
 interface ProductsContentProps {
   products: ProductsQueryResult[0][];
@@ -27,12 +28,18 @@ const ProductsContent = ({
       {products?.map((item, index) => {
         if (products.length === index + 1) {
           return (
-            <div key={item._id} ref={lastProductElementRef}>
-              <ProductCard item={item} />
-            </div>
+            <Reveal>
+              <div key={item._id} ref={lastProductElementRef}>
+                <ProductCard item={item} />
+              </div>
+            </Reveal>
           );
         } else {
-          return <ProductCard key={item._id} item={item} />;
+          return (
+            <Reveal>
+              <ProductCard key={item._id} item={item} />
+            </Reveal>
+          );
         }
       })}
     </div>
