@@ -77,7 +77,7 @@ const ProductsMainContent = ({
           lastProductElementRef={lastProductElementRef}
         />
         {loading && (
-          <div className="absolute bottom-0 left-0 right-0 flex justify-center py-4 bg-white/80">
+          <div className="absolute bottom-0 left-0 right-0 flex justify-center py-4 background-light800_dark400">
             <Loader2 className="h-6 w-6 animate-spin text-primary-500" />
           </div>
         )}

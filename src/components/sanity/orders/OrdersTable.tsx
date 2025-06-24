@@ -54,7 +54,7 @@ export default function OrdersTable() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [currentPage, setCurrentPage] = useState(0);
   const [totalOrders, setTotalOrders] = useState(0);
-  const client = useClient();
+  const client = useClient({ apiVersion: "2025-02-10" });
 
   // Fetch orders
   const fetchOrders = useCallback(async () => {
@@ -73,21 +73,44 @@ export default function OrdersTable() {
       const end = start + ITEMS_PER_PAGE;
 
       const query = `*[${baseFilter}] | order(${sortField} ${sortOrder}) [${start}...${end}] {
-        _id,
+       _id,
         orderNumber,
         createdAt,
+        status,
+        paymentStatus,
+        total,
+        tax,
+        discount,
+        subtotal,
+        shippingCost,
         "user": user->{
           _id,
           firstName,
           lastName,
         },
-        items[]{
-          "product": product->{_id, name},
-          variant,
+        "items": items[] {
+          _key,
           quantity,
-          subtotal
+          subtotal,
+          "product": product-> {
+            _id,
+            name,
+            "images": {
+              "primary": {
+                "url": images.primary.asset->url,
+                "alt": images.primary.alt
+              }
+            }
+          },
+          variant {
+            size,
+            price,
+            color
+            
+          },
+          
         },
-        "shippingAddress": shippingAddress->{
+         "shippingAddress": shippingAddress->{
           _id,
           fullName,
           addressLine1,
@@ -95,13 +118,11 @@ export default function OrdersTable() {
           city,
           state,
           postalCode,
-          country
+          country,
+          phone,
+          email,
+       
         },
-        total,
-        status,
-        paymentStatus,
-        tax,
-        discount,
       }`;
 
       const rawData = await client.fetch(query);
@@ -113,7 +134,7 @@ export default function OrdersTable() {
         const userName =
           [order.user?.firstName, order.user?.lastName]
             .filter(Boolean)
-            .join(" ") || "N/A";
+            .join(" ") || shipAddr?.fullName;
 
         return {
           _id: order._id || "missing_id",
@@ -151,6 +172,8 @@ export default function OrdersTable() {
             postalCode: shipAddr?.postalCode,
             country: shipAddr?.country,
             formatted: formatAddress(shipAddr),
+            phone: shipAddr?.phone,
+            email: shipAddr?.email,
           },
           total: order.total || 0,
           status: order.status || "pending",
@@ -251,7 +274,7 @@ export default function OrdersTable() {
           </Flex>
         ) : (
           <>
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto  ">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-100">
                   <tr>
@@ -301,7 +324,7 @@ export default function OrdersTable() {
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="  divide-y divide-gray-200  ">
                   {orders.length === 0 ? (
                     <tr>
                       <td
@@ -314,27 +337,27 @@ export default function OrdersTable() {
                   ) : (
                     orders.map((order) => (
                       <tr key={order._id}>
-                        <td className="px-6 py-4 whitespace-nowrap text-md text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-md  ">
                           {order.createdAt
                             ? format(new Date(order.createdAt), "MMM dd, yyyy")
                             : "N/A"}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-md text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-md ">
                           {order.orderNumber}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-md text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-md ">
                           {order.user?.name || "N/A"}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-md text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-md ">
                           {order.items?.length || 0} items
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-md text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-md ">
                           {order.shippingAddress?.formatted || "N/A"}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-md text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-md ">
                           GHs{(order.total || 0).toFixed(2)}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-md text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-md ">
                           <span
                             className={`px-2 inline-flex text-md leading-5 font-semibold rounded-full ${
                               order.status === "delivered"
@@ -351,7 +374,7 @@ export default function OrdersTable() {
                             {order.status}
                           </span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-md text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-md ">
                           <Flex gap={2}>
                             <Button
                               mode="ghost"

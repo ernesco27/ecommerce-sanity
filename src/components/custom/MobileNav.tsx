@@ -4,8 +4,12 @@ import React, { useState } from "react";
 
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { CiHeart, CiHome, CiShoppingCart, CiUser } from "react-icons/ci";
+
 import { BiCategory } from "react-icons/bi";
+import { MdOutlineShoppingCart } from "react-icons/md";
+import { FaRegHeart, FaRegUser } from "react-icons/fa6";
+
+import { FiHome } from "react-icons/fi";
 import Container from "./Container";
 import { motion } from "framer-motion";
 
@@ -25,7 +29,7 @@ const MobileNav = () => {
   const navItems = [
     {
       name: "Home",
-      icon: CiHome,
+      icon: FiHome,
       href: "/",
       onClick: () => router.push("/"),
     },
@@ -37,26 +41,26 @@ const MobileNav = () => {
     },
     {
       name: "Cart",
-      icon: CiShoppingCart,
+      icon: MdOutlineShoppingCart,
       href: "/cart",
       onClick: () => setCartOpen(true),
     },
     {
       name: "Wishlist",
-      icon: CiHeart,
+      icon: FaRegHeart,
       href: "/wishlist",
       onClick: () => router.push("/wishlist"),
     },
     {
       name: "Account",
-      icon: CiUser,
+      icon: FaRegUser,
       href: "/account",
       onClick: () => router.push("/account"),
     },
   ];
 
   return (
-    <nav className="bottom-0 left-0 right-0  border-t border-gray-200 lg:hidden w-full overflow-hidden background-light900_dark200 fixed z-50 shadow-light-300 dark:shadow-none">
+    <nav className="bottom-0 left-0 right-0  lg:hidden w-full overflow-hidden background-light900_dark200 fixed z-50 shadow-light-300  dark:shadow-none">
       <Container className="w-full max-w-full px-0">
         <div className="flex justify-between items-center h-16 w-full">
           {navItems.map((item) => {
@@ -90,7 +94,7 @@ const MobileNav = () => {
                     transition={{ type: "spring", stiffness: 500 }}
                     className="relative"
                   >
-                    <Icon size={24} />
+                    <Icon size={20} className="" />
                     {item.name === "Cart" && getTotalItems() > 0 && (
                       <span className="absolute -top-1 -right-1 bg-primary-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center">
                         {getTotalItems()}

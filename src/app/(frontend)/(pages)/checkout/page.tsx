@@ -169,12 +169,13 @@ export default function CheckoutPage() {
     setIsProcessing(true);
     try {
       // Process payment here
-      setCheckoutData((prev) => ({
-        ...prev,
+      const updatedCheckoutData = {
+        ...checkoutData,
         paymentMethod: paymentDetails,
-      }));
+      };
+      setCheckoutData(updatedCheckoutData);
 
-      await handleConfirmOrder();
+      await handleConfirmOrder(updatedCheckoutData);
       setCurrentStep("thankyou");
     } catch (error) {
       toast.error("Payment processing failed. Please try again.");
@@ -183,7 +184,9 @@ export default function CheckoutPage() {
     }
   };
 
-  const handleConfirmOrder = async () => {
+  const handleConfirmOrder = async (
+    currentCheckoutData: CheckoutData = checkoutData,
+  ) => {
     setIsProcessing(true);
     try {
       const response = await fetch("/api/orders", {
@@ -193,19 +196,18 @@ export default function CheckoutPage() {
         },
         body: JSON.stringify({
           items,
-          shippingAddress: checkoutData.shippingAddress,
-          billingAddress: checkoutData.billingAddress,
-          shippingMethod: checkoutData.shippingMethod,
-          paymentMethod: checkoutData.paymentMethod,
+          shippingAddress: currentCheckoutData.shippingAddress,
+          billingAddress: currentCheckoutData.billingAddress,
+          shippingMethod: currentCheckoutData.shippingMethod,
+          paymentMethod: currentCheckoutData.paymentMethod,
           paymentStatus: paymentStatus,
           subtotal: getTotalPrice(),
           total: total,
           taxAmount: getTaxAmount(),
-          //taxSettings: taxSettings,
           discountTotal: getDiscountTotal(),
           customerEmail:
             user?.emailAddresses[0]?.emailAddress ||
-            checkoutData.shippingAddress?.email,
+            currentCheckoutData.shippingAddress?.email,
         }),
       });
 

@@ -22,11 +22,30 @@ import { toast } from "sonner";
 
 import { useUser } from "@clerk/nextjs";
 
-const paymentFormSchema = z.object({
-  paymentMethod: z.enum(["paystack", "onDelivery"]),
-  fullName: z.string(),
-  email: z.string().email().optional(),
-});
+const paymentFormSchema = z
+  .object({
+    paymentMethod: z.enum(["paystack", "onDelivery"]),
+    fullName: z.string().optional(),
+    email: z.string().email().optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.paymentMethod === "paystack") {
+      if (!data.fullName) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["fullName"],
+          message: "Full name is required",
+        });
+      }
+      if (!data.email) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["email"],
+          message: "Email is required",
+        });
+      }
+    }
+  });
 
 type PaymentFormValues = z.infer<typeof paymentFormSchema>;
 
@@ -63,6 +82,7 @@ export const PaymentForm = ({
   });
 
   const handleSubmit = async (data: PaymentFormValues) => {
+    console.log("data:", data);
     if (data.paymentMethod === "onDelivery") {
       onSuccess({
         paymentMethod: "onDelivery",
@@ -70,12 +90,9 @@ export const PaymentForm = ({
         email: data.email || "",
       });
 
-      setPaymentStatus("not paid");
-      return;
-    }
+      console.log("payment onDelivery");
 
-    if (!data.email) {
-      toast.error("Email is required for payment");
+      setPaymentStatus("not paid");
       return;
     }
 
@@ -86,10 +103,6 @@ export const PaymentForm = ({
       return;
     }
 
-    console.log(
-      "Attempting to use Paystack Key from env:",
-      process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY,
-    );
     const publicKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY;
     if (!publicKey) {
       toast.error("Paystack configuration error. Please contact support.");
@@ -105,11 +118,11 @@ export const PaymentForm = ({
       await new Promise((resolve) => setTimeout(resolve, 100));
 
       const config = {
-        email: data.email,
+        email: data.email!,
         amount: Math.round(total * 100),
         publicKey: publicKey,
-        firstname: data.fullName?.split(" ")[0],
-        lastname: data.fullName?.split(" ").slice(1).join(" "),
+        firstname: data.fullName!.split(" ")[0],
+        lastname: data.fullName!.split(" ").slice(1).join(" "),
 
         onSuccess: () => {
           setTimeout(() => {
@@ -145,6 +158,7 @@ export const PaymentForm = ({
   };
 
   const selectedPaymentMethod = form.watch("paymentMethod");
+  console.log("selectedPaymentMethod:", selectedPaymentMethod);
 
   return (
     <Form {...form}>
@@ -229,9 +243,9 @@ export const PaymentForm = ({
           variant="outline"
           className="bg-primary-500 hover:bg-primary-900 cursor-pointer !text-white transition-all duration-300 ease-in-out dark:bg-primary-500 dark:hover:ring-2 dark:hover:ring-primary-500 dark:hover:shadow-lg dark:hover:shadow-primary-500/50 w-full"
           disabled={
-            isProcessing ||
-            isCreatingOrder ||
-            (selectedPaymentMethod === "onDelivery" && !isScriptLoaded)
+            isProcessing || isCreatingOrder
+            // ||
+            // (selectedPaymentMethod === "onDelivery" && !isScriptLoaded)
           }
         >
           {isCreatingOrder ? (
@@ -257,7 +271,7 @@ export const PaymentForm = ({
               }).format(total)}`
             )
           ) : (
-            "Proceed to Order Confirmation"
+            "Proceed to Place Order"
           )}
         </Button>
       </form>

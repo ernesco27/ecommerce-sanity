@@ -20,11 +20,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <>
+    <main className="background-light850_dark100">
       <Header />
       {children}
       <Footer />
       <MobileNav />
-    </>
+    </main>
   );
 }

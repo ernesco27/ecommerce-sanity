@@ -57,7 +57,7 @@ const CategoryDetail = ({ category }: CategoryDetailProps) => {
                   `px-4 py-2 rounded-full cursor-pointer`,
                   !selectedSubcategory
                     ? "bg-primary-900 text-white"
-                    : "bg-gray-100 hover:bg-gray-200",
+                    : "bg-gray-100 dark:bg-gray-100/20 dark:hover:bg-gray-100/30 hover:bg-gray-200",
                 )}
               >
                 All
@@ -70,7 +70,7 @@ const CategoryDetail = ({ category }: CategoryDetailProps) => {
                     `px-4 py-2 rounded-full cursor-pointer`,
                     selectedSubcategory === subcategory._id
                       ? "bg-primary-900 text-white"
-                      : "bg-gray-100 hover:bg-gray-200",
+                      : "bg-gray-100 dark:bg-gray-100/20 dark:hover:bg-gray-100/30 hover:bg-gray-200",
                   )}
                 >
                   {subcategory.name}

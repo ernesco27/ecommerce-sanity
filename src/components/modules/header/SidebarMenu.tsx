@@ -46,11 +46,12 @@ const SidebarMenu = ({
   return (
     <>
       <Sheet open={open} onOpenChange={setOpen}>
-        <SheetTrigger>
+        <SheetTrigger asChild>
           <CiMenuFries size={34} />
         </SheetTrigger>
         <SheetContent
-          className={cn("px-4 w-full [&>#closeBtn]:text-3xl ", "md:w-[400px]")}
+          side="left"
+          className="px-4 background-light900_dark200 border-none md:w-[400px]  [&>#closeBtn]:text-3xl "
         >
           <VisuallyHidden asChild>
             <SheetHeader>
@@ -63,7 +64,7 @@ const SidebarMenu = ({
 
           <div className="mt-10">
             <Tabs defaultValue="category">
-              <TabsList className="grid grid-cols-2 w-full">
+              <TabsList className="grid grid-cols-2 w-full tab">
                 <TabsTrigger value="category">Categories</TabsTrigger>
                 <TabsTrigger value="page">Pages</TabsTrigger>
               </TabsList>

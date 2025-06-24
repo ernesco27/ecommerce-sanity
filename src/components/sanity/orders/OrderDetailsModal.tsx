@@ -32,7 +32,9 @@ export default function OrderDetailsModal({
 }: OrderDetailsModalProps) {
   const [logoUrl, setLogoUrl] = useState<string | undefined>(undefined);
   const [loadingLogo, setLoadingLogo] = useState<boolean>(true);
-  const client = useClient();
+  const client = useClient({ apiVersion: "2025-02-10" });
+
+  console.log("sanity order:", order);
 
   useEffect(() => {
     if (isOpen) {

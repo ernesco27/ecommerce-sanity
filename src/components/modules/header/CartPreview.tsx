@@ -46,7 +46,7 @@ const CartPreview = ({
 
   return (
     <Sheet open={cartOpen} onOpenChange={setCartOpen}>
-      <SheetContent side={side}>
+      <SheetContent side={side} className="background-light900_dark200">
         <SheetHeader>
           <SheetTitle className="text-xl font-bold">
             Cart ({getTotalItems()})
@@ -54,11 +54,11 @@ const CartPreview = ({
         </SheetHeader>
 
         <div className="flex flex-col h-full justify-between gap-8">
-          <div className="flex flex-col snap-y gap-6 max-h-[360px] border-b border-gray-200 p-4 overflow-y-auto">
+          <div className="flex flex-col snap-y gap-6 max-h-[360px] lg:max-h-[500px] custom-scrollbar p-4 overflow-y-auto">
             {items.map((item) => (
               <div
                 key={`${item._id}-${item.selectedVariant._id}-${item.selectedVariant.color}`}
-                className="flex justify-between gap-4 snap-center "
+                className="flex justify-between gap-4 snap-center  border-b light-border shadow-light-300 dark:shadow-none "
               >
                 {item.selectedVariant.imageUrl && (
                   <div className="relative h-20 w-20">

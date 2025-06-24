@@ -227,7 +227,7 @@ const page = () => {
                 <div className="flex flex-col lg:flex-row gap-2 w-1/2">
                   <Input
                     placeholder="Enter coupon code"
-                    className="py-5 px-4 md:text-lg focus-visible:ring-primary-100"
+                    className="py-5 px-4 md:text-lg "
                     value={couponCode}
                     onChange={(e) => setCouponCode(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && handleApplyCoupon()}
@@ -285,9 +285,6 @@ const page = () => {
                   </div>
                 </div>
               )}
-              {/* Shipping & Billing Address */}
-
-              {/* <UserAddress /> */}
             </div>
 
             {/* Order Summary */}
@@ -296,13 +293,13 @@ const page = () => {
               <Separator className="my-4" />
               <div className="flex justify-between">
                 <p className="text-lg text-gray-500">Items</p>
-                <p className="text-lg font-semibold">{getTotalItems()}</p>
+                <p className="text-lg">{getTotalItems()}</p>
               </div>
               <div className="flex justify-between">
                 <p className="text-lg text-gray-500">Subtotal</p>
                 <CurrencyFormat
                   value={getTotalPrice()}
-                  className="text-right font-semibold"
+                  className="text-right "
                 />
               </div>
               {getDiscountTotal() > 0 && (

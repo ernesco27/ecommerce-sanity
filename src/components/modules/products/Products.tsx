@@ -40,7 +40,7 @@ const Products = ({
   className,
 }: ProductsProps & { className?: string }) => {
   return (
-    <section className="my-10">
+    <section className="my-10 ">
       <Container>
         <Row className="gap-12 items-start ">
           {/* sidebar */}
