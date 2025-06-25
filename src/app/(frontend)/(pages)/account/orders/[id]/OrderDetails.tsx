@@ -127,60 +127,63 @@ const OrderDetails = ({ id }: { id: string }) => {
 
         console.log("orders:", orders);
 
-        const sanitizedData: Order[] = orders.map((order: any): Order => {
-          const shipAddr = order.shippingAddress;
+        const sanitizedData: Order[] = orders.orders?.map(
+          (order: any): Order => {
+            const shipAddr = order.shippingAddress;
 
-          // Concatenate user's first and last name
-          const userName =
-            [order.user?.firstName, order.user?.lastName]
-              .filter(Boolean)
-              .join(" ") || "N/A";
+            // Concatenate user's first and last name
+            const userName =
+              [order.user?.firstName, order.user?.lastName]
+                .filter(Boolean)
+                .join(" ") || "N/A";
 
-          return {
-            _id: order._id || "missing_id",
-            orderNumber: order.orderNumber || "N/A",
-            createdAt: order.createdAt || new Date().toISOString(),
-            user: {
-              _id: order.user?._id || "missing_user_id",
-              name: userName,
-            },
-            items: (order.items || []).map((item: Item) => ({
-              product: {
-                _id: item?.product?._id || "missing_product_id",
-                name: item?.product?.name || "Unknown Product",
-                image: item?.product?.images?.primary?.url,
+            return {
+              _id: order._id || "missing_id",
+              orderNumber: order.orderNumber || "N/A",
+              createdAt: order.createdAt || new Date().toISOString(),
+              user: {
+                _id: order.user?._id || "missing_user_id",
+                name: userName,
               },
+              items: (order.items || []).map((item: Item) => ({
+                product: {
+                  _id: item?.product?._id || "missing_product_id",
+                  name: item?.product?.name || "Unknown Product",
+                  image: item?.product?.images?.primary?.url,
+                },
 
-              variant: {
-                //variantId: item.variant.variantId,
-                color: item.variant.color,
-                size: item.variant.size,
-                price: item.variant.price,
+                variant: {
+                  //variantId: item.variant.variantId,
+                  color: item.variant.color,
+                  size: item.variant.size,
+                  price: item.variant.price,
+                },
+                quantity: item?.quantity || 0,
+                subtotal: item?.subtotal,
+              })),
+              shippingAddress: {
+                _id: shipAddr?._id || "missing_address_id",
+                fullName: shipAddr?.fullName,
+                addressLine1: shipAddr?.addressLine1,
+                addressLine2: shipAddr?.addressLine2,
+                city: shipAddr?.city,
+                state: shipAddr?.state,
+                postalCode: shipAddr?.postalCode,
+                country: shipAddr?.country,
+                formatted: formatAddress(shipAddr),
+                phone: shipAddr?.phone,
+                email: shipAddr?.email,
               },
-              quantity: item?.quantity || 0,
-              subtotal: item?.subtotal,
-            })),
-            shippingAddress: {
-              _id: shipAddr?._id || "missing_address_id",
-              fullName: shipAddr?.fullName,
-              addressLine1: shipAddr?.addressLine1,
-              addressLine2: shipAddr?.addressLine2,
-              city: shipAddr?.city,
-              state: shipAddr?.state,
-              postalCode: shipAddr?.postalCode,
-              country: shipAddr?.country,
-              formatted: formatAddress(shipAddr),
-              phone: shipAddr?.phone,
-            },
-            total: order.total || 0,
-            status: order.status || "pending",
-            paymentStatus: order.paymentStatus || "not paid",
-            tax: order.tax || 0,
-            discount: order.discount || 0,
-            subtotal: order.subtotal || 0,
-            shippingCost: order.shippingCost || 0,
-          };
-        });
+              total: order.total || 0,
+              status: order.status || "pending",
+              paymentStatus: order.paymentStatus || "not paid",
+              tax: order.tax || 0,
+              discount: order.discount || 0,
+              subtotal: order.subtotal || 0,
+              shippingCost: order.shippingCost || 0,
+            };
+          },
+        );
 
         setOrders(sanitizedData);
       } catch (error) {

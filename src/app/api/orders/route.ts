@@ -7,90 +7,108 @@ import { v4 as uuidv4 } from "uuid";
 
 export async function GET(request: Request) {
   try {
-    const { userId } = await auth();
-    if (!userId) {
+    const { userId: clerkUserId } = await auth();
+    if (!clerkUserId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Get the Sanity user ID from the query params
     const { searchParams } = new URL(request.url);
+    const admin = searchParams.get("admin") === "true";
     const sanityUserId = searchParams.get("userId");
+    const status = searchParams.get("status") || "all";
+    const sortField = searchParams.get("sortField") || "createdAt";
+    const sortOrder = searchParams.get("sortOrder") || "desc";
+    const page = parseInt(searchParams.get("page") || "0", 10);
+    const pageSize = parseInt(searchParams.get("pageSize") || "10", 10);
+    const start = page * pageSize;
+    const end = start + pageSize;
 
-    if (!sanityUserId) {
-      return NextResponse.json(
-        { error: "Missing userId parameter" },
-        { status: 400 },
+    let baseFilter = '_type == "order"';
+    let queryParams: Record<string, any> = {};
+
+    if (!admin) {
+      // User-restricted: require userId
+      if (!sanityUserId) {
+        return NextResponse.json(
+          { error: "Missing userId parameter" },
+          { status: 400 },
+        );
+      }
+      // Verify that the requesting user owns these orders
+      const user = await client.fetch(
+        `*[_type == "user" && _id == $sanityUserId && clerkUserId == $clerkUserId][0]._id`,
+        { sanityUserId, clerkUserId },
       );
+      if (!user) {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      }
+      baseFilter += ` && user._ref == $userId`;
+      queryParams.userId = sanityUserId;
     }
 
-    // Verify that the requesting user owns these orders
-    const user = await client.fetch(
-      `*[_type == "user" && _id == $sanityUserId && clerkUserId == $clerkUserId][0]._id`,
-      { sanityUserId, clerkUserId: userId },
-    );
-
-    if (!user) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    if (status !== "all") {
+      baseFilter += ` && status == $status`;
+      queryParams.status = status;
     }
 
-    // Fetch orders for the user with all necessary details
-    const orders = await client.fetch(
-      `*[_type == "order" && user._ref == $userId] | order(createdAt desc) {
+    // Get total count for pagination
+    const countQuery = `count(*[${baseFilter}])`;
+    const totalOrders = await client.fetch(countQuery, queryParams);
+
+    // Fetch paginated data
+    const query = `*[${baseFilter}] | order(${sortField} ${sortOrder}) [${start}...${end}] {
+      _id,
+      orderNumber,
+      createdAt,
+      status,
+      paymentStatus,
+      total,
+      tax,
+      discount,
+      subtotal,
+      shippingCost,
+      "user": user->{
         _id,
-        orderNumber,
-        createdAt,
-        status,
-        paymentStatus,
-        total,
-        tax,
-        discount,
+        firstName,
+        lastName,
+      },
+      "items": items[] {
+        _key,
+        quantity,
         subtotal,
-        shippingCost,
-        "user": user->{
+        "product": product-> {
           _id,
-          firstName,
-          lastName,
-        },
-        "items": items[] {
-          _key,
-          quantity,
-          subtotal,
-          "product": product-> {
-            _id,
-            name,
-            "images": {
-              "primary": {
-                "url": images.primary.asset->url,
-                "alt": images.primary.alt
-              }
+          name,
+          "images": {
+            "primary": {
+              "url": images.primary.asset->url,
+              "alt": images.primary.alt
             }
-          },
-          variant {
-            size,
-            price,
-            color
-            
-          },
-          
+          }
         },
-         "shippingAddress": shippingAddress->{
-          _id,
-          fullName,
-          addressLine1,
-          addressLine2,
-          city,
-          state,
-          postalCode,
-          country,
-          phone,
-          email,
-       
+        variant {
+          variantId,
+          size,
+          price,
+          color
         },
-      }`,
-      { userId: sanityUserId },
-    );
+      },
+      "shippingAddress": shippingAddress->{
+        _id,
+        fullName,
+        addressLine1,
+        addressLine2,
+        city,
+        state,
+        postalCode,
+        country,
+        phone,
+        email,
+      },
+    }`;
+    const orders = await client.fetch(query, queryParams);
 
-    return NextResponse.json(orders);
+    return NextResponse.json({ orders, totalOrders });
   } catch (error) {
     console.error("Error fetching orders:", error);
     return NextResponse.json(

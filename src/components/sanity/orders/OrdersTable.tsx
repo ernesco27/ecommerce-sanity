@@ -54,81 +54,31 @@ export default function OrdersTable() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [currentPage, setCurrentPage] = useState(0);
   const [totalOrders, setTotalOrders] = useState(0);
-  const client = useClient({ apiVersion: "2025-02-10" });
+  // const client = useClient({ apiVersion: "2025-02-10" });
 
-  // Fetch orders
+  // Fetch orders from API
   const fetchOrders = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
 
-      const baseFilter = `_type == "order"${statusFilter !== "all" ? ` && status == "${statusFilter}"` : ""}`;
-
-      // Get total count for pagination
-      const count = await client.fetch(`count(*[${baseFilter}])`);
-      setTotalOrders(count);
-
-      // Fetch paginated data
-      const start = currentPage * ITEMS_PER_PAGE;
-      const end = start + ITEMS_PER_PAGE;
-
-      const query = `*[${baseFilter}] | order(${sortField} ${sortOrder}) [${start}...${end}] {
-       _id,
-        orderNumber,
-        createdAt,
-        status,
-        paymentStatus,
-        total,
-        tax,
-        discount,
-        subtotal,
-        shippingCost,
-        "user": user->{
-          _id,
-          firstName,
-          lastName,
-        },
-        "items": items[] {
-          _key,
-          quantity,
-          subtotal,
-          "product": product-> {
-            _id,
-            name,
-            "images": {
-              "primary": {
-                "url": images.primary.asset->url,
-                "alt": images.primary.alt
-              }
-            }
-          },
-          variant {
-            size,
-            price,
-            color
-            
-          },
-          
-        },
-         "shippingAddress": shippingAddress->{
-          _id,
-          fullName,
-          addressLine1,
-          addressLine2,
-          city,
-          state,
-          postalCode,
-          country,
-          phone,
-          email,
-       
-        },
-      }`;
-
-      const rawData = await client.fetch(query);
+      const pageSize = ITEMS_PER_PAGE;
+      const params = new URLSearchParams({
+        admin: "true", // Assume admin mode for now
+        status: statusFilter,
+        sortField,
+        sortOrder,
+        page: currentPage.toString(),
+        pageSize: pageSize.toString(),
+      });
+      const res = await fetch(`/api/orders?${params.toString()}`);
+      if (!res.ok) {
+        throw new Error(`Failed to fetch orders: ${res.statusText}`);
+      }
+      const data = await res.json();
 
       // Ensure all required fields are present and handle null values
-      const sanitizedData: Order[] = rawData.map((order: any): Order => {
+      const sanitizedData: Order[] = data.orders.map((order: any): Order => {
         const shipAddr = order.shippingAddress;
         // Concatenate user's first and last name
         const userName =
@@ -185,7 +135,8 @@ export default function OrdersTable() {
         };
       });
 
-      setOrders(sanitizedData);
+      setOrders(sanitizedData || []);
+      setTotalOrders(data.totalOrders || 0);
     } catch (err) {
       setError(
         err instanceof Error
@@ -196,7 +147,7 @@ export default function OrdersTable() {
     } finally {
       setIsLoading(false);
     }
-  }, [client, sortField, sortOrder, statusFilter, currentPage]);
+  }, [sortField, sortOrder, statusFilter, currentPage]);
 
   // Fetch orders on component mount and when sort/filter/page changes
   useEffect(() => {

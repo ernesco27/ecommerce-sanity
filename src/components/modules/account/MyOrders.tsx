@@ -81,6 +81,8 @@ const MyOrders = ({ user }: { user: User }) => {
     isLoading,
   } = useSWR(user ? `/api/orders?userId=${user._id}` : null, fetcher);
 
+  console.log("orders:", orders);
+
   if (isLoading) {
     return (
       <Container className="flex items-center justify-center">
@@ -122,7 +124,7 @@ const MyOrders = ({ user }: { user: User }) => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {orders.map((order: Order) => (
+              {orders.orders?.map((order: Order) => (
                 <TableRow key={order._id}>
                   <TableCell className="font-medium lg:text-lg">
                     {order.orderNumber}
