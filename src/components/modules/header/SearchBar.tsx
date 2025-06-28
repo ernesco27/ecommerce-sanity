@@ -6,15 +6,18 @@ import React, {
   useRef,
   KeyboardEvent,
   useEffect,
+  useMemo,
 } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { SearchIcon, X, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import useSWR from "swr";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import debounce from "lodash/debounce";
+import { formUrlQuery, removeKeysFromUrl } from "@/lib/url";
+import { cn } from "@/lib/utils";
 
 interface SearchProduct {
   _id: string;
@@ -75,6 +78,7 @@ const SearchBar = ({
   setOpenSearchBar: (open: boolean) => void;
 }) => {
   const router = useRouter();
+
   const [search, setSearch] = useState("");
   const [inputValue, setInputValue] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(-1);
@@ -98,7 +102,7 @@ const SearchBar = ({
   );
 
   // Sort results by search score
-  const sortedResults = React.useMemo(() => {
+  const sortedResults = useMemo(() => {
     if (!data) return [];
     return [...data].sort((a, b) => b.searchScore - a.searchScore);
   }, [data]);
@@ -177,15 +181,16 @@ const SearchBar = ({
   return (
     <Dialog open={openSearchBar} onOpenChange={setOpenSearchBar}>
       <DialogContent
-        className="lg:max-w-screen-lg z-[99999] w-[800px] [&>button]:hidden"
+        className="lg:max-w-screen-lg z-[99999] w-[800px] [&>button]:hidden background-light900_dark200 "
         onKeyDown={handleKeyDown}
       >
         <div className="flex items-center justify-center w-full gap-4">
           <SearchIcon className="w-8 h-8 text-slate-300" />
           <div className="relative flex-1">
             <Input
+              type="text"
               placeholder="Search for any product..."
-              className="text-slate-500 text-sm lg:text-lg font-medium  pr-10  focus-visible:ring-primary-100"
+              className="placeholder text-dark300_light700 text-sm lg:text-lg font-medium  pr-10 no-focus  "
               onChange={handleSearch}
               value={inputValue}
               autoFocus
@@ -257,9 +262,10 @@ const SearchBar = ({
             sortedResults?.map((product, index) => (
               <div
                 key={product._id}
-                className={`group flex flex-col justify-start gap-4 px-4 items-center cursor-pointer lg:h-fit lg:flex-row lg:justify-between hover:border-gray-50 hover:scale-102 transition-all hover:shadow-lg py-4 rounded-lg ${
-                  selectedIndex === index ? "bg-slate-100" : ""
-                }`}
+                className={cn(
+                  ` flex flex-col justify-start gap-4 px-4 items-center cursor-pointer lg:h-fit lg:flex-row lg:justify-between  hover:scale-102 transition-all hover:shadow-lg py-4 rounded-lg custom-scrollbar`,
+                  selectedIndex === index ? "background-light800_dark300" : "",
+                )}
                 role="button"
                 onClick={() => handleSelectResult(product)}
                 onMouseEnter={() => setSelectedIndex(index)}
@@ -275,7 +281,7 @@ const SearchBar = ({
                   className="object-contain"
                 />
 
-                <div className="flex-1 space-y-1 px-4">
+                <div className="flex-1 space-y-1 px-4 ">
                   <div className="text-lg">
                     {highlightMatch(product.name, search)}
                   </div>

@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { usePages } from "@/store/pagesStore";
 import { useCategories } from "@/store/categoriesStore";
 import useSWR from "swr";
+import Logo from "@/components/custom/Logo";
 
 type BannerResponse = Banner & {
   imageUrl: string;
@@ -31,7 +32,7 @@ const MainMenu = () => {
   const router = useRouter();
 
   return (
-    <section className="hidden lg:flex z-10 relative">
+    <section className="hidden lg:flex flex-center z-10 relative w-full">
       <ul className="flex-between gap-10  ">
         <li className="relative">
           <Link
@@ -147,6 +148,7 @@ const MainMenu = () => {
             )}
           </AnimatePresence>
         </li>
+        <Logo />
         {["About Us", "Contact Us"].map((title) => {
           const page = pages?.find((page) => page.title === title);
           return page ? (

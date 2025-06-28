@@ -9,6 +9,7 @@ import ProductCard from "@/components/custom/ProductCard";
 import PageHeader from "@/components/modules/products/PageHeader";
 import { useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
+import Reveal from "@/components/custom/Reveal";
 
 interface CategoryDetailProps {
   category: Category;
@@ -91,7 +92,9 @@ const CategoryDetail = ({ category }: CategoryDetailProps) => {
           ) : products && products.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {products.map((product: ProductsQueryResult[0]) => (
-                <ProductCard key={product._id} item={product} />
+                <Reveal>
+                  <ProductCard key={product._id} item={product} />
+                </Reveal>
               ))}
             </div>
           ) : (

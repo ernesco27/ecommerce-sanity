@@ -38,7 +38,7 @@ export default function RootLayout({
       </head>
       <body
         className={cn(
-          "min-h-screen  w-full max-w-full overflow-x-hidden pb-16 lg:pb-0",
+          "min-h-screen  w-full max-w-full overflow-x-hidden pb-16 lg:pb-0 custom-scrollbar",
           jost.className,
         )}
       >

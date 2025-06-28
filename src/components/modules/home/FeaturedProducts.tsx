@@ -35,7 +35,7 @@ const FeaturedProducts = () => {
             <Heading name="Featured Products" />
           </Row>
           {isLoading && (
-            <div className=" ">
+            <div>
               <Skeleton className="w-full h-[350px]" />
             </div>
           )}
@@ -59,6 +59,14 @@ const FeaturedProducts = () => {
               },
               1280: {
                 slidesPerView: 4,
+                spaceBetween: 40,
+              },
+              1440: {
+                slidesPerView: 4,
+                spaceBetween: 40,
+              },
+              1680: {
+                slidesPerView: 6,
                 spaceBetween: 40,
               },
             }}

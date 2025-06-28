@@ -50,7 +50,7 @@ const SidebarMenu = ({
           <CiMenuFries size={34} />
         </SheetTrigger>
         <SheetContent
-          side="left"
+          side="right"
           className="px-4 background-light900_dark200 border-none md:w-[400px]  [&>#closeBtn]:text-3xl "
         >
           <VisuallyHidden asChild>

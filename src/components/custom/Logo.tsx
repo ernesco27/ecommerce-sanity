@@ -26,7 +26,7 @@ const Logo = () => {
         />
       )}
 
-      <p className="hidden lg:block h2-semibold">{company?.businessName}</p>
+      {/* <p className="hidden lg:block h2-semibold">{company?.businessName}</p> */}
     </Link>
   );
 };

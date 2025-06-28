@@ -7,7 +7,7 @@ import ProductsContainer from "@/components/modules/products/ProductsContainer";
 const page = () => {
   return (
     <>
-      <PageHeader heading="Shop" link1="shop" />
+      {/* <PageHeader heading="Shop" link1="shop" /> */}
 
       <ProductsContainer />
     </>
@@ -17,7 +17,7 @@ const page = () => {
 export default page;
 
 export const metadata: Metadata = {
-  title: "Edimays Couture - Products page",
+  title: "Edimays Couture - Products Page",
   description: "Your Go To Online Fahion Store",
   icons: {
     icon: "/assets/logo.png",

@@ -70,6 +70,14 @@ const Deals = () => {
                 slidesPerView: 4,
                 spaceBetween: 40,
               },
+              1440: {
+                slidesPerView: 4,
+                spaceBetween: 40,
+              },
+              1680: {
+                slidesPerView: 6,
+                spaceBetween: 40,
+              },
             }}
             navigation={false}
             pagination={true}

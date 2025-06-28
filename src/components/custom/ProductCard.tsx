@@ -37,7 +37,7 @@ const ProductCard = ({ item }: ProductCardProps) => {
   const rating = reviewCount > 0 ? averageRating / reviewCount : 0;
 
   return (
-    <Card className="w-[340px] lg:w-[380px] mb-8 relative ">
+    <Card className="w-[340px] lg:w-[380px] mb-8 relative background-light900_dark200 ">
       {maxPrice > minPrice && (
         <Badge
           variant="default"

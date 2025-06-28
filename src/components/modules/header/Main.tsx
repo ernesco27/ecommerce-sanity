@@ -17,9 +17,11 @@ const Main = () => {
   return (
     <section className="h-full">
       <Container>
-        <Row className="flex-between">
+        <Row className="w-full justify-between">
           <MobileButton />
-          <Logo />
+          <div className="lg:hidden">
+            <Logo />
+          </div>
           <MainMenu />
           <IconsGroup
             openSearchBar={searchBarOpen}

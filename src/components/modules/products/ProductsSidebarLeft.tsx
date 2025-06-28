@@ -36,7 +36,12 @@ const ProductsSidebarLeft = ({
   };
 
   return (
-    <div className={cn("lg:max-w-[300px] h-full", className)}>
+    <div
+      className={cn(
+        "h-screen w-fit  lg:w-[350px] flex-col  background-light900_dark200 border-r-2 light-border sticky left-0 top-0 p-6 pt-20 overflow-y-auto shadow-light-300 dark:shadow-none max-sm:hidden custom-scrollbar ",
+        className,
+      )}
+    >
       <div className="flex flex-col gap-8 items-center">
         <div className="flex flex-col gap-4 items-center w-full">
           <HeadingSidebar name="Product Categories" />

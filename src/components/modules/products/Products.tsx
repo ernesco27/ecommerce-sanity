@@ -40,18 +40,17 @@ const Products = ({
   className,
 }: ProductsProps & { className?: string }) => {
   return (
-    <section className="my-10 ">
+    <section className="my-10 flex background-light800_dark100  relative ">
+      {/* sidebar */}
+      <ProductsSidebarLeft
+        filters={filters}
+        onFilterChange={onFilterChange}
+        loading={loading}
+        setLoading={setLoading}
+        className="hidden lg:flex"
+      />
       <Container>
         <Row className="gap-12 items-start ">
-          {/* sidebar */}
-          <ProductsSidebarLeft
-            filters={filters}
-            onFilterChange={onFilterChange}
-            loading={loading}
-            setLoading={setLoading}
-            className="hidden lg:flex"
-          />
-
           {/* main content */}
           <ProductsMainContent
             filters={filters}

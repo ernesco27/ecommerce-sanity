@@ -46,7 +46,7 @@ const ProductsMainContent = ({
 }: ProductsMainContentProps) => {
   return (
     <div className={cn("w-full", className)}>
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-6 mt-14">
         <MobileFilters
           filters={filters}
           onFilterChange={onFilterChange}
@@ -77,12 +77,12 @@ const ProductsMainContent = ({
           lastProductElementRef={lastProductElementRef}
         />
         {loading && (
-          <div className="absolute bottom-0 left-0 right-0 flex justify-center py-4 background-light800_dark400">
+          <div className="absolute bottom-0 left-0 right-0 flex justify-center py-4 background-light800_dark100">
             <Loader2 className="h-6 w-6 animate-spin text-primary-500" />
           </div>
         )}
         {!loading && !hasMore && products.length > 0 && (
-          <p className="text-center text-gray-500 py-4">
+          <p className="text-center text-gray-500 py-4 ">
             No more products to load
           </p>
         )}

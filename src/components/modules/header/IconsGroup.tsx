@@ -47,7 +47,7 @@ const IconsGroup = ({
   const { getTotalItems } = useCartStore();
 
   return (
-    <section>
+    <section className="">
       <Row className="gap-4">
         <SearchBar
           openSearchBar={openSearchBar}

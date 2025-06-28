@@ -6,7 +6,7 @@ import SidebarMenuContainer from "./SidebarMenuContainer";
 
 const MobileButton = () => {
   return (
-    <div className="block lg:hidden">
+    <div className=" lg:hidden flex-center">
       <SidebarMenuContainer />
     </div>
   );
