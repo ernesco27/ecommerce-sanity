@@ -11,17 +11,11 @@ import ProductsContent from "@/components/modules/products/ProductsContent";
 import type { ProductsQueryResult } from "../../../../sanity.types";
 import { Loader2 } from "lucide-react";
 import MobileFilters from "@/components/custom/MobileFilters";
-interface FilterState {
-  minPrice: number;
-  maxPrice: number;
-  selectedSizes: string[];
-  selectedColors: string[];
-  selectedCategories: string[];
-}
+import type { FilterState } from "@/hooks/useFilters";
 
 interface ProductsMainContentProps {
   filters: FilterState;
-  onFilterChange: (filterType: keyof FilterState, value: any) => void;
+  onFilterChange: (newFilters: Partial<FilterState>) => void;
   loading: boolean;
   setLoading: (v: boolean) => void;
   products: ProductsQueryResult[0][];
@@ -47,18 +41,18 @@ const ProductsMainContent = ({
   return (
     <div className={cn("w-full", className)}>
       <div className="flex justify-between items-center mb-6 mt-14">
-        <MobileFilters
+        {/* <MobileFilters
           filters={filters}
           onFilterChange={onFilterChange}
           loading={loading}
           setLoading={setLoading}
-        />
+        /> */}
         <div>
           <Select value={filter} onValueChange={setFilter}>
-            <SelectTrigger className="w-[150px] cursor-pointer ">
+            <SelectTrigger className="w-[150px] cursor-pointer background-light900_dark200 ">
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
-            <SelectContent className="mr-2">
+            <SelectContent className="mr-2 background-light900_dark200">
               <SelectItem value="latest">Latest</SelectItem>
               <SelectItem value="price_low_to_high">
                 Price: Low to High

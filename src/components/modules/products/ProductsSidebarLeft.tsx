@@ -7,17 +7,16 @@ import ProductsCatAccordion from "@/components/custom/ProductsCatAccordion";
 import SizeFilter from "@/components/custom/SizeFilter";
 import ColorFilter from "@/components/custom/ColorFilter";
 
-interface FilterState {
-  minPrice: number;
-  maxPrice: number;
-  selectedSizes: string[];
-  selectedColors: string[];
-  selectedCategories: string[];
-}
+// Use the shared FilterState interface from useFilters
+import type { FilterState } from "@/hooks/useFilters";
 
 interface ProductsSidebarLeftProps {
   filters: FilterState;
-  onFilterChange: (filterType: keyof FilterState, value: any) => void;
+  onFilterChange: (newFilters: Partial<FilterState>) => void;
+  min: number;
+  max: number;
+  step: number;
+  initialValues: [number, number];
   loading: boolean;
   setLoading: (v: boolean) => void;
   className?: string;
@@ -26,15 +25,14 @@ interface ProductsSidebarLeftProps {
 const ProductsSidebarLeft = ({
   filters,
   onFilterChange,
+  min,
+  max,
+  initialValues,
+  step,
   loading,
   setLoading,
   className,
 }: ProductsSidebarLeftProps) => {
-  const handlePriceChange = (values: [number, number]) => {
-    onFilterChange("minPrice", values[0]);
-    onFilterChange("maxPrice", values[1]);
-  };
-
   return (
     <div
       className={cn(
@@ -46,29 +44,35 @@ const ProductsSidebarLeft = ({
         <div className="flex flex-col gap-4 items-center w-full">
           <HeadingSidebar name="Product Categories" />
           <ProductsCatAccordion
-            selectedCategories={filters.selectedCategories}
+            selectedCategories={filters.selectedCategories ?? []}
             onCategoryChange={(categories) =>
-              onFilterChange("selectedCategories", categories)
+              onFilterChange({ selectedCategories: categories })
             }
           />
           <HeadingSidebar name="Price" />
           <PriceSlider
-            initialMin={filters.minPrice}
-            initialMax={filters.maxPrice}
-            onChange={handlePriceChange}
+            min={min}
+            max={max}
+            step={step}
+            initialValues={initialValues}
+            onCommit={(values) =>
+              onFilterChange({ minPrice: values[0], maxPrice: values[1] })
+            }
           />
           <Separator />
           <HeadingSidebar name="Size" />
           <SizeFilter
-            selectedSizes={filters.selectedSizes}
-            onSizeChange={(sizes) => onFilterChange("selectedSizes", sizes)}
+            selectedSizes={filters.selectedSizes ?? []}
+            onSizeChange={(sizes) => onFilterChange({ selectedSizes: sizes })}
             className="flex flex-col gap-2"
           />
           <Separator />
           <HeadingSidebar name="Color" />
           <ColorFilter
-            selectedColors={filters.selectedColors}
-            onColorChange={(colors) => onFilterChange("selectedColors", colors)}
+            selectedColors={filters.selectedColors ?? []}
+            onColorChange={(colors) =>
+              onFilterChange({ selectedColors: colors })
+            }
             className="flex flex-col ml-10"
           />
         </div>

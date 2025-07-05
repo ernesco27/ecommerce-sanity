@@ -51,13 +51,16 @@ const MobileFilters = ({
     <div className="w-full">
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild className="lg:hidden">
-          <Button variant="outline">
+          <Button
+            variant="ghost"
+            className="background-light900_dark200 text-dark400_light900 cursor-pointer"
+          >
             <Filter /> Filters
           </Button>
         </SheetTrigger>
         <SheetContent
           side="bottom"
-          className="max-h-[90vh] overflow-y-auto p-4 w-full  "
+          className="max-h-[90vh] overflow-y-auto p-4 w-full background-light900_dark200"
         >
           <SheetHeader>
             <SheetTitle className="text-xl font-bold">Filters</SheetTitle>

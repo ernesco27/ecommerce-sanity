@@ -4,24 +4,10 @@ import React, { useEffect, useState, useCallback, useRef } from "react";
 import Products from "@/components/modules/products/Products";
 import axios from "axios";
 import type { ProductsQueryResult } from "../../../../sanity.types";
-
-interface FilterState {
-  minPrice: number;
-  maxPrice: number;
-  selectedSizes: string[];
-  selectedColors: string[];
-  selectedCategories: string[];
-}
+import { useFilters, FilterState } from "@/hooks/useFilters";
 
 const ProductsContainer = () => {
-  // Filter states
-  const [filters, setFilters] = useState<FilterState>({
-    minPrice: 500,
-    maxPrice: 2000,
-    selectedSizes: [],
-    selectedColors: [],
-    selectedCategories: [],
-  });
+  const { filters, updateFilters } = useFilters();
 
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState<ProductsQueryResult[0][]>([]);
@@ -30,15 +16,12 @@ const ProductsContainer = () => {
   const [hasMore, setHasMore] = useState(true);
   const observer = useRef<IntersectionObserver | null>(null);
 
-  // Handler for updating filters
-  const handleFilterChange = (filterType: keyof FilterState, value: any) => {
-    setFilters((prev) => ({
-      ...prev,
-      [filterType]: value,
-    }));
-    setPage(1); // Reset page when filters change
-    setProducts([]); // Clear products when filters change
-  };
+  // Use a stable stringified version of filters for useEffect dependencies
+  const filtersString = JSON.stringify(filters);
+
+  // Track previous filtersString and filter to prevent infinite reset loop
+  const prevFiltersString = useRef(filtersString);
+  const prevFilter = useRef(filter);
 
   const lastProductElementRef = useCallback(
     (node: HTMLElement | null) => {
@@ -57,19 +40,28 @@ const ProductsContainer = () => {
   const fetchProducts = async (pageNumber: number) => {
     try {
       setLoading(true);
-      const params = {
+      const params: any = {
         filter,
         page: pageNumber,
         limit: 10,
-        ...filters,
-        selectedSizes: filters.selectedSizes.join(","),
-        selectedColors: filters.selectedColors.join(","),
-        selectedCategories: filters.selectedCategories.join(","),
       };
-
+      if (filters.selectedCategories && filters.selectedCategories.length > 0) {
+        params.selectedCategories = filters.selectedCategories.join(",");
+      }
+      if (filters.selectedSizes && filters.selectedSizes.length > 0) {
+        params.selectedSizes = filters.selectedSizes.join(",");
+      }
+      if (filters.selectedColors && filters.selectedColors.length > 0) {
+        params.selectedColors = filters.selectedColors.join(",");
+      }
+      if (filters.minPrice !== undefined) {
+        params.minPrice = filters.minPrice;
+      }
+      if (filters.maxPrice !== undefined) {
+        params.maxPrice = filters.maxPrice;
+      }
       const response = await axios.get("/api/products", { params });
       const newProducts = response.data;
-
       setProducts((prev) =>
         pageNumber === 1 ? newProducts : [...prev, ...newProducts],
       );
@@ -81,15 +73,31 @@ const ProductsContainer = () => {
     }
   };
 
+  // Reset page and products only if filtersString or filter actually change
+  useEffect(() => {
+    if (
+      prevFiltersString.current !== filtersString ||
+      prevFilter.current !== filter
+    ) {
+      setPage(1);
+      setProducts([]);
+      prevFiltersString.current = filtersString;
+      prevFilter.current = filter;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filtersString, filter]);
+
+  // Fetch products when page, filters, or sort order change
   useEffect(() => {
     fetchProducts(page);
-  }, [page, filters, filter]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, filtersString, filter]);
 
   return (
     <div>
       <Products
         filters={filters}
-        onFilterChange={handleFilterChange}
+        onFilterChange={updateFilters}
         loading={loading}
         setLoading={setLoading}
         filter={filter}

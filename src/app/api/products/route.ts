@@ -5,13 +5,19 @@ import { NextResponse } from "next/server";
 interface CategoryQueryResult {
   _id: string;
   _type: "category" | "subcategory";
-  parentCategoryId?: string | null; // For subcategories, this will be parent's _id
+  parentCategoryId?: string | null;
+  slug?: string;
 }
 
 interface CategoryResult {
   _id: string;
   _type: "category" | "subcategory";
   parentCategory: string | null;
+}
+
+function isSanityId(str: string) {
+  // Sanity IDs are usually 24+ chars, slugs are shorter and URL-friendly
+  return /^[a-zA-Z0-9_-]{16,}$/.test(str);
 }
 
 // Define the product query with all necessary fields
@@ -135,15 +141,54 @@ export async function GET(request: Request) {
 
     const minPrice = searchParams.get("minPrice");
     const maxPrice = searchParams.get("maxPrice");
-    const selectedSizes =
-      searchParams.get("selectedSizes")?.split(",").filter(Boolean) || [];
-    const selectedColors =
-      searchParams.get("selectedColors")?.split(",").filter(Boolean) || [];
-    const selectedCategoriesFromURL =
+    const selectedCategoriesRaw =
       searchParams.get("selectedCategories")?.split(",").filter(Boolean) || [];
+    const selectedSizesRaw =
+      searchParams.get("selectedSizes")?.split(",").filter(Boolean) || [];
+    const selectedColorsRaw =
+      searchParams.get("selectedColors")?.split(",").filter(Boolean) || [];
     const featured = searchParams.get("featured");
     const category = searchParams.get("category");
     const subcategory = searchParams.get("subcategory");
+
+    // Helper to resolve slugs to IDs for categories, sizes, and colors
+    async function resolveSlugsToIds(
+      type: string,
+      values: string[],
+    ): Promise<string[]> {
+      if (values.length === 0) return [];
+      const ids: string[] = [];
+      const slugs: string[] = [];
+      values.forEach((val) => {
+        if (isSanityId(val)) {
+          ids.push(val);
+        } else {
+          slugs.push(val);
+        }
+      });
+      if (slugs.length > 0) {
+        const slugResults = await client.fetch(
+          groq`*[_type == $type && slug.current in $slugs]{ _id, "slug": slug.current }`,
+          { type, slugs },
+        );
+        ids.push(...slugResults.map((item: any) => item._id));
+      }
+      return ids;
+    }
+
+    // Resolve category slugs/ids
+    const selectedCategories = await resolveSlugsToIds(
+      "category",
+      selectedCategoriesRaw,
+    );
+    // For subcategories, you may want to support them as well
+    const selectedSubcategories = await resolveSlugsToIds(
+      "subcategory",
+      selectedCategoriesRaw,
+    );
+    // For size and color, use the raw string values (not IDs)
+    const selectedSizes = selectedSizesRaw;
+    const selectedColors = selectedColorsRaw;
 
     const baseFilterConditions = [
       "_type == 'product'",
@@ -165,7 +210,6 @@ export async function GET(request: Request) {
           count(variants[]->colorVariants[lower(color) match "*${term}*"]) > 0
         )`,
         );
-
         baseFilterConditions.push(`(${searchConditions.join(" && ")})`);
       }
     }
@@ -188,51 +232,19 @@ export async function GET(request: Request) {
       );
     }
 
-    if (selectedCategoriesFromURL.length > 0) {
-      const categoryQueryResults: CategoryQueryResult[] = await client.fetch(
-        groq`*[_id in $ids] {
-          _id,
-          _type,
-          "parentCategoryId": select(_type == "subcategory" => parentCategory._ref, null)
-        }`,
-        { ids: selectedCategoriesFromURL },
-      );
-
-      const selectedMainCategoryIds = new Set<string>();
-      const selectedSubCategoryIds = new Set<string>();
-
-      categoryQueryResults.forEach((item) => {
-        if (item._type === "category") {
-          selectedMainCategoryIds.add(item._id);
-        } else if (item._type === "subcategory") {
-          selectedSubCategoryIds.add(item._id);
-        }
-      });
-
+    // --- CATEGORY FILTERS (support both category and subcategory IDs) ---
+    if (selectedCategories.length > 0 || selectedSubcategories.length > 0) {
       const effectiveCategoryFilterClauses: string[] = [];
-
-      if (selectedSubCategoryIds.size > 0) {
+      if (selectedSubcategories.length > 0) {
         effectiveCategoryFilterClauses.push(
-          `count(subcategory[_ref in [${Array.from(selectedSubCategoryIds)
-            .map((id) => `"${id}"`)
-            .join(",")}]]) > 0`,
+          `count(subcategory[_ref in [${selectedSubcategories.map((id) => `"${id}"`).join(",")} ]]) > 0`,
         );
       }
-
-      selectedMainCategoryIds.forEach((mainCatId) => {
-        const hasDirectlySelectedChildSubcategory = categoryQueryResults.some(
-          (item) =>
-            item._type === "subcategory" &&
-            item.parentCategoryId === mainCatId &&
-            selectedSubCategoryIds.has(item._id),
+      if (selectedCategories.length > 0) {
+        effectiveCategoryFilterClauses.push(
+          `category._ref in [${selectedCategories.map((id) => `"${id}"`).join(",")}]`,
         );
-        if (!hasDirectlySelectedChildSubcategory) {
-          effectiveCategoryFilterClauses.push(
-            `category._ref == "${mainCatId}"`,
-          );
-        }
-      });
-
+      }
       if (effectiveCategoryFilterClauses.length > 0) {
         baseFilterConditions.push(
           `(${effectiveCategoryFilterClauses.join(" || ")})`,
@@ -240,18 +252,18 @@ export async function GET(request: Request) {
       }
     }
 
+    // --- SIZE FILTERS ---
     if (selectedSizes.length > 0) {
       baseFilterConditions.push(
-        `count(variants[]->[size in [${selectedSizes.map((size) => `"${size}"`).join(",")} ]]) > 0`,
+        `count(variants[]->[size in [${selectedSizes.map((size) => `"${size}"`).join(",")}]]) > 0`,
       );
     }
-
+    // --- COLOR FILTERS ---
     if (selectedColors.length > 0) {
       baseFilterConditions.push(
         `count(variants[]->colorVariants[color in [${selectedColors.map((color) => `"${color}"`).join(",")}]]) > 0`,
       );
     }
-
     if (featured === "true") {
       baseFilterConditions.push("featured == true");
     }

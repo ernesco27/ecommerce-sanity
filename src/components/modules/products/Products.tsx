@@ -6,18 +6,19 @@ import React from "react";
 import ProductsSidebarLeft from "@/components/modules/products/ProductsSidebarLeft";
 import ProductsMainContent from "@/components/modules/products/ProductsMainContent";
 import type { ProductsQueryResult } from "../../../../sanity.types";
+import { useFilters, FilterState } from "@/hooks/useFilters";
 
-interface FilterState {
-  minPrice: number;
-  maxPrice: number;
-  selectedSizes: string[];
-  selectedColors: string[];
-  selectedCategories: string[];
-}
+// interface FilterState {
+//   minPrice: number;
+//   maxPrice: number;
+//   selectedSizes: string[];
+//   selectedColors: string[];
+//   selectedCategories: string[];
+// }
 
 interface ProductsProps {
   filters: FilterState;
-  onFilterChange: (filterType: keyof FilterState, value: any) => void;
+  onFilterChange: (newFilters: Partial<FilterState>) => void;
   loading: boolean;
   setLoading: (v: boolean) => void;
   filter: string;
@@ -25,6 +26,7 @@ interface ProductsProps {
   products: ProductsQueryResult[0][];
   lastProductElementRef: (node: HTMLElement | null) => void;
   hasMore: boolean;
+  className?: string;
 }
 
 const Products = ({
@@ -38,13 +40,24 @@ const Products = ({
   lastProductElementRef,
   hasMore,
   className,
-}: ProductsProps & { className?: string }) => {
+}: ProductsProps) => {
+  // Define default/fallback values for the slider
+  const MIN_PRICE = 500;
+  const MAX_PRICE = 5000;
+
   return (
-    <section className="my-10 flex background-light800_dark100  relative ">
+    <section className=" flex background-light800_dark100  relative ">
       {/* sidebar */}
       <ProductsSidebarLeft
         filters={filters}
         onFilterChange={onFilterChange}
+        min={MIN_PRICE}
+        max={MAX_PRICE}
+        step={100}
+        initialValues={[
+          filters.minPrice ?? MIN_PRICE,
+          filters.maxPrice ?? MAX_PRICE,
+        ]}
         loading={loading}
         setLoading={setLoading}
         className="hidden lg:flex"
