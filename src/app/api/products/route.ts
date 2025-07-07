@@ -2,132 +2,10 @@ import { client } from "@/sanity/lib/client";
 import { groq } from "next-sanity";
 import { NextResponse } from "next/server";
 
-interface CategoryQueryResult {
-  _id: string;
-  _type: "category" | "subcategory";
-  parentCategoryId?: string | null;
-  slug?: string;
-}
-
-interface CategoryResult {
-  _id: string;
-  _type: "category" | "subcategory";
-  parentCategory: string | null;
-}
-
 function isSanityId(str: string) {
   // Sanity IDs are usually 24+ chars, slugs are shorter and URL-friendly
   return /^[a-zA-Z0-9_-]{16,}$/.test(str);
 }
-
-// Define the product query with all necessary fields
-const productsQuery = groq`*[_type == "product" && !(_id in path("drafts.**")) && status == "active"] {
-  _id,
-  _createdAt,
-  name,
-  "slug": slug.current,
-  description,
-  fullDescription,
-  materialType,
-  status,
-  featured,
-  visibility {
-    isVisible,
-    publishDate,
-    unpublishDate
-  },
-  "category": category->{
-    _id,
-    title,
-    "slug": slug.current
-  },
-  "subcategories": subcategory[]->{
-    _id,
-    name,
-    "slug": slug.current,
-    "parentCategory": parentCategory->{
-      _id,
-      title
-    }
-  },
-  "brand": brand->{
-    _id,
-    name,
-    "slug": slug.current
-  },
-  "images": {
-    "primary": images.primary{
-      "url": asset->url,
-      alt,
-      "lqip": asset->metadata.lqip,
-      "dimensions": asset->metadata.dimensions
-    },
-    "gallery": images.gallery[]{
-      "url": asset->url,
-      alt,
-      "lqip": asset->metadata.lqip,
-      "dimensions": asset->metadata.dimensions
-    }
-  },
-  "variants": variants[]->{
-    _id,
-    size,
-    price,
-    compareAtPrice,
-    sku,
-    colorVariants[] {
-      color,
-      colorCode,
-      stock,
-      "images": images[]{
-        "url": asset->url,
-        alt,
-        "lqip": asset->metadata.lqip,
-        "dimensions": asset->metadata.dimensions
-      }
-    }
-  },
-  "pricing": {
-    "min": coalesce((variants[]->price)[0], 0),
-    "max": coalesce((variants[]->price)[-1], 0)
-  },
-  "reviews": reviews[]->{
-    _id,
-    _createdAt,
-    reviewTitle,
-    reviewDetails,
-    rating,
-    verifiedPurchase,
-    "user": user->{
-      _id,
-      firstName,
-      lastName,
-      email,
-      isEmailVerified,
-      "photo": photo.asset->
-    },
-    "images": images[]->{
-      _id,
-      title,
-      altText,
-      "images": images[]{
-        "asset": {
-          "url": asset->url
-        }
-      }
-    }
-  },
-  "relatedProducts": relatedProducts[]->{ 
-    _id,
-    name,
-    "slug": slug.current,
-    "primaryImage": images.primary{
-      "url": asset->url,
-      alt,
-      "lqip": asset->metadata.lqip
-    }
-  }
-} | order(coalesce((variants[]->price)[0], 0) asc)`;
 
 export async function GET(request: Request) {
   try {
@@ -143,8 +21,7 @@ export async function GET(request: Request) {
     const maxPrice = searchParams.get("maxPrice");
     const selectedCategoriesRaw =
       searchParams.get("selectedCategories")?.split(",").filter(Boolean) || [];
-    const selectedSizesRaw =
-      searchParams.get("selectedSizes")?.split(",").filter(Boolean) || [];
+
     const selectedColorsRaw =
       searchParams.get("selectedColors")?.split(",").filter(Boolean) || [];
     const featured = searchParams.get("featured");
@@ -187,7 +64,7 @@ export async function GET(request: Request) {
       selectedCategoriesRaw,
     );
     // For size and color, use the raw string values (not IDs)
-    const selectedSizes = selectedSizesRaw;
+    //const selectedSizes = selectedSizesRaw;
     const selectedColors = selectedColorsRaw;
 
     const baseFilterConditions = [
@@ -253,11 +130,20 @@ export async function GET(request: Request) {
     }
 
     // --- SIZE FILTERS ---
-    if (selectedSizes.length > 0) {
+    const selectedSizesRaw =
+      searchParams.get("selectedSizes")?.split(",").filter(Boolean) || [];
+
+    if (selectedSizesRaw.length > 0) {
+      // Prepare the array for a direct, case-sensitive comparison. No .toLowerCase().
+      const sizesArray = `[${selectedSizesRaw.map((s) => `"${s}"`).join(",")}]`;
+
+      // This subquery performs a direct, case-sensitive match.
+      // It is the most precise query for your confirmed data structure.
       baseFilterConditions.push(
-        `count(variants[]->[size in [${selectedSizes.map((size) => `"${size}"`).join(",")}]]) > 0`,
+        `count(*[_type == "productVariant" && _id in ^.variants[]._ref && size in ${sizesArray}]) > 0`,
       );
     }
+
     // --- COLOR FILTERS ---
     if (selectedColors.length > 0) {
       baseFilterConditions.push(
@@ -269,6 +155,8 @@ export async function GET(request: Request) {
     }
 
     const finalFilterConditions = baseFilterConditions.join(" && ");
+
+    console.log("Executing GROQ filter:", finalFilterConditions);
 
     const orderBy =
       filter === "latest"

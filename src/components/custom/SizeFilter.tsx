@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 import React from "react";
 
-const SIZES = ["S", "M", "L", "XL", "XXL", "XXXL"];
+const SIZES = ["S", "M", "L", "XL", "2XL", "3XL"];
 
 interface SizeFilterProps {
   selectedSizes: string[];

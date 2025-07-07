@@ -19,6 +19,7 @@ export const productVariantType = defineType({
           { title: "Large", value: "L" },
           { title: "Extra Large", value: "XL" },
           { title: "2XL", value: "2XL" },
+          { title: "3XL", value: "3XL" },
         ],
       },
     }),
