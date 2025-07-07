@@ -68,6 +68,13 @@ const Products = ({
           <ProductsMainContent
             filters={filters}
             onFilterChange={onFilterChange}
+            min={MIN_PRICE}
+            max={MAX_PRICE}
+            step={100}
+            initialValues={[
+              filters.minPrice ?? MIN_PRICE,
+              filters.maxPrice ?? MAX_PRICE,
+            ]}
             loading={loading}
             setLoading={setLoading}
             products={products}

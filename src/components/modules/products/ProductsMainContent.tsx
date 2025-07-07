@@ -16,19 +16,28 @@ import type { FilterState } from "@/hooks/useFilters";
 interface ProductsMainContentProps {
   filters: FilterState;
   onFilterChange: (newFilters: Partial<FilterState>) => void;
+  min: number;
+  max: number;
+  step: number;
+  initialValues: [number, number];
   loading: boolean;
   setLoading: (v: boolean) => void;
-  products: ProductsQueryResult[0][];
+  className?: string;
   filter: string;
   setFilter: (v: string) => void;
+  products: ProductsQueryResult[0][];
   lastProductElementRef: (node: HTMLElement | null) => void;
   hasMore: boolean;
-  className?: string;
 }
 
 const ProductsMainContent = ({
   filters,
+
   onFilterChange,
+  min,
+  max,
+  initialValues,
+  step,
   loading,
   setLoading,
   products,
@@ -41,12 +50,16 @@ const ProductsMainContent = ({
   return (
     <div className={cn("w-full", className)}>
       <div className="flex justify-between items-center mb-6 mt-14">
-        {/* <MobileFilters
+        <MobileFilters
           filters={filters}
           onFilterChange={onFilterChange}
+          min={min}
+          max={max}
+          initialValues={initialValues}
+          step={step}
           loading={loading}
           setLoading={setLoading}
-        /> */}
+        />
         <div>
           <Select value={filter} onValueChange={setFilter}>
             <SelectTrigger className="w-[150px] cursor-pointer background-light900_dark200 ">

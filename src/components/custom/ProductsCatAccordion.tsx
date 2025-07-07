@@ -372,18 +372,10 @@ const ProductsCatAccordion = ({
   selectedCategories,
   onCategoryChange,
 }: ProductsCatAccordionProps) => {
-  // These states are internal to the component and are perfectly fine to keep.
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
 
-  // 2. REMOVED: All router and searchParams hooks are gone.
-  // const searchParams = useSearchParams();
-  // const router = useRouter();
-  // const [selectedCategories, setSelectedCategories] = useState(...)
-
-  // 3. The complex selection logic is PRESERVED, but simplified.
   const handleCategoryClick = (categorySlug: string, parentSlug?: string) => {
-    // The starting point is now the `selectedCategories` from props, not local state.
     let newSelectedCategories: string[];
 
     if (selectedCategories.includes(categorySlug)) {
@@ -430,7 +422,6 @@ const ProductsCatAccordion = ({
 
     const finalSelected = [...new Set(newSelectedCategories)];
 
-    // 4. INSTEAD of updating local state and the URL, just call the parent.
     onCategoryChange(finalSelected);
   };
 
@@ -450,8 +441,6 @@ const ProductsCatAccordion = ({
     getCategories();
   }, []);
 
-  // 5. The JSX uses `selectedCategories` from props to render the checked state.
-  //    No changes are needed here, as it will now automatically react to prop changes.
   return (
     <>
       {loading ? (
@@ -468,6 +457,7 @@ const ProductsCatAccordion = ({
                     checked={selectedCategories.includes(item.slug)}
                     onCheckedChange={() => handleCategoryClick(item.slug)}
                     onClick={(e) => e.stopPropagation()}
+                    className=""
                   />
                   <Label htmlFor={item._id} className="text-xl font-medium">
                     {item.title}

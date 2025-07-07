@@ -156,8 +156,6 @@ export async function GET(request: Request) {
 
     const finalFilterConditions = baseFilterConditions.join(" && ");
 
-    console.log("Executing GROQ filter:", finalFilterConditions);
-
     const orderBy =
       filter === "latest"
         ? "| order(_createdAt desc)"
