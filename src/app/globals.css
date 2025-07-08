@@ -320,6 +320,13 @@ body {
   );
 }
 
+@utility primary-text-image {
+  background: url("/notfound.webp") center/cover no-repeat;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
 @utility primary-text-gradient {
   background: linear-gradient(129deg, #d97706 0%, #fcd34d 100%);
   background-clip: text;
