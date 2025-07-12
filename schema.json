@@ -326,6 +326,213 @@
     }
   },
   {
+    "name": "taxSettings",
+    "type": "document",
+    "attributes": {
+      "_id": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        }
+      },
+      "_type": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+          "value": "taxSettings"
+        }
+      },
+      "_createdAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        }
+      },
+      "_updatedAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        }
+      },
+      "_rev": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        }
+      },
+      "isEnabled": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "boolean"
+        },
+        "optional": true
+      },
+      "defaultRate": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "number"
+        },
+        "optional": true
+      },
+      "taxRules": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "array",
+          "of": {
+            "type": "object",
+            "attributes": {
+              "name": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "string"
+                },
+                "optional": true
+              },
+              "rate": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "number"
+                },
+                "optional": true
+              },
+              "regions": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "array",
+                  "of": {
+                    "type": "string"
+                  }
+                },
+                "optional": true
+              },
+              "isDefault": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "boolean"
+                },
+                "optional": true
+              }
+            },
+            "rest": {
+              "type": "object",
+              "attributes": {
+                "_key": {
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "optional": true
+      },
+      "exemptCategories": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "array",
+          "of": {
+            "type": "object",
+            "attributes": {
+              "_ref": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "string"
+                }
+              },
+              "_type": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "string",
+                  "value": "reference"
+                }
+              },
+              "_weak": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "boolean"
+                },
+                "optional": true
+              }
+            },
+            "dereferencesTo": "category",
+            "rest": {
+              "type": "object",
+              "attributes": {
+                "_key": {
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "optional": true
+      },
+      "exemptProducts": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "array",
+          "of": {
+            "type": "object",
+            "attributes": {
+              "_ref": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "string"
+                }
+              },
+              "_type": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "string",
+                  "value": "reference"
+                }
+              },
+              "_weak": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "boolean"
+                },
+                "optional": true
+              }
+            },
+            "dereferencesTo": "product",
+            "rest": {
+              "type": "object",
+              "attributes": {
+                "_key": {
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "optional": true
+      },
+      "taxIncluded": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "boolean"
+        },
+        "optional": true
+      },
+      "displayTax": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "boolean"
+        },
+        "optional": true
+      }
+    }
+  },
+  {
     "name": "companySettings",
     "type": "document",
     "attributes": {
@@ -4228,6 +4435,200 @@
     }
   },
   {
+    "name": "shippingMethod",
+    "type": "document",
+    "attributes": {
+      "_id": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        }
+      },
+      "_type": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+          "value": "shippingMethod"
+        }
+      },
+      "_createdAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        }
+      },
+      "_updatedAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        }
+      },
+      "_rev": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        }
+      },
+      "name": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "description": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "price": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "number"
+        },
+        "optional": true
+      },
+      "estimatedDays": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "isAvailable": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "boolean"
+        },
+        "optional": true
+      }
+    }
+  },
+  {
+    "name": "payment",
+    "type": "document",
+    "attributes": {
+      "_id": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        }
+      },
+      "_type": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+          "value": "payment"
+        }
+      },
+      "_createdAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        }
+      },
+      "_updatedAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        }
+      },
+      "_rev": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        }
+      },
+      "paymentMethod": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "union",
+          "of": [
+            {
+              "type": "string",
+              "value": "credit_card"
+            },
+            {
+              "type": "string",
+              "value": "paypal"
+            },
+            {
+              "type": "string",
+              "value": "bank_transfer"
+            },
+            {
+              "type": "string",
+              "value": "cod"
+            }
+          ]
+        },
+        "optional": true
+      },
+      "amount": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "number"
+        },
+        "optional": true
+      },
+      "currency": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "status": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "union",
+          "of": [
+            {
+              "type": "string",
+              "value": "pending"
+            },
+            {
+              "type": "string",
+              "value": "completed"
+            },
+            {
+              "type": "string",
+              "value": "failed"
+            },
+            {
+              "type": "string",
+              "value": "refunded"
+            }
+          ]
+        },
+        "optional": true
+      },
+      "transactionId": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "paymentDate": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "notes": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      }
+    }
+  },
+  {
     "name": "orderItem",
     "type": "document",
     "attributes": {
@@ -4454,28 +4855,88 @@
           "of": {
             "type": "object",
             "attributes": {
-              "_ref": {
+              "product": {
                 "type": "objectAttribute",
                 "value": {
-                  "type": "string"
-                }
+                  "type": "object",
+                  "attributes": {
+                    "_ref": {
+                      "type": "objectAttribute",
+                      "value": {
+                        "type": "string"
+                      }
+                    },
+                    "_type": {
+                      "type": "objectAttribute",
+                      "value": {
+                        "type": "string",
+                        "value": "reference"
+                      }
+                    },
+                    "_weak": {
+                      "type": "objectAttribute",
+                      "value": {
+                        "type": "boolean"
+                      },
+                      "optional": true
+                    }
+                  },
+                  "dereferencesTo": "product"
+                },
+                "optional": true
               },
-              "_type": {
+              "variant": {
                 "type": "objectAttribute",
                 "value": {
-                  "type": "string",
-                  "value": "reference"
-                }
+                  "type": "object",
+                  "attributes": {
+                    "variantId": {
+                      "type": "objectAttribute",
+                      "value": {
+                        "type": "string"
+                      },
+                      "optional": true
+                    },
+                    "color": {
+                      "type": "objectAttribute",
+                      "value": {
+                        "type": "string"
+                      },
+                      "optional": true
+                    },
+                    "size": {
+                      "type": "objectAttribute",
+                      "value": {
+                        "type": "string"
+                      },
+                      "optional": true
+                    },
+                    "price": {
+                      "type": "objectAttribute",
+                      "value": {
+                        "type": "number"
+                      },
+                      "optional": true
+                    }
+                  }
+                },
+                "optional": true
               },
-              "_weak": {
+              "quantity": {
                 "type": "objectAttribute",
                 "value": {
-                  "type": "boolean"
+                  "type": "number"
+                },
+                "optional": true
+              },
+              "subtotal": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "number"
                 },
                 "optional": true
               }
             },
-            "dereferencesTo": "orderItem",
             "rest": {
               "type": "object",
               "attributes": {
@@ -4488,42 +4949,6 @@
               }
             }
           }
-        },
-        "optional": true
-      },
-      "totalAmount": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "number"
-        },
-        "optional": true
-      },
-      "status": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "union",
-          "of": [
-            {
-              "type": "string",
-              "value": "pending"
-            },
-            {
-              "type": "string",
-              "value": "processing"
-            },
-            {
-              "type": "string",
-              "value": "shipped"
-            },
-            {
-              "type": "string",
-              "value": "delivered"
-            },
-            {
-              "type": "string",
-              "value": "cancelled"
-            }
-          ]
         },
         "optional": true
       },
@@ -4587,252 +5012,108 @@
         },
         "optional": true
       },
-      "paymentInfo": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "object",
-          "attributes": {
-            "_ref": {
-              "type": "objectAttribute",
-              "value": {
-                "type": "string"
-              }
-            },
-            "_type": {
-              "type": "objectAttribute",
-              "value": {
-                "type": "string",
-                "value": "reference"
-              }
-            },
-            "_weak": {
-              "type": "objectAttribute",
-              "value": {
-                "type": "boolean"
-              },
-              "optional": true
-            }
-          },
-          "dereferencesTo": "payment"
-        },
-        "optional": true
-      },
       "shippingMethod": {
         "type": "objectAttribute",
         "value": {
           "type": "object",
           "attributes": {
-            "_ref": {
+            "id": {
               "type": "objectAttribute",
               "value": {
                 "type": "string"
-              }
+              },
+              "optional": true
             },
-            "_type": {
+            "name": {
               "type": "objectAttribute",
               "value": {
-                "type": "string",
-                "value": "reference"
-              }
+                "type": "string"
+              },
+              "optional": true
             },
-            "_weak": {
+            "price": {
               "type": "objectAttribute",
               "value": {
-                "type": "boolean"
+                "type": "number"
+              },
+              "optional": true
+            },
+            "estimatedDays": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "string"
               },
               "optional": true
             }
-          },
-          "dereferencesTo": "shippingMethod"
-        },
-        "optional": true
-      },
-      "orderNotes": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string"
-        },
-        "optional": true
-      },
-      "createdAt": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string"
-        },
-        "optional": true
-      },
-      "updatedAt": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string"
-        },
-        "optional": true
-      }
-    }
-  },
-  {
-    "name": "shippingMethod",
-    "type": "document",
-    "attributes": {
-      "_id": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string"
-        }
-      },
-      "_type": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string",
-          "value": "shippingMethod"
-        }
-      },
-      "_createdAt": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string"
-        }
-      },
-      "_updatedAt": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string"
-        }
-      },
-      "_rev": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string"
-        }
-      },
-      "name": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string"
-        },
-        "optional": true
-      },
-      "description": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string"
-        },
-        "optional": true
-      },
-      "price": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "number"
-        },
-        "optional": true
-      },
-      "estimatedDays": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "number"
-        },
-        "optional": true
-      },
-      "isAvailable": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "boolean"
-        },
-        "optional": true
-      },
-      "restrictions": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "array",
-          "of": {
-            "type": "string"
           }
         },
         "optional": true
-      },
-      "countries": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "array",
-          "of": {
-            "type": "string"
-          }
-        },
-        "optional": true
-      }
-    }
-  },
-  {
-    "name": "payment",
-    "type": "document",
-    "attributes": {
-      "_id": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string"
-        }
-      },
-      "_type": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string",
-          "value": "payment"
-        }
-      },
-      "_createdAt": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string"
-        }
-      },
-      "_updatedAt": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string"
-        }
-      },
-      "_rev": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string"
-        }
       },
       "paymentMethod": {
         "type": "objectAttribute",
         "value": {
-          "type": "union",
-          "of": [
-            {
-              "type": "string",
-              "value": "credit_card"
+          "type": "object",
+          "attributes": {
+            "type": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "union",
+                "of": [
+                  {
+                    "type": "string",
+                    "value": "card"
+                  },
+                  {
+                    "type": "string",
+                    "value": "paypal"
+                  }
+                ]
+              },
+              "optional": true
             },
-            {
-              "type": "string",
-              "value": "paypal"
+            "lastFourDigits": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "string"
+              },
+              "optional": true
             },
-            {
-              "type": "string",
-              "value": "bank_transfer"
-            },
-            {
-              "type": "string",
-              "value": "cod"
+            "cardType": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "string"
+              },
+              "optional": true
             }
-          ]
+          }
         },
         "optional": true
       },
-      "amount": {
+      "subtotal": {
         "type": "objectAttribute",
         "value": {
           "type": "number"
         },
         "optional": true
       },
-      "currency": {
+      "shippingCost": {
         "type": "objectAttribute",
         "value": {
-          "type": "string"
+          "type": "number"
+        },
+        "optional": true
+      },
+      "tax": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "number"
+        },
+        "optional": true
+      },
+      "total": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "number"
         },
         "optional": true
       },
@@ -4847,7 +5128,40 @@
             },
             {
               "type": "string",
-              "value": "completed"
+              "value": "processing"
+            },
+            {
+              "type": "string",
+              "value": "shipped"
+            },
+            {
+              "type": "string",
+              "value": "delivered"
+            },
+            {
+              "type": "string",
+              "value": "cancelled"
+            },
+            {
+              "type": "string",
+              "value": "refunded"
+            }
+          ]
+        },
+        "optional": true
+      },
+      "paymentStatus": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "union",
+          "of": [
+            {
+              "type": "string",
+              "value": "pending"
+            },
+            {
+              "type": "string",
+              "value": "paid"
             },
             {
               "type": "string",
@@ -4861,21 +5175,21 @@
         },
         "optional": true
       },
-      "transactionId": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string"
-        },
-        "optional": true
-      },
-      "paymentDate": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string"
-        },
-        "optional": true
-      },
       "notes": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "createdAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "updatedAt": {
         "type": "objectAttribute",
         "value": {
           "type": "string"
@@ -5219,40 +5533,47 @@
         },
         "optional": true
       },
-      "notes": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string"
-        },
-        "optional": true
-      },
       "variant": {
         "type": "objectAttribute",
         "value": {
           "type": "object",
           "attributes": {
-            "_ref": {
+            "variantId": {
               "type": "objectAttribute",
               "value": {
                 "type": "string"
-              }
+              },
+              "optional": true
             },
-            "_type": {
+            "color": {
               "type": "objectAttribute",
               "value": {
-                "type": "string",
-                "value": "reference"
-              }
+                "type": "string"
+              },
+              "optional": true
             },
-            "_weak": {
+            "size": {
               "type": "objectAttribute",
               "value": {
-                "type": "boolean"
+                "type": "string"
+              },
+              "optional": true
+            },
+            "price": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "number"
               },
               "optional": true
             }
-          },
-          "dereferencesTo": "productVariant"
+          }
+        },
+        "optional": true
+      },
+      "quantity": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "number"
         },
         "optional": true
       },
@@ -6186,6 +6507,50 @@
           "type": "string"
         },
         "optional": true
+      },
+      "addresses": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "array",
+          "of": {
+            "type": "object",
+            "attributes": {
+              "_ref": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "string"
+                }
+              },
+              "_type": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "string",
+                  "value": "reference"
+                }
+              },
+              "_weak": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "boolean"
+                },
+                "optional": true
+              }
+            },
+            "dereferencesTo": "address",
+            "rest": {
+              "type": "object",
+              "attributes": {
+                "_key": {
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "optional": true
       }
     }
   },
@@ -6852,6 +7217,10 @@
             {
               "type": "string",
               "value": "2XL"
+            },
+            {
+              "type": "string",
+              "value": "3XL"
             }
           ]
         },
@@ -6914,6 +7283,30 @@
                     {
                       "type": "string",
                       "value": "brown"
+                    },
+                    {
+                      "type": "string",
+                      "value": "pink"
+                    },
+                    {
+                      "type": "string",
+                      "value": "purple"
+                    },
+                    {
+                      "type": "string",
+                      "value": "orange"
+                    },
+                    {
+                      "type": "string",
+                      "value": "yellow"
+                    },
+                    {
+                      "type": "string",
+                      "value": "gold"
+                    },
+                    {
+                      "type": "string",
+                      "value": "silver"
                     }
                   ]
                 },
@@ -7844,50 +8237,12 @@
         },
         "optional": true
       },
-      "taxInfo": {
+      "tags": {
         "type": "objectAttribute",
         "value": {
-          "type": "object",
-          "attributes": {
-            "taxCategory": {
-              "type": "objectAttribute",
-              "value": {
-                "type": "union",
-                "of": [
-                  {
-                    "type": "string",
-                    "value": "standard"
-                  },
-                  {
-                    "type": "string",
-                    "value": "reduced"
-                  },
-                  {
-                    "type": "string",
-                    "value": "zero"
-                  },
-                  {
-                    "type": "string",
-                    "value": "exempt"
-                  }
-                ]
-              },
-              "optional": true
-            },
-            "taxRate": {
-              "type": "objectAttribute",
-              "value": {
-                "type": "number"
-              },
-              "optional": true
-            },
-            "hsnCode": {
-              "type": "objectAttribute",
-              "value": {
-                "type": "string"
-              },
-              "optional": true
-            }
+          "type": "array",
+          "of": {
+            "type": "string"
           }
         },
         "optional": true

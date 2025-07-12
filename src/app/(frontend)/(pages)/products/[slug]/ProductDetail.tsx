@@ -23,6 +23,8 @@ export default function ProductDetail({ slug }: ProductDetailProps) {
     fetcher,
   );
 
+  console.log("product:", product);
+
   useEffect(() => {
     if (product?._id) {
       // Get userId from session/cookie if available

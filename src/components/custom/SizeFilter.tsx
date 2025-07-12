@@ -9,11 +9,11 @@ interface SizeFilterProps {
   className?: string;
 }
 
-const SizeFilter: React.FC<SizeFilterProps> = ({
+const SizeFilter = ({
   selectedSizes,
   onSizeChange,
   className,
-}) => {
+}: SizeFilterProps) => {
   const toggleSize = (size: string) => {
     if (selectedSizes.includes(size)) {
       onSizeChange(selectedSizes.filter((s) => s !== size));

@@ -5,16 +5,8 @@ import Row from "@/components/custom/Row";
 import React from "react";
 import ProductsSidebarLeft from "@/components/modules/products/ProductsSidebarLeft";
 import ProductsMainContent from "@/components/modules/products/ProductsMainContent";
-import type { ProductsQueryResult } from "../../../../sanity.types";
+import type { Product } from "../../../../sanity.types";
 import { useFilters, FilterState } from "@/hooks/useFilters";
-
-// interface FilterState {
-//   minPrice: number;
-//   maxPrice: number;
-//   selectedSizes: string[];
-//   selectedColors: string[];
-//   selectedCategories: string[];
-// }
 
 interface ProductsProps {
   filters: FilterState;
@@ -23,7 +15,7 @@ interface ProductsProps {
   setLoading: (v: boolean) => void;
   filter: string;
   setFilter: (v: string) => void;
-  products: ProductsQueryResult[0][];
+  products: Product[];
   lastProductElementRef: (node: HTMLElement | null) => void;
   hasMore: boolean;
   className?: string;

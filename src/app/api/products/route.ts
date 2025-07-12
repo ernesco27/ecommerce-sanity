@@ -27,6 +27,7 @@ export async function GET(request: Request) {
     const featured = searchParams.get("featured");
     const category = searchParams.get("category");
     const subcategory = searchParams.get("subcategory");
+    const tag = searchParams.get("tag");
 
     // Helper to resolve slugs to IDs for categories, sizes, and colors
     async function resolveSlugsToIds(
@@ -150,11 +151,20 @@ export async function GET(request: Request) {
         `count(variants[]->colorVariants[color in [${selectedColors.map((color) => `"${color}"`).join(",")}]]) > 0`,
       );
     }
+
+    // TAG FILTER
+
+    if (tag) {
+      baseFilterConditions.push(`defined(tags) && "${tag}" in tags`);
+    }
+
     if (featured === "true") {
       baseFilterConditions.push("featured == true");
     }
 
     const finalFilterConditions = baseFilterConditions.join(" && ");
+
+    console.log("finalfilter", finalFilterConditions);
 
     const orderBy =
       filter === "latest"

@@ -32,6 +32,7 @@ import { PortableText } from "@portabletext/react";
 import { useCartStore } from "@/store/cartStore";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
+import TagsCard from "@/components/custom/TagsCard";
 type ColorName =
   | "red"
   | "green"
@@ -283,7 +284,7 @@ const ProductData = ({ product }: { product: Product }) => {
     }
 
     const selectedColorVariant = selectedVariant.colorVariants?.find(
-      (cv: ColorVariant) => cv.color === selectedColor,
+      (cv) => cv.color === selectedColor,
     );
 
     return selectedColorVariant?.stock || 0;
@@ -339,7 +340,7 @@ const ProductData = ({ product }: { product: Product }) => {
     }
 
     const selectedColorVariant = selectedVariant.colorVariants?.find(
-      (cv: ColorVariant) => cv.color === selectedColor,
+      (cv) => cv.color === selectedColor,
     );
 
     return selectedColorVariant?.images;
@@ -502,6 +503,11 @@ const ProductData = ({ product }: { product: Product }) => {
                 SKU:
                 {selectedVariant?.sku || "Select size and color to see SKU"}
               </p>
+              <div className="flex gap-2 mt-4">
+                <span>Tags:</span>
+                {product.tags &&
+                  product.tags.map((tag) => <TagsCard key={tag} tag={tag} />)}
+              </div>
             </div>
           </div>
         </div>

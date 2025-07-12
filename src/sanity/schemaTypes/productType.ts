@@ -215,36 +215,43 @@ export const productType = defineType({
         }),
       ],
     }),
+    // defineField({
+    //   name: "taxInfo",
+    //   title: "Tax Information",
+    //   type: "object",
+    //   fields: [
+    //     defineField({
+    //       name: "taxCategory",
+    //       title: "Tax Category",
+    //       type: "string",
+    //       options: {
+    //         list: [
+    //           { title: "Standard Rate", value: "standard" },
+    //           { title: "Reduced Rate", value: "reduced" },
+    //           { title: "Zero Rate", value: "zero" },
+    //           { title: "Exempt", value: "exempt" },
+    //         ],
+    //       },
+    //     }),
+    //     defineField({
+    //       name: "taxRate",
+    //       title: "Tax Rate (%)",
+    //       type: "number",
+    //     }),
+    //     defineField({
+    //       name: "hsnCode",
+    //       title: "HSN/SAC Code",
+    //       type: "string",
+    //       description: "Harmonized System Nomenclature code",
+    //     }),
+    //   ],
+    // }),
     defineField({
-      name: "taxInfo",
-      title: "Tax Information",
-      type: "object",
-      fields: [
-        defineField({
-          name: "taxCategory",
-          title: "Tax Category",
-          type: "string",
-          options: {
-            list: [
-              { title: "Standard Rate", value: "standard" },
-              { title: "Reduced Rate", value: "reduced" },
-              { title: "Zero Rate", value: "zero" },
-              { title: "Exempt", value: "exempt" },
-            ],
-          },
-        }),
-        defineField({
-          name: "taxRate",
-          title: "Tax Rate (%)",
-          type: "number",
-        }),
-        defineField({
-          name: "hsnCode",
-          title: "HSN/SAC Code",
-          type: "string",
-          description: "Harmonized System Nomenclature code",
-        }),
-      ],
+      name: "tags",
+      title: "Tags",
+      type: "array",
+      of: [{ type: "string" }],
+      description: "Tags for products in common",
     }),
     defineField({
       name: "reviews",

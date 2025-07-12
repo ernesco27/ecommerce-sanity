@@ -8,6 +8,7 @@ export interface FilterState {
   selectedCategories?: string[];
   selectedSizes?: string[];
   selectedColors?: string[];
+  tag?: string;
   // Add other filters here, e.g., selectedSizes, selectedColors
 }
 
@@ -27,6 +28,7 @@ export const useFilters = () => {
       selectedCategories: searchParams.getAll("category"),
       selectedSizes: searchParams.getAll("size"),
       selectedColors: searchParams.getAll("color"),
+      tag: searchParams.get("tag") ?? undefined,
     };
   }, [searchParams]);
 
@@ -62,6 +64,11 @@ export const useFilters = () => {
           currentParams.delete("maxPrice");
           if (value !== undefined) {
             currentParams.set("maxPrice", String(value));
+          }
+        } else if (key === "tag") {
+          currentParams.delete("tag");
+          if (value !== undefined) {
+            currentParams.set("tag", String(value));
           }
         }
       });

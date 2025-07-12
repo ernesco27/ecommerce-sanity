@@ -13,7 +13,7 @@ const NotFound = () => {
           404
         </p>
         <p className=" text-2xl lg:text-4xl mb-4">Oops! Page not Found</p>
-        <p className=" text-[11px] lg:text-md mb-6">
+        <p className=" text-[11px] lg:text-lg mb-6">
           The page you're looking for cannot be found.
         </p>
         <Button

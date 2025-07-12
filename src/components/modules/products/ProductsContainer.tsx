@@ -3,14 +3,14 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import Products from "@/components/modules/products/Products";
 import axios from "axios";
-import type { ProductsQueryResult } from "../../../../sanity.types";
-import { useFilters, FilterState } from "@/hooks/useFilters";
+import type { Product } from "../../../../sanity.types";
+import { useFilters } from "@/hooks/useFilters";
 
 const ProductsContainer = () => {
   const { filters, updateFilters } = useFilters();
 
   const [loading, setLoading] = useState(false);
-  const [products, setProducts] = useState<ProductsQueryResult[0][]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [filter, setFilter] = useState<string>("latest");
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -60,6 +60,10 @@ const ProductsContainer = () => {
       if (filters.maxPrice !== undefined) {
         params.maxPrice = filters.maxPrice;
       }
+      if (filters.tag !== undefined) {
+        params.tag = filters.tag;
+      }
+
       const response = await axios.get("/api/products", { params });
       const newProducts = response.data;
       setProducts((prev) =>

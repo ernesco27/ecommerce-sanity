@@ -20,6 +20,7 @@ export async function GET(
         materialType,
         status,
         featured,
+        tags,
         visibility {
           isVisible,
           publishDate,
@@ -111,7 +112,8 @@ export async function GET(
             alt,
             "lqip": asset->metadata.lqip
           }
-        }
+        },
+       
       }`,
       { slug },
     );
