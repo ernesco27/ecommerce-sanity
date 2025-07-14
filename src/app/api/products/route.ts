@@ -28,6 +28,9 @@ export async function GET(request: Request) {
     const category = searchParams.get("category");
     const subcategory = searchParams.get("subcategory");
     const tag = searchParams.get("tag");
+    const deal = searchParams.get("deal");
+
+    console.log("deal:", deal);
 
     // Helper to resolve slugs to IDs for categories, sizes, and colors
     async function resolveSlugsToIds(
@@ -160,6 +163,10 @@ export async function GET(request: Request) {
 
     if (featured === "true") {
       baseFilterConditions.push("featured == true");
+    }
+
+    if (deal === "true") {
+      baseFilterConditions.push("deal == true");
     }
 
     const finalFilterConditions = baseFilterConditions.join(" && ");

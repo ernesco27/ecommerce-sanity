@@ -9,7 +9,9 @@ const Row = ({
   className?: string;
 }) => {
   return (
-    <div className={cn("flex items-center h-full", className)}>{children}</div>
+    <div className={cn("flex items-center h-full w-full", className)}>
+      {children}
+    </div>
   );
 };
 

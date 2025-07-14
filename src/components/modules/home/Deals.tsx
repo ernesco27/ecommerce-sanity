@@ -14,8 +14,9 @@ import "swiper/css/pagination";
 
 import { Skeleton } from "@/components/ui/skeleton";
 import ProductCardTwo from "@/components/custom/ProductCardTwo";
-import { ProductsQueryResult } from "../../../../sanity.types";
+import { Product } from "../../../../sanity.types";
 import Reveal from "@/components/custom/Reveal";
+import Link from "next/link";
 
 const Deals = () => {
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
@@ -26,7 +27,7 @@ const Deals = () => {
     data: products,
     error,
     isLoading,
-  } = useSWR<ProductsQueryResult>("/api/products?limit=10", fetcher);
+  } = useSWR<Product[]>("/api/products?deal=true&limit=10", fetcher);
 
   const handleClick = (link: string) => {
     router.push(link);
@@ -36,9 +37,15 @@ const Deals = () => {
     <Reveal>
       <section className="py-10 ">
         <Container>
-          <Row className="mb-10">
+          <Row className="mb-10 justify-between ">
             <Heading name="Today Deals" />
             <Countdown date={Date.now() + 1000000} className="text-2xl" />
+            <Link
+              href="/products?deal=true"
+              className="paragraph-semibold hover:text-primary-500"
+            >
+              View All
+            </Link>
           </Row>
           <h3 className="py-2 font-normal text-lg lg:text-2xl">
             Deals of the Day

@@ -7605,6 +7605,13 @@
         },
         "optional": true
       },
+      "deal": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "boolean"
+        },
+        "optional": true
+      },
       "description": {
         "type": "objectAttribute",
         "value": {

@@ -13,8 +13,9 @@ import Row from "@/components/custom/Row";
 import Heading from "@/components/custom/Heading";
 
 import { Skeleton } from "@/components/ui/skeleton";
-import type { ProductsQueryResult } from "../../../../sanity.types";
+import type { Product } from "../../../../sanity.types";
 import Reveal from "@/components/custom/Reveal";
+import Link from "next/link";
 
 const FeaturedProducts = () => {
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
@@ -23,7 +24,7 @@ const FeaturedProducts = () => {
     data: products,
     error,
     isLoading,
-  } = useSWR<ProductsQueryResult>("/api/products?featured=true", fetcher);
+  } = useSWR<Product[]>("/api/products?featured=true&limit=10", fetcher);
 
   if (error) return <div>error fetching featured products</div>;
 
@@ -31,8 +32,14 @@ const FeaturedProducts = () => {
     <Reveal>
       <section className="py-10 ">
         <Container>
-          <Row className="mb-10">
+          <Row className="mb-10 justify-between">
             <Heading name="Featured Products" />
+            <Link
+              href="/products?featured=true"
+              className="paragraph-semibold hover:text-primary-500"
+            >
+              View All
+            </Link>
           </Row>
           {isLoading && (
             <div>

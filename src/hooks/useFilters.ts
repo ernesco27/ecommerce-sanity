@@ -9,6 +9,7 @@ export interface FilterState {
   selectedSizes?: string[];
   selectedColors?: string[];
   tag?: string;
+  deal?: string;
   // Add other filters here, e.g., selectedSizes, selectedColors
 }
 
@@ -29,6 +30,7 @@ export const useFilters = () => {
       selectedSizes: searchParams.getAll("size"),
       selectedColors: searchParams.getAll("color"),
       tag: searchParams.get("tag") ?? undefined,
+      deal: searchParams.get("deal") ?? undefined,
     };
   }, [searchParams]);
 
@@ -69,6 +71,10 @@ export const useFilters = () => {
           currentParams.delete("tag");
           if (value !== undefined) {
             currentParams.set("tag", String(value));
+          }
+        } else if (key === "deal") {
+          if (value !== undefined) {
+            currentParams.set("deal", String(value));
           }
         }
       });

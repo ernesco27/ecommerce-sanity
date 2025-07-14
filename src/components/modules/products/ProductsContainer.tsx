@@ -63,6 +63,9 @@ const ProductsContainer = () => {
       if (filters.tag !== undefined) {
         params.tag = filters.tag;
       }
+      if (filters.deal !== undefined) {
+        params.deal = filters.deal;
+      }
 
       const response = await axios.get("/api/products", { params });
       const newProducts = response.data;

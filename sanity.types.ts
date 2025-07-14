@@ -1177,6 +1177,7 @@ export type Product = {
     unpublishDate?: string;
   };
   featured?: boolean;
+  deal?: boolean;
   description?: string;
   materialType?: string;
   fullDescription?: Array<{

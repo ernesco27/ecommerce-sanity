@@ -78,6 +78,13 @@ export const productType = defineType({
       initialValue: false,
     }),
     defineField({
+      name: "deal",
+      type: "boolean",
+      title: "Product Deals",
+      description: "Display this product in deals sections",
+      initialValue: false,
+    }),
+    defineField({
       name: "description",
       title: "Short Description",
       type: "text",
