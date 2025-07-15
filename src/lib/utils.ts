@@ -36,3 +36,19 @@ export const formatAddress = (
   ].filter(Boolean); // Filter out null/undefined/empty strings
   return parts.join(", ") || "N/A";
 };
+
+export const formatPriceRange = (
+  min: number | undefined,
+  max: number | undefined,
+) => {
+  if (min !== undefined && max !== undefined) {
+    return `GHC${min} - GHC${max}`;
+  }
+  if (min !== undefined) {
+    return `Over $${min}`;
+  }
+  if (max !== undefined) {
+    return `Under $${max}`;
+  }
+  return ""; // Should not happen if logic is correct
+};

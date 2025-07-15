@@ -1,3 +1,4 @@
+import handleError from "@/lib/handlers/error";
 import { client } from "@/sanity/lib/client";
 import { groq } from "next-sanity";
 import { NextResponse } from "next/server";
@@ -29,8 +30,6 @@ export async function GET(request: Request) {
     const subcategory = searchParams.get("subcategory");
     const tag = searchParams.get("tag");
     const deal = searchParams.get("deal");
-
-    console.log("deal:", deal);
 
     // Helper to resolve slugs to IDs for categories, sizes, and colors
     async function resolveSlugsToIds(
@@ -296,7 +295,8 @@ export async function GET(request: Request) {
       },
     });
   } catch (error) {
-    console.error("Error fetching products:", error);
+    handleError(error, "api") as APIErrorResponse;
+    //console.error("Error fetching products:", error);
     return NextResponse.json(
       { error: "Failed to fetch products" },
       { status: 500 },

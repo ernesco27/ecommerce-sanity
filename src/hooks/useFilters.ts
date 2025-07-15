@@ -73,6 +73,7 @@ export const useFilters = () => {
             currentParams.set("tag", String(value));
           }
         } else if (key === "deal") {
+          currentParams.delete("deal");
           if (value !== undefined) {
             currentParams.set("deal", String(value));
           }

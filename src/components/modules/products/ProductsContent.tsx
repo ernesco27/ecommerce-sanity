@@ -2,11 +2,11 @@ import { ShoppingBasket } from "lucide-react";
 import React from "react";
 
 import ProductCard from "@/components/custom/ProductCard";
-import type { ProductsQueryResult } from "../../../../sanity.types";
+import type { Product } from "../../../../sanity.types";
 import Reveal from "@/components/custom/Reveal";
 
 interface ProductsContentProps {
-  products: ProductsQueryResult[0][];
+  products: Product[];
   lastProductElementRef: (node: HTMLElement | null) => void;
 }
 
@@ -28,7 +28,7 @@ const ProductsContent = ({
       {products?.map((item, index) => {
         if (products.length === index + 1) {
           return (
-            <Reveal>
+            <Reveal key={item._id}>
               <div key={item._id} ref={lastProductElementRef}>
                 <ProductCard item={item} />
               </div>
@@ -36,7 +36,7 @@ const ProductsContent = ({
           );
         } else {
           return (
-            <Reveal>
+            <Reveal key={item._id}>
               <ProductCard key={item._id} item={item} />
             </Reveal>
           );

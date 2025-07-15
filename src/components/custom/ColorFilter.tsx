@@ -24,11 +24,11 @@ interface ColorFilterProps {
   className?: string;
 }
 
-const ColorFilter: React.FC<ColorFilterProps> = ({
+const ColorFilter = ({
   selectedColors,
   onColorChange,
   className,
-}) => {
+}: ColorFilterProps) => {
   const toggleColor = (colorName: string) => {
     if (selectedColors.includes(colorName)) {
       onColorChange(selectedColors.filter((c) => c !== colorName));
