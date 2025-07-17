@@ -266,13 +266,13 @@ export const productType = defineType({
       of: [{ type: "reference", to: [{ type: "productReview" }] }],
       title: "Reviews",
     }),
-    defineField({
-      name: "relatedProducts",
-      type: "array",
-      of: [{ type: "reference", to: [{ type: "product" }] }],
-      title: "Related Products",
-      validation: (Rule) => Rule.unique(),
-    }),
+    // defineField({
+    //   name: "relatedProducts",
+    //   type: "array",
+    //   of: [{ type: "reference", to: [{ type: "product" }] }],
+    //   title: "Related Products",
+    //   validation: (Rule) => Rule.unique(),
+    // }),
     defineField({
       name: "stockSummary",
       type: "object",

@@ -13,13 +13,13 @@ import { Badge } from "@/components/ui/badge";
 import Tooltip from "@mui/material/Tooltip";
 import { Button } from "../ui/button";
 import CurrencyFormat from "./CurrencyFormat";
-import type { ProductsQueryResult } from "../../../sanity.types";
+import type { Product } from "../../../sanity.types";
 
 type ProductCardProps = {
-  item: ProductsQueryResult[0];
+  item: Product[];
 };
 
-const ProductCard = ({ item }: ProductCardProps) => {
+const ProductCard = ({ item }: { item: Product }) => {
   const router = useRouter();
 
   // Calculate min and max prices from variants

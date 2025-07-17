@@ -340,7 +340,7 @@ export const structure = (S: StructureBuilder) =>
             "blockContent",
             "reviewImage",
             "orderItem",
-            "relatedProduct",
+            // "relatedProduct",
             "productVariantValue",
             "productAttribute",
             "page",

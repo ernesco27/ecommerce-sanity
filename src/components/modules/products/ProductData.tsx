@@ -5,7 +5,7 @@ import CurrencyFormat from "@/components/custom/CurrencyFormat";
 import CustomButton from "@/components/custom/CustomButton";
 
 //import ProductVariants from "@/components/custom/ProductVariants";
-import FeaturedProducts from "@/components/modules/home/FeaturedProducts";
+
 //import { Product, ProductItem, ProductItemVariantValue } from "@/types";
 import { Heart, Loader2, Star } from "lucide-react";
 import Link from "next/link";
@@ -33,6 +33,8 @@ import { useCartStore } from "@/store/cartStore";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import TagsCard from "@/components/custom/TagsCard";
+import RelatedProducts from "./RelatedProducts";
+
 type ColorName =
   | "red"
   | "green"
@@ -514,7 +516,7 @@ const ProductData = ({ product }: { product: Product }) => {
       </Container>
       <ProductInfo product={product} />
 
-      <FeaturedProducts />
+      <RelatedProducts product={product} />
 
       <Services />
     </>

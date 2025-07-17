@@ -12,7 +12,7 @@ import { productReviewType } from "./reviewsType";
 import { userType } from "./userType";
 import { reviewImageType } from "./reviewImages";
 import { productWishlistType } from "./wishListType";
-import { relatedProduct } from "./relatedProductType";
+
 import { orderType } from "./orderType";
 import { orderItemType } from "./orderItemType";
 import { addressType } from "./addressType";
@@ -43,7 +43,7 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     userType,
     reviewImageType,
     productWishlistType,
-    relatedProduct,
+
     orderType,
     orderItemType,
     addressType,
