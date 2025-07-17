@@ -222,37 +222,6 @@ export const productType = defineType({
         }),
       ],
     }),
-    // defineField({
-    //   name: "taxInfo",
-    //   title: "Tax Information",
-    //   type: "object",
-    //   fields: [
-    //     defineField({
-    //       name: "taxCategory",
-    //       title: "Tax Category",
-    //       type: "string",
-    //       options: {
-    //         list: [
-    //           { title: "Standard Rate", value: "standard" },
-    //           { title: "Reduced Rate", value: "reduced" },
-    //           { title: "Zero Rate", value: "zero" },
-    //           { title: "Exempt", value: "exempt" },
-    //         ],
-    //       },
-    //     }),
-    //     defineField({
-    //       name: "taxRate",
-    //       title: "Tax Rate (%)",
-    //       type: "number",
-    //     }),
-    //     defineField({
-    //       name: "hsnCode",
-    //       title: "HSN/SAC Code",
-    //       type: "string",
-    //       description: "Harmonized System Nomenclature code",
-    //     }),
-    //   ],
-    // }),
     defineField({
       name: "tags",
       title: "Tags",
@@ -266,13 +235,6 @@ export const productType = defineType({
       of: [{ type: "reference", to: [{ type: "productReview" }] }],
       title: "Reviews",
     }),
-    // defineField({
-    //   name: "relatedProducts",
-    //   type: "array",
-    //   of: [{ type: "reference", to: [{ type: "product" }] }],
-    //   title: "Related Products",
-    //   validation: (Rule) => Rule.unique(),
-    // }),
     defineField({
       name: "stockSummary",
       type: "object",
