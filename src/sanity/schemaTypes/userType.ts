@@ -7,17 +7,35 @@ export const userType = defineType({
   title: "User",
   icon: UserIcon,
   fields: [
+    // defineField({
+    //   name: "firstName",
+    //   type: "string",
+    //   title: "First Name",
+    //   validation: (Rule) => Rule.required(),
+    // }),
+    // defineField({
+    //   name: "lastName",
+    //   type: "string",
+    //   title: "Last Name",
+    //   validation: (Rule) => Rule.required(),
+    // }),
     defineField({
-      name: "firstName",
+      name: "name",
       type: "string",
-      title: "First Name",
+      title: "Name",
       validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: "lastName",
+      name: "username",
       type: "string",
-      title: "Last Name",
+      title: "Username",
       validation: (Rule) => Rule.required(),
+    }),
+
+    defineField({
+      name: "image",
+      type: "string",
+      title: "Image",
     }),
     defineField({
       name: "email",
@@ -272,6 +290,12 @@ export const userType = defineType({
       title: "Addresses",
       of: [{ type: "reference", to: [{ type: "address" }] }],
       description: "User's shipping and billing addresses",
+    }),
+    defineField({
+      name: "accounts",
+      title: "Accounts",
+      type: "array",
+      of: [{ type: "reference", to: [{ type: "account" }] }],
     }),
   ],
   preview: {

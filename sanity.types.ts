@@ -125,6 +125,7 @@ export type CompanySettings = {
       _ref: string;
       _type: "reference";
       _weak?: boolean;
+      url: "string";
       [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
     };
     media?: unknown;
@@ -979,14 +980,31 @@ export type ProductReview = {
   lastModified?: string;
 };
 
+export type Account = {
+  _id: string;
+  _type: "account";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  user: User;
+  name: string;
+  image?: string;
+  password?: string;
+  provider: string;
+  providerAccountId: string;
+};
+
 export type User = {
   _id: string;
   _type: "user";
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
-  firstName?: string;
-  lastName?: string;
+  // firstName?: string;
+  // lastName?: string;
+  name: string;
+  username: string;
+  image?: string;
   email?: string;
   phone?: string;
   accountStatus?: "active" | "inactive" | "suspended" | "pending";
@@ -1057,6 +1075,7 @@ export type User = {
     _key: string;
     [internalGroqTypeReferenceTo]?: "address";
   }>;
+  accounts?: Account[];
 };
 
 export type Discount = {
@@ -1211,135 +1230,6 @@ export type ProductVariant = {
   };
 };
 
-export type RelatedProduct = {
-  _id: string;
-  _type: "product";
-  _createdAt: string;
-  _updatedAt: string;
-  _rev: string;
-  name?: string;
-  slug?: Slug;
-  status?: "draft" | "active" | "discontinued" | "scheduled";
-  visibility?: {
-    isVisible?: boolean;
-    publishDate?: string;
-    unpublishDate?: string;
-  };
-  featured?: boolean;
-  deal?: boolean;
-  description?: string;
-  materialType?: string;
-  fullDescription?: Array<
-    | {
-        children?: Array<{
-          marks?: Array<string>;
-          text?: string;
-          _type: "span";
-          _key: string;
-        }>;
-        style?: "normal" | "h1" | "h2" | "h3" | "h4" | "blockquote";
-        listItem?: "bullet";
-        markDefs?: Array<{
-          href?: string;
-          _type: "link";
-          _key: string;
-        }>;
-        level?: number;
-        _type: "block";
-        _key: string;
-      }
-    | {
-        asset?: {
-          _ref: string;
-          _type: "reference";
-          _weak?: boolean;
-          [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-        };
-        media?: unknown;
-        hotspot?: SanityImageHotspot;
-        crop?: SanityImageCrop;
-        alt?: string;
-        _type: "image";
-        _key: string;
-      }
-  >;
-  images?: {
-    primary?: {
-      asset?: {
-        _ref: string;
-        _type: "reference";
-        _weak?: boolean;
-        [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-      };
-      media?: unknown;
-      hotspot?: SanityImageHotspot;
-      crop?: SanityImageCrop;
-      alt?: string;
-      _type: "image";
-    };
-    gallery?: Array<{
-      asset?: {
-        _ref: string;
-        _type: "reference";
-        _weak?: boolean;
-        [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-      };
-      media?: unknown;
-      hotspot?: SanityImageHotspot;
-      crop?: SanityImageCrop;
-      alt?: string;
-      _type: "image";
-      _key: string;
-    }>;
-  };
-  variants?: Array<{
-    _ref: string;
-    _type: "reference";
-    _weak?: boolean;
-    _key: string;
-    [internalGroqTypeReferenceTo]?: "productVariant";
-  }>;
-  category?: {
-    _ref: string;
-    _type: "reference";
-    _weak?: boolean;
-    [internalGroqTypeReferenceTo]?: "category";
-  };
-  subcategory?: Array<{
-    _ref: string;
-    _type: "reference";
-    _weak?: boolean;
-    _key: string;
-    [internalGroqTypeReferenceTo]?: "subcategory";
-  }>;
-  brand?: {
-    _ref: string;
-    _type: "reference";
-    _weak?: boolean;
-    [internalGroqTypeReferenceTo]?: "brand";
-  };
-  seo?: {
-    metaTitle?: string;
-    metaDescription?: string;
-    keywords?: Array<string>;
-    canonicalUrl?: string;
-  };
-  tags?: Array<string>;
-  reviews?: Array<{
-    _ref: string;
-    _type: "reference";
-    _weak?: boolean;
-    _key: string;
-    [internalGroqTypeReferenceTo]?: "productReview";
-  }>;
-  stockSummary?: {
-    totalStock?: number;
-    lowStockVariants?: number;
-    outOfStockVariants?: number;
-    lastUpdated?: string;
-  };
-};
-
 export type Product = {
   _id: string;
   _type: "product";
@@ -1467,7 +1357,6 @@ export type Product = {
     outOfStockVariants?: number;
     lastUpdated?: string;
   };
-  relatedProducts?: RelatedProduct[];
 };
 
 export type Brand = {

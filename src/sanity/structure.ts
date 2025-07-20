@@ -58,26 +58,10 @@ export const structure = (S: StructureBuilder) =>
                 .icon(ShoppingCart)
                 .child(S.documentTypeList("product")),
 
-              // S.listItem()
-              //   .title("Subcategories")
-              //   .icon(TagIcon)
-              //   .child(S.documentTypeList("subcategory")),
               S.listItem()
                 .title("Brands")
                 .icon(Landmark)
                 .child(S.documentTypeList("brand")),
-              // S.listItem()
-              //   .title("Product Variants")
-              //   .schemaType("productVariant")
-              //   .child(S.documentTypeList("productVariant")),
-              // S.listItem()
-              //   .title("Product Images")
-              //   .icon(ImageIcon)
-              //   .child(S.documentTypeList("productImage")),
-              // S.listItem()
-              //   .title("Related Products")
-              //   .icon(ImageIcon)
-              //   .child(S.documentTypeList("relatedProduct")),
             ]),
         ),
 
@@ -166,6 +150,10 @@ export const structure = (S: StructureBuilder) =>
                 .title("Shopping Carts")
                 .icon(ShoppingCart)
                 .child(S.documentTypeList("cart")),
+              S.listItem()
+                .title("Accounts")
+                .icon(UserIcon)
+                .child(S.documentTypeList("account")),
             ]),
         ),
 
@@ -226,13 +214,6 @@ export const structure = (S: StructureBuilder) =>
                 .title("Shipping Methods")
                 .icon(Truck)
                 .child(S.documentTypeList("shippingMethod")),
-              // S.listItem()
-              //   .title("Payment Settings")
-              //   .schemaType("payment")
-              //   .child(S.documentTypeList("payment")),
-              // S.listItem()
-              //   .title("Addresses")
-              //   .child(S.documentTypeList("address")),
             ]),
         ),
 
@@ -349,6 +330,7 @@ export const structure = (S: StructureBuilder) =>
             "role",
             "companySettings",
             "taxSettings",
+            "account",
           ].includes(listItem.getId() ?? ""),
       ),
     ]);

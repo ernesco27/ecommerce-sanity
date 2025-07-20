@@ -22,6 +22,10 @@ import { useUser, SignOutButton, SignInButton } from "@clerk/nextjs";
 import { BiBox, BiHeart } from "react-icons/bi";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Theme from "@/components/modules/header/Theme";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import Image from "next/image";
+import ROUTES from "../../../../constants/route";
 
 const IconsGroup = ({
   openSearchBar,
@@ -41,10 +45,9 @@ const IconsGroup = ({
   cartItemsCount?: number;
 }) => {
   const router = useRouter();
+  const { getTotalItems } = useCartStore();
 
   const { user } = useUser();
-
-  const { getTotalItems } = useCartStore();
 
   return (
     <section className="">
@@ -136,14 +139,28 @@ const IconsGroup = ({
                     </DropdownMenuItem> */}
                   </>
                 ) : (
-                  <SignInButton mode="redirect">
-                    <DropdownMenuItem>
-                      <div className="flex-center gap-2 hover:text-white cursor-pointer transition-all duration-200 ease-in-out bg-green-300 p-2 rounded-md w-full shadow-md">
-                        <Lock className="hover:text-white" />
-                        <span>Login</span>
-                      </div>
-                    </DropdownMenuItem>
-                  </SignInButton>
+                  // <SignInButton mode="redirect">
+                  //   <DropdownMenuItem>
+                  //     <div className="flex-center gap-2 hover:text-white cursor-pointer transition-all duration-200 ease-in-out bg-green-300 p-2 rounded-md w-full shadow-md">
+                  //       <Lock className="hover:text-white" />
+                  //       <span>Login</span>
+                  //     </div>
+                  //   </DropdownMenuItem>
+                  // </SignInButton>
+                  <Button className="flex-center gap-2 hover:text-white cursor-pointer transition-all duration-200 ease-in-out bg-green-300 p-2 rounded-md w-full shadow-md">
+                    <Link href={ROUTES.SIGN_IN}>
+                      <Image
+                        src="/icons/account.svg"
+                        alt="Account"
+                        width={20}
+                        height={20}
+                        className="invert-colors lg:hidden"
+                      />
+                      <span className="primary-text-gradient max-lg:hidden">
+                        Log In
+                      </span>
+                    </Link>
+                  </Button>
                 )}
               </DropdownMenuGroup>
               <DropdownMenuItem>
@@ -154,14 +171,26 @@ const IconsGroup = ({
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               {user && (
-                <SignOutButton>
-                  <DropdownMenuItem>
-                    <div className="flex items-center justify-center gap-2 hover:text-white cursor-pointer transition-all duration-200 ease-in-out bg-red-300 p-2 rounded-md w-full shadow-md">
-                      <LogOut className="hover:text-primary-500" />
-                      <span>Log out</span>
-                    </div>
-                  </DropdownMenuItem>
-                </SignOutButton>
+                // <SignOutButton>
+                //   <DropdownMenuItem>
+                //     <div className="flex items-center justify-center gap-2 hover:text-white cursor-pointer transition-all duration-200 ease-in-out bg-red-300 p-2 rounded-md w-full shadow-md">
+                //       <LogOut className="hover:text-primary-500" />
+                //       <span>Log out</span>
+                //     </div>
+                //   </DropdownMenuItem>
+                // </SignOutButton>
+                <Button className="flex items-center justify-center gap-2 hover:text-white cursor-pointer transition-all duration-200 ease-in-out bg-red-300 p-2 rounded-md w-full shadow-md">
+                  <Link href={ROUTES.SIGN_UP}>
+                    <Image
+                      src="/icons/sign-up.svg"
+                      alt="Account"
+                      width={20}
+                      height={20}
+                      className="invert-colors lg:hidden"
+                    />
+                    <span className="max-lg:hidden">Sign Up</span>
+                  </Link>
+                </Button>
               )}
             </DropdownMenuContent>
           </DropdownMenu>
