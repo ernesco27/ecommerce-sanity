@@ -257,33 +257,33 @@ export const userType = defineType({
         },
       ],
     }),
-    defineField({
-      name: "failedLoginAttempts",
-      type: "number",
-      title: "Failed Login Attempts",
-      initialValue: 0,
-      readOnly: true,
-    }),
-    defineField({
-      name: "accountLocked",
-      type: "boolean",
-      title: "Account Locked",
-      initialValue: false,
-      description:
-        "Account automatically locks after multiple failed login attempts",
-    }),
-    defineField({
-      name: "lockExpiresAt",
-      type: "datetime",
-      title: "Lock Expiry Time",
-      hidden: true,
-    }),
-    defineField({
-      name: "clerkUserId",
-      type: "string",
-      title: "Clerk User ID",
-      validation: (Rule) => Rule.required(),
-    }),
+    // defineField({
+    //   name: "failedLoginAttempts",
+    //   type: "number",
+    //   title: "Failed Login Attempts",
+    //   initialValue: 0,
+    //   readOnly: true,
+    // }),
+    // defineField({
+    //   name: "accountLocked",
+    //   type: "boolean",
+    //   title: "Account Locked",
+    //   initialValue: false,
+    //   description:
+    //     "Account automatically locks after multiple failed login attempts",
+    // }),
+    // defineField({
+    //   name: "lockExpiresAt",
+    //   type: "datetime",
+    //   title: "Lock Expiry Time",
+    //   hidden: true,
+    // }),
+    // defineField({
+    //   name: "clerkUserId",
+    //   type: "string",
+    //   title: "Clerk User ID",
+    //   validation: (Rule) => Rule.required(),
+    // }),
     defineField({
       name: "addresses",
       type: "array",

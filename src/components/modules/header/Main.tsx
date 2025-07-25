@@ -7,12 +7,17 @@ import MobileButton from "./MobileButton";
 import Logo from "@/components/custom/Logo";
 import MainMenu from "./MainMenu";
 import IconsGroup from "./IconsGroup";
+import { Session } from "next-auth";
 
-const Main = () => {
+interface SessionProp {
+  session: Session | null;
+}
+
+const Main = ({ session }: SessionProp) => {
   const [searchBarOpen, setSearchBarOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
-  const [cartItemsCount, setCartItemsCount] = useState(0);
+  const [cartItemsCount] = useState(0);
 
   return (
     <section className="h-full">
@@ -31,6 +36,7 @@ const Main = () => {
             userOpen={userOpen}
             setUserOpen={setUserOpen}
             cartItemsCount={cartItemsCount}
+            session={session}
           />
         </Row>
       </Container>

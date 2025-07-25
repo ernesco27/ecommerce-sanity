@@ -50,10 +50,13 @@ export async function POST(request: Request) {
 
       // Check if the specific account link exists.
       const accountQuery = groq`*[_type == "account" && user._ref == $userId && provider == $provider][0]`;
-      const existingAccount = await writeClient.fetch(accountQuery, {
-        userId: finalUserId,
-        provider,
-      });
+      const existingAccount: Account | null = await writeClient.fetch(
+        accountQuery,
+        {
+          userId: finalUserId,
+          provider,
+        },
+      );
 
       // Create the account link if it doesn't exist.
       if (!existingAccount) {

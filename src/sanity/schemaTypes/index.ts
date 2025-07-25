@@ -10,6 +10,7 @@ import { brandType } from "./brandType";
 import { discountType } from "./discountType";
 import { productReviewType } from "./reviewsType";
 import { userType } from "./userType";
+import { accountType } from "./accountType";
 import { reviewImageType } from "./reviewImages";
 import { productWishlistType } from "./wishListType";
 
@@ -41,6 +42,7 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     discountType,
     productReviewType,
     userType,
+    accountType,
     reviewImageType,
     productWishlistType,
 

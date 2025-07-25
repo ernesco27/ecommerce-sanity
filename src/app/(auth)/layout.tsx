@@ -19,8 +19,6 @@ const AuthLayout = ({ children }: { children: ReactNode }) => {
   );
   const { data: company } = useSWR<CompanySettings>("/api/company", fetcher);
 
-  console.log("logo:", company?.logo);
-
   return (
     <main className="h-full grid grid-cols-1 lg:grid-cols-2">
       <div

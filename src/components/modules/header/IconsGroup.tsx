@@ -1,7 +1,7 @@
 import React from "react";
 
 import { CiSearch, CiShoppingCart, CiUser } from "react-icons/ci";
-import { LifeBuoy, Lock, LogOut, Settings, User } from "lucide-react";
+import { LifeBuoy, User } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -18,23 +18,25 @@ import CartPreview from "./CartPreview";
 import Row from "@/components/custom/Row";
 import SearchBar from "./SearchBar";
 import { useCartStore } from "@/store/cartStore";
-import { useUser, SignOutButton, SignInButton } from "@clerk/nextjs";
+
 import { BiBox, BiHeart } from "react-icons/bi";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
 import Theme from "@/components/modules/header/Theme";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
 import ROUTES from "../../../../constants/route";
 
+import UserAvatar from "@/components/custom/UserAvatar";
+import { handleSignOut } from "@/lib/actions/signOutAction";
+import { Session } from "next-auth";
+
 const IconsGroup = ({
   openSearchBar,
   setOpenSearchBar,
   cartOpen,
   setCartOpen,
-  userOpen,
-  setUserOpen,
-  cartItemsCount = 0,
+  session,
 }: {
   openSearchBar: boolean;
   setOpenSearchBar: (open: boolean) => void;
@@ -43,11 +45,14 @@ const IconsGroup = ({
   userOpen: boolean;
   setUserOpen: (open: boolean) => void;
   cartItemsCount?: number;
+  session: Session | null;
 }) => {
   const router = useRouter();
   const { getTotalItems } = useCartStore();
 
-  const { user } = useUser();
+  const user = session?.user;
+
+  console.log("user:", user);
 
   return (
     <section className="">
@@ -75,16 +80,10 @@ const IconsGroup = ({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               {user ? (
-                <Avatar>
-                  {user?.imageUrl ? (
-                    <AvatarImage src={user?.imageUrl} />
-                  ) : (
-                    <AvatarFallback>
-                      {user?.firstName?.charAt(0)}
-                      {user?.lastName?.charAt(0)}
-                    </AvatarFallback>
-                  )}
-                </Avatar>
+                <UserAvatar
+                  name={user.name ?? "User"}
+                  imageUrl={user.image ?? undefined}
+                />
               ) : (
                 <CiUser
                   size={35}
@@ -95,7 +94,7 @@ const IconsGroup = ({
             <DropdownMenuContent className="w-56 mr-8">
               <div className="flex-between">
                 <DropdownMenuLabel>
-                  {user ? "Welcome! " + user.firstName : "Welcome!"}
+                  {user ? `Welcome! ${user.name}` : "Welcome!"}
                 </DropdownMenuLabel>
                 <Theme />
               </div>
@@ -131,36 +130,36 @@ const IconsGroup = ({
                         <span>Wishlist</span>
                       </div>
                     </DropdownMenuItem>
-                    {/* <DropdownMenuItem>
-                      <div className="flex-center gap-2 hover:text-primary-500 cursor-pointer transition-all duration-200 ease-in-out">
-                        <Settings className="hover:text-primary-500" />
-                        <span>Settings</span>
-                      </div>
-                    </DropdownMenuItem> */}
                   </>
                 ) : (
-                  // <SignInButton mode="redirect">
-                  //   <DropdownMenuItem>
-                  //     <div className="flex-center gap-2 hover:text-white cursor-pointer transition-all duration-200 ease-in-out bg-green-300 p-2 rounded-md w-full shadow-md">
-                  //       <Lock className="hover:text-white" />
-                  //       <span>Login</span>
-                  //     </div>
-                  //   </DropdownMenuItem>
-                  // </SignInButton>
-                  <Button className="flex-center gap-2 hover:text-white cursor-pointer transition-all duration-200 ease-in-out bg-green-300 p-2 rounded-md w-full shadow-md">
-                    <Link href={ROUTES.SIGN_IN}>
-                      <Image
-                        src="/icons/account.svg"
-                        alt="Account"
-                        width={20}
-                        height={20}
-                        className="invert-colors lg:hidden"
-                      />
-                      <span className="primary-text-gradient max-lg:hidden">
-                        Log In
-                      </span>
-                    </Link>
-                  </Button>
+                  <div className="flex flex-col gap-3">
+                    <Button className="flex-center gap-2 hover:text-white cursor-pointer transition-all duration-200 ease-in-out bg-green-300 p-2 rounded-md w-full shadow-md">
+                      <Link href={ROUTES.SIGN_IN} className="flex-center gap-2">
+                        <Image
+                          src="/icons/account.svg"
+                          alt="Account"
+                          width={20}
+                          height={20}
+                          className="invert-colors"
+                        />
+                        <span className="primary-text-gradient max-lg:hidden">
+                          Log In
+                        </span>
+                      </Link>
+                    </Button>
+                    <Button className="small-medium light-border-2 btn-tertiary text-dark400_light900 min-h-[41px] w-full rounded-lg border px-4 py-3 shadow-none cursor-pointer">
+                      <Link href={ROUTES.SIGN_UP} className="flex-center gap-2">
+                        <Image
+                          src="/icons/sign-up.svg"
+                          alt="Account"
+                          width={20}
+                          height={20}
+                          className="invert-colors "
+                        />
+                        <span className="max-lg:hidden">Sign Up</span>
+                      </Link>
+                    </Button>
+                  </div>
                 )}
               </DropdownMenuGroup>
               <DropdownMenuItem>
@@ -171,26 +170,23 @@ const IconsGroup = ({
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               {user && (
-                // <SignOutButton>
-                //   <DropdownMenuItem>
-                //     <div className="flex items-center justify-center gap-2 hover:text-white cursor-pointer transition-all duration-200 ease-in-out bg-red-300 p-2 rounded-md w-full shadow-md">
-                //       <LogOut className="hover:text-primary-500" />
-                //       <span>Log out</span>
-                //     </div>
-                //   </DropdownMenuItem>
-                // </SignOutButton>
-                <Button className="flex items-center justify-center gap-2 hover:text-white cursor-pointer transition-all duration-200 ease-in-out bg-red-300 p-2 rounded-md w-full shadow-md">
-                  <Link href={ROUTES.SIGN_UP}>
+                <form action={handleSignOut}>
+                  <Button
+                    type="submit"
+                    className="base-medium w-fit !bg-transparent px-4 py-3 cursor-pointer"
+                  >
                     <Image
-                      src="/icons/sign-up.svg"
-                      alt="Account"
+                      src="/icons/logout-3.svg"
+                      alt="Logout"
                       width={20}
                       height={20}
-                      className="invert-colors lg:hidden"
+                      className="invert-colors"
                     />
-                    <span className="max-lg:hidden">Sign Up</span>
-                  </Link>
-                </Button>
+                    <span className="max-lg:hidden text-dark300_light900">
+                      Log Out
+                    </span>
+                  </Button>
+                </form>
               )}
             </DropdownMenuContent>
           </DropdownMenu>
