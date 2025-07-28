@@ -7,11 +7,16 @@ export const accountType = defineType({
   type: "document",
   icon: UsersIcon,
   fields: [
+    // defineField({
+    //   name: "userId",
+    //   title: "User ID",
+    //   type: "string",
+    //   validation: (Rule) => Rule.required().error("User ID is required."),
+    // }),
     defineField({
-      name: "userId",
-      title: "User ID",
-      type: "string",
-      validation: (Rule) => Rule.required().error("User ID is required."),
+      name: "user",
+      type: "reference",
+      to: [{ type: "user" }],
     }),
     defineField({
       name: "name",

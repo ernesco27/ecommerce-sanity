@@ -26,7 +26,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           if (!existingAccount) return null;
 
           const { data: existingUser } = (await api.users.getById(
-            existingAccount.user._id.toString(),
+            existingAccount.user._ref,
           )) as ActionResponse<User>;
 
           if (!existingUser) return null;

@@ -1000,8 +1000,7 @@ export type User = {
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
-  // firstName?: string;
-  // lastName?: string;
+  _ref: string;
   name: string;
   username: string;
   image?: string;
