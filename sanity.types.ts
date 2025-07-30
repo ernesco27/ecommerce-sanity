@@ -986,26 +986,16 @@ export type Account = {
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
-  user: User;
-  name: string;
-  image?: string;
+  user?: {
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    [internalGroqTypeReferenceTo]?: "user";
+  };
+
   password?: string;
   provider: string;
   providerAccountId: string;
-};
-
-export type User = {
-  _id: string;
-  _type: "user";
-  _createdAt: string;
-  _updatedAt: string;
-  _rev: string;
-  _ref: string;
-  name: string;
-  username: string;
-  image?: string;
-  email?: string;
-  phone?: string;
   accountStatus?: "active" | "inactive" | "suspended" | "pending";
   dateJoined?: string;
   lastLogin?: string;
@@ -1053,20 +1043,6 @@ export type User = {
     [internalGroqTypeReferenceTo]?: "role";
   }>;
   isEmailVerified?: boolean;
-  isMobileVerified?: boolean;
-  twoFactorEnabled?: boolean;
-  lastPasswordChange?: string;
-  loginHistory?: Array<{
-    timestamp?: string;
-    ipAddress?: string;
-    deviceInfo?: string;
-    location?: string;
-    _key: string;
-  }>;
-  failedLoginAttempts?: number;
-  accountLocked?: boolean;
-  lockExpiresAt?: string;
-  clerkUserId?: string;
   addresses?: Array<{
     _ref: string;
     _type: "reference";
@@ -1074,7 +1050,19 @@ export type User = {
     _key: string;
     [internalGroqTypeReferenceTo]?: "address";
   }>;
-  accounts?: Account[];
+};
+
+export type User = {
+  _id: string;
+  _type: "user";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  name: string;
+  username: string;
+  image?: string;
+  email?: string;
+  phone?: string;
 };
 
 export type Discount = {
@@ -1637,6 +1625,7 @@ export type AllSanitySchemaTypes =
   | ProductWishlist
   | ReviewImage
   | ProductReview
+  | Account
   | User
   | Discount
   | ProductAttribute

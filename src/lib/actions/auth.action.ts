@@ -71,6 +71,24 @@ export async function signUpWithCredentials(
       providerAccountId: email,
       password: hashedPassword,
       user: { _type: "reference", _ref: temporaryUserId },
+      accountStatus: "active",
+      dateJoined: new Date().toISOString(),
+      isEmailVerified: false,
+      preferences: {
+        language: "en",
+        currency: "GHS",
+        notifications: {
+          email: true,
+          sms: false,
+          push: true,
+        },
+      },
+      marketingPreferences: {
+        emailMarketing: true,
+        smsMarketing: false,
+        personalization: true,
+        thirdPartySharing: false,
+      },
     });
 
     await transaction.commit();

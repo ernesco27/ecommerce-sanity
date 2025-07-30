@@ -65,6 +65,24 @@ export async function POST(request: Request) {
           provider,
           providerAccountId,
           user: { _type: "reference", _ref: finalUserId },
+          accountStatus: "active",
+          dateJoined: new Date().toISOString(),
+          isEmailVerified: true, // OAuth accounts are typically verified
+          preferences: {
+            language: "en",
+            currency: "GHS",
+            notifications: {
+              email: true,
+              sms: false,
+              push: true,
+            },
+          },
+          marketingPreferences: {
+            emailMarketing: true,
+            smsMarketing: false,
+            personalization: true,
+            thirdPartySharing: false,
+          },
         });
       }
     } else {
@@ -88,6 +106,24 @@ export async function POST(request: Request) {
         provider,
         providerAccountId,
         user: { _type: "reference", _ref: temporaryUserId },
+        accountStatus: "active",
+        dateJoined: new Date().toISOString(),
+        isEmailVerified: true, // OAuth accounts are typically verified
+        preferences: {
+          language: "en",
+          currency: "GHS",
+          notifications: {
+            email: true,
+            sms: false,
+            push: true,
+          },
+        },
+        marketingPreferences: {
+          emailMarketing: true,
+          smsMarketing: false,
+          personalization: true,
+          thirdPartySharing: false,
+        },
       });
     }
 

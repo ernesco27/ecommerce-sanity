@@ -50,6 +50,24 @@ export async function POST(request: Request) {
     const newAccount = await writeClient.create({
       _type: "account",
       ...validatedData,
+      accountStatus: "active",
+      dateJoined: new Date().toISOString(),
+      isEmailVerified: false,
+      preferences: {
+        language: "en",
+        currency: "GHS",
+        notifications: {
+          email: true,
+          sms: false,
+          push: true,
+        },
+      },
+      marketingPreferences: {
+        emailMarketing: true,
+        smsMarketing: false,
+        personalization: true,
+        thirdPartySharing: false,
+      },
     });
 
     return NextResponse.json(
