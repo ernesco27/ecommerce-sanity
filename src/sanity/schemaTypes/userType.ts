@@ -37,14 +37,14 @@ export const userType = defineType({
       title: "Phone Number",
     }),
 
-    defineField({
-      name: "accounts",
-      title: "Accounts",
-      type: "array",
-      of: [{ type: "reference", to: [{ type: "account" }] }],
-      readOnly: true,
-      description: "Accounts are managed from the Account documents.",
-    }),
+    // defineField({
+    //   name: "accounts",
+    //   title: "Accounts",
+    //   type: "array",
+    //   of: [{ type: "reference", to: [{ type: "account" }] }],
+    //   readOnly: true,
+    //   description: "Accounts are managed from the Account documents.",
+    // }),
   ],
   preview: {
     select: {

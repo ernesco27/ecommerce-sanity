@@ -224,13 +224,13 @@ export const accountType = defineType({
   ],
   preview: {
     select: {
-      title: "name",
       subtitle: "provider",
+      userName: "user.name",
     },
     prepare(selection) {
-      const { title, subtitle } = selection;
+      const { subtitle, userName } = selection;
       return {
-        title: title || "Unnamed Account",
+        title: userName || "Unnamed Account",
         subtitle: `Provider: ${subtitle || "Not specified"}`,
         media: UsersIcon,
       };
