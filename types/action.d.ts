@@ -15,3 +15,16 @@ interface AuthCredentials {
   email: string;
   password: string;
 }
+
+interface EditUserParams {
+  username: string;
+  name: string;
+  email: string;
+  image: string;
+  phone: string;
+  userId: string;
+}
+
+interface GetUserParams {
+  email: string;
+}
