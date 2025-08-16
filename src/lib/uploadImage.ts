@@ -1,4 +1,4 @@
-import { client } from "@/sanity/lib/client";
+import { writeClient } from "@/sanity/lib/client";
 
 interface ImageAsset {
   _id: string;
@@ -14,7 +14,7 @@ export async function uploadImages(files: File[]): Promise<ImageAsset[]> {
       throw new Error("Image size should be less than 5MB");
     }
 
-    const asset = await client.assets.upload("image", file, {
+    const asset = await writeClient.assets.upload("image", file, {
       filename: file.name,
     });
 

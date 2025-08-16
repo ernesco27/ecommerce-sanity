@@ -12,6 +12,8 @@ const ProfilePage = async ({ params }: RouteParams) => {
   const session = await auth();
   if (!session || !session.user) return redirect("sign-in");
 
+  console.log("Session user:", session.user);
+
   const { email } = session.user;
 
   if (!email) return redirect("sign-in");

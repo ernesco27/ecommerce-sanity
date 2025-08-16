@@ -52,3 +52,15 @@ export const formatPriceRange = (
   }
   return ""; // Should not happen if logic is correct
 };
+
+// Utility function to convert Sanity image reference to URL
+export const convertSanityRefToUrl = (imageRef: string): string => {
+  const processedRef = imageRef
+    .replace("image-", "")
+    .replace("-jpg", ".jpg")
+    .replace("-png", ".png")
+    .replace("-webp", ".webp")
+    .replace("-gif", ".gif");
+
+  return `https://cdn.sanity.io/images/${process.env.NEXT_PUBLIC_SANITY_PROJECT_ID}/${process.env.NEXT_PUBLIC_SANITY_DATASET || "production"}/${processedRef}`;
+};

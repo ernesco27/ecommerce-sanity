@@ -37,14 +37,6 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
-interface UploadedImage {
-  _type: "image";
-  asset: {
-    _type: "reference";
-    _ref: string;
-  };
-}
-
 const ReviewForm = ({ productId }: { productId: string }) => {
   const [photos, setPhotos] = useState<File[]>([]);
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);

@@ -1,12 +1,14 @@
 import { z } from "zod";
 
+const imageSchema = z.union([z.string().url(), z.string()]).optional();
+
 export const UserSchema = z.object({
   name: z.string().min(1, { message: "Name is required." }),
   username: z
     .string()
     .min(3, { message: "Username must be at least 3 characters long." }),
   email: z.string().email({ message: "Please provide a valid email address." }),
-  image: z.string().url({ message: "Please provide a valid URL." }).optional(),
+  image: imageSchema,
   phone: z
     .string()
     .min(10, { message: "Phone number must be at least 10 digits." })

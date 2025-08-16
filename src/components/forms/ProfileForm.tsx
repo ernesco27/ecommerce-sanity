@@ -16,12 +16,13 @@ import { Input } from "@/components/ui/input";
 import { z } from "zod";
 import { toast } from "sonner";
 
-import { useState, useRef, useTransition } from "react";
+import { useRef, useTransition, useState, useEffect } from "react";
 import Image from "next/image";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { User } from "../../../sanity.types";
 import { UserSchema } from "@/lib/validations";
 import { editUser } from "@/lib/actions/profile.action";
+import { convertSanityRefToUrl } from "@/lib/utils";
 
 interface Params {
   user: User;
@@ -37,19 +38,81 @@ const ImageUploadField = ({
   onChange: (value: string) => void;
   error?: string;
 }) => {
-  const [previewUrl, setPreviewUrl] = useState(value);
+  const [previewUrl, setPreviewUrl] = useState<string>("");
+  const [uploading, setUploading] = useState(false);
+  const [uploadedImage, setUploadedImage] = useState<UploadedImage[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  // Helper function to get the proper image URL
+  const getImageUrl = (imageValue: string): string => {
+    if (!imageValue) return "";
+
+    // Check if it's already a URL (starts with http/https)
+    if (imageValue.startsWith("http://") || imageValue.startsWith("https://")) {
+      return imageValue;
+    }
+
+    // Check if it's a Sanity image reference (contains 'image-' and doesn't look like a URL)
+    if (imageValue.includes("image-") && !imageValue.includes("://")) {
+      // For Sanity image references, construct the URL using the proper format
+      return convertSanityRefToUrl(imageValue);
+    }
+
+    // If it's neither, return empty string
+    return "";
+  };
+
+  // Update preview URL when value changes
+  useEffect(() => {
+    const imageUrl = getImageUrl(value);
+    setPreviewUrl(imageUrl);
+  }, [value]);
+
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const result = e.target?.result as string;
-        setPreviewUrl(result);
-        onChange(result);
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error(`File ${file.name} is too large. Maximum size is 2MB`);
+      return;
+    }
+
+    // Create preview URL for the uploaded file
+    const previewUrl = URL.createObjectURL(file);
+    setPreviewUrl(previewUrl);
+
+    try {
+      setUploading(true);
+      const formData = new FormData();
+
+      formData.append("files", file);
+
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to upload image");
+      }
+
+      const data = await response.json();
+      setUploadedImage(data.images[0]);
+
+      // Convert the Sanity reference to URL immediately
+      const imageRef = data.images[0].asset._ref;
+      const imageUrl = convertSanityRefToUrl(imageRef);
+
+      onChange(imageUrl);
+      toast.success("Image uploaded successfully");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to upload images",
+      );
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -123,10 +186,14 @@ const ImageUploadField = ({
   );
 };
 
+const ProfileFormSchema = UserSchema.extend({
+  image: z.any().optional(),
+});
+
 const ProfileForm = ({ user }: Params) => {
   // Define form.
-  const form = useForm<z.infer<typeof UserSchema>>({
-    resolver: zodResolver(UserSchema),
+  const form = useForm<z.infer<typeof ProfileFormSchema>>({
+    resolver: zodResolver(ProfileFormSchema),
     defaultValues: {
       image: user?.image || "",
       name: user?.name || "",
@@ -138,16 +205,36 @@ const ProfileForm = ({ user }: Params) => {
 
   const [isPending, startTransition] = useTransition();
 
+  // Helper function to convert Sanity reference to URL
+  const convertImageToUrl = (imageValue: string): string => {
+    if (!imageValue) return "";
+
+    // If it's already a URL, return as-is
+    if (imageValue.startsWith("http://") || imageValue.startsWith("https://")) {
+      return imageValue;
+    }
+
+    // If it's a Sanity image reference, convert to URL
+    if (imageValue.includes("image-") && !imageValue.includes("://")) {
+      return convertSanityRefToUrl(imageValue);
+    }
+
+    return imageValue;
+  };
+
   // Define your submit handler.
-  const handleEditUser = async (data: z.infer<typeof UserSchema>) => {
+  const handleEditUser = async (data: z.infer<typeof ProfileFormSchema>) => {
     startTransition(async () => {
+      // Convert image reference to URL before submitting
+      const imageUrl = convertImageToUrl(data.image || "");
+
       const result = await editUser({
         userId: user._id,
         name: data.name,
         email: data.email,
         username: data.username,
         phone: data.phone || "",
-        image: data.image || "",
+        image: imageUrl,
       });
 
       if (result.success) {
@@ -176,6 +263,7 @@ const ProfileForm = ({ user }: Params) => {
                 onChange={formField.onChange}
                 error={fieldState.error?.message}
               />
+
               <FormMessage />
             </FormItem>
           )}

@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
-import React, { ReactNode, useEffect, useRef } from "react";
-import { motion, useInView, useAnimation } from "framer-motion";
+import React, { ReactNode, useRef } from "react";
+import { motion, useInView } from "framer-motion";
 
 const Reveal = ({
   children,

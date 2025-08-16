@@ -26,17 +26,17 @@ import { useState, useRef, useTransition } from "react";
 import Image from "next/image";
 import { ReloadIcon } from "@radix-ui/react-icons";
 
-interface AuthFormProps<T extends FieldValues> {
+interface PasswordFormProps<T extends FieldValues, R = null> {
   schema: ZodType<T>;
   defaultValues: T;
-  onSubmit: (data: T) => Promise<ActionResponse>;
+  onSubmit: (data: T) => Promise<ActionResponse<R>>;
 }
 
-const PasswordForm = <T extends FieldValues>({
+const PasswordForm = <T extends FieldValues, R = null>({
   schema,
   defaultValues,
   onSubmit,
-}: AuthFormProps<T>) => {
+}: PasswordFormProps<T, R>) => {
   // Define form.
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
@@ -45,17 +45,19 @@ const PasswordForm = <T extends FieldValues>({
 
   const [isPending, startTransition] = useTransition();
 
-  // const router = useRouter();
-
   // Define your submit handler.
   const handleSubmit: SubmitHandler<T> = async (data) => {
     console.log("data:", data);
-    const result = (await onSubmit(data)) as ActionResponse;
+
+    if (data.newPassword !== data.confirmPassword) {
+      toast.error("New passwords don't match.");
+      return;
+    }
+
+    const result = (await onSubmit(data)) as ActionResponse<R>;
 
     if (result?.success) {
-      toast.success("Profile updated successfully!");
-
-      //router.push(ROUTES.HOME);
+      toast.success("Password updated successfully!");
     } else {
       toast.error(
         result?.error?.message || "An error occurred. Please try again.",

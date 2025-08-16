@@ -28,3 +28,17 @@ interface EditUserParams {
 interface GetUserParams {
   email: string;
 }
+
+interface UploadedImage {
+  _type: "image";
+  asset: {
+    _type: "reference";
+    _ref: string;
+  };
+}
+
+interface EditPasswordParams {
+  password: string;
+  newPassword: string;
+  confirmPassword: string;
+}
